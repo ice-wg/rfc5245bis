@@ -1,24 +1,4 @@
-# ICE bis
-
-This is the working area for the Working Group internet-draft, "ICE bis".
-
-* [Editor's copy](https://ice-wg.github.io/rfc5245bis/)
-* [Working Group Draft] (https://tools.ietf.org/html/draft-ietf-ice-rfc5245bis-latest)
-
-
-## Building the Draft
-
-Formatted text and HTML versions of the draft can be built using `make`.
-
-```sh
-$ make
-```
-
-This requires that you have the necessary software installed.  See [the
-instructions](https://github.com/martinthomson/i-d-template/blob/master/doc/SETUP.md).
-
-
-## Contributing
+# Contributing
 
 Before submitting feedback, please familiarize yourself with our current issues
 list and review the [working group
