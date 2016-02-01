@@ -3036,6 +3036,17 @@ for an agent to cease sending or receiving checks on a candidate that
 was not selected by ICE, and then free the candidate.
 </t>
 
+<t>
+Once ICE processing has reached the Completed state for all peers for
+media streams using those candidates, the agent SHOULD wait an
+additional three seconds, and then it MAY cease responding to checks or
+generating triggered checks on that candidate.  It MAY free the
+candidate at that time. Freeing of server reflexive candidates is never
+explicit; it happens by lack of a keepalive.  The three-second delay
+handles cases when aggressive nomination is used, and the selected pairs
+can quickly change after ICE has completed.
+</t>
+
 </section>
 
 <section title="Lite Implementation Procedures">
