@@ -29,6 +29,18 @@
       </address>
     </author>
 
+    <author fullname="Christer Holmberg" initials="C." surname="Holmberg">
+      <organization abbrev="Ericsson">Ericsson</organization>
+      <address>
+        <postal>
+          <street>Hirsalantie 11</street>
+          <city>02420 Jorvas</city>
+          <country>Finland</country>
+        </postal>
+        <email>christer.holmberg@ericsson.com</email>
+      </address>
+    </author>
+
     <author initials="J.R." surname="Rosenberg"
 	    fullname="Jonathan Rosenberg">
       <organization>jdrosen.net</organization>
@@ -43,7 +55,7 @@
       </address>
     </author>
 
-        <date year="2015" />
+        <date year="2016" />
 
         <area>ART</area>
         <workgroup>ICE</workgroup>
@@ -67,7 +79,7 @@
 <t>Protocols establishing multimedia sessions between peers typically
 involve exchanging IP addresses and ports for the media sources and
 sinks. However this poses challenges when operated through Network Address
-Translators (NATs) [RFC3235]. These protocols also seek to
+Translators (NATs) <xref target="RFC3235"/>. These protocols also seek to
 create a media flow directly between participants, so that there is
 no application layer intermediary between them.  This is done to
 reduce media latency, decrease packet loss, and reduce the
@@ -100,12 +112,13 @@ multiplicity of IP addresses and ports which are then tested for
 connectivity by peer-to-peer connectivity checks. The IP addresses and
 ports are exchanged via mechanisms (for example, including in a
 offer/answer exchange) and the connectivity checks are performed using
-Session Traversal Utilities for NAT (STUN) specification
-[RFC5389]. ICE also makes use of Traversal Using Relays around NAT
-(TURN) [RFC5766], an extension to STUN.  Because ICE exchanges a
-multiplicity of IP addresses and ports for each media stream, it also
-allows for address selection for multihomed and dual-stack hosts, and
-for this reason it deprecates [RFC4091] and [RFC4092].
+Session Traversal Utilities for NAT (STUN) specification <xref
+target="RFC5389"/>. ICE also makes use of Traversal Using Relays
+around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
+Because ICE exchanges a multiplicity of IP addresses and ports for
+each media stream, it also allows for address selection for multihomed
+and dual-stack hosts, and for this reason it deprecates <xref
+target="RFC4091"/> and <xref target="RFC4092"/>.
 </t>
 
 </section>
@@ -4298,8 +4311,8 @@ IANA has registered following STUN error response code:
 
 <figure><artwork>
 <![CDATA[
-   487   Role Conflict: The client asserted an ICE role (controlling or
-         controlled) that is in conflict with the role of the server.
+ 487   Role Conflict: The client asserted an ICE role (controlling or
+       controlled) that is in conflict with the role of the server.
 ]]></artwork></figure>
 
 
@@ -4547,10 +4560,10 @@ addresses were clarified. </t>
 <t> Most of the text in this document comes from the original ICE
 specification, RFC 5245. The authors would like to thank everyone who
 has contributed to that document. For additional contributions to this
-revision of the specification we would like to thank Christer
-Holmberg, Emil Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon Perrault,
-Eric Rescorla, Thomas Stach, Peter Thatcher, Martin Thomson, Justin
-Uberti, and Suhas Nandakumar.</t>
+revision of the specification we would like to thank Emil Ivov, Paul
+Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
+Stach, Peter Thatcher, Martin Thomson, Justin Uberti, and Suhas
+Nandakumar. </t>
 
 </section>
 
