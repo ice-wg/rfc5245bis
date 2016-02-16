@@ -3,10 +3,11 @@
 
 
 ICE                                                           A. Keranen
-Internet-Draft                                                  Ericsson
-Obsoletes: 5245 (if approved)                               J. Rosenberg
-Intended status: Standards Track                             jdrosen.net
-Expires: August 2, 2016                                 January 30, 2016
+Internet-Draft                                               C. Holmberg
+Obsoletes: 5245 (if approved)                                   Ericsson
+Intended status: Standards Track                            J. Rosenberg
+Expires: August 19, 2016                                     jdrosen.net
+                                                       February 16, 2016
 
 
   Interactive Connectivity Establishment (ICE): A Protocol for Network
@@ -38,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 2, 2016.
+   This Internet-Draft will expire on August 19, 2016.
 
 Copyright Notice
 
@@ -49,15 +50,15 @@ Copyright Notice
    Provisions Relating to IETF Documents
    (http://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 1]
+Keranen, et al.          Expires August 19, 2016                [Page 1]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
+   carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
@@ -105,15 +106,15 @@ Table of Contents
    5.  ICE Candidate Processing  . . . . . . . . . . . . . . . . . .  30
      5.1.  Procedures for Full Implementation  . . . . . . . . . . .  30
        5.1.1.  Verifying ICE Support . . . . . . . . . . . . . . . .  30
-       5.1.2.  Determining Role  . . . . . . . . . . . . . . . . . .  31
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 2]
+Keranen, et al.          Expires August 19, 2016                [Page 2]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
+       5.1.2.  Determining Role  . . . . . . . . . . . . . . . . . .  31
        5.1.3.  Forming the Check Lists . . . . . . . . . . . . . . .  32
          5.1.3.1.  Forming Candidate Pairs . . . . . . . . . . . . .  32
          5.1.3.2.  Computing Pair Priority and Ordering Pairs  . . .  35
@@ -161,15 +162,15 @@ Internet-Draft                     ICE                      January 2016
    9.  Keepalives  . . . . . . . . . . . . . . . . . . . . . . . . .  57
    10. Media Handling  . . . . . . . . . . . . . . . . . . . . . . .  58
      10.1.  Sending Media  . . . . . . . . . . . . . . . . . . . . .  58
-       10.1.1.  Procedures for Full Implementations  . . . . . . . .  58
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 3]
+Keranen, et al.          Expires August 19, 2016                [Page 3]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
+       10.1.1.  Procedures for Full Implementations  . . . . . . . .  58
        10.1.2.  Procedures for Lite Implementations  . . . . . . . .  59
        10.1.3.  Procedures for All Implementations . . . . . . . . .  59
      10.2.  Receiving Media  . . . . . . . . . . . . . . . . . . . .  59
@@ -217,15 +218,15 @@ Internet-Draft                     ICE                      January 2016
      B.3.  Purpose of the Related Address and Related Port
            Attributes  . . . . . . . . . . . . . . . . . . . . . . .  89
      B.4.  Importance of the STUN Username . . . . . . . . . . . . .  90
-     B.5.  The Candidate Pair Priority Formula . . . . . . . . . . .  91
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 4]
+Keranen, et al.          Expires August 19, 2016                [Page 4]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
+     B.5.  The Candidate Pair Priority Formula . . . . . . . . . . .  91
      B.6.  Why Are Keepalives Needed?  . . . . . . . . . . . . . . .  91
      B.7.  Why Prefer Peer Reflexive Candidates? . . . . . . . . . .  92
      B.8.  Why Are Binding Indications Used for Keepalives?  . . . .  92
@@ -272,15 +273,17 @@ Internet-Draft                     ICE                      January 2016
    makes use of Traversal Using Relays around NAT (TURN) [RFC5766], an
    extension to STUN.  Because ICE exchanges a multiplicity of IP
    addresses and ports for each media stream, it also allows for address
+
+
+
+
+Keranen, et al.          Expires August 19, 2016                [Page 5]
+
+Internet-Draft                     ICE                     February 2016
+
+
    selection for multihomed and dual-stack hosts, and for this reason it
    deprecates [RFC4091] and [RFC4092].
-
-
-
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 5]
-
-Internet-Draft                     ICE                      January 2016
-
 
 2.  Overview of ICE
 
@@ -330,12 +333,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-
-
-
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 6]
+Keranen, et al.          Expires August 19, 2016                [Page 6]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
                      +---------+
@@ -389,9 +389,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 7]
+Keranen, et al.          Expires August 19, 2016                [Page 7]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 2.1.  Gathering Candidate Addresses
@@ -445,9 +445,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 8]
+Keranen, et al.          Expires August 19, 2016                [Page 8]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
                  To Internet
@@ -501,9 +501,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                 [Page 9]
+Keranen, et al.          Expires August 19, 2016                [Page 9]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    server) will be discovered by the agent.  If the agent is not behind
@@ -557,9 +557,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 10]
+Keranen, et al.          Expires August 19, 2016               [Page 10]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    L                        R
@@ -613,9 +613,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 11]
+Keranen, et al.          Expires August 19, 2016               [Page 11]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The second property is important for getting ICE to work when there
@@ -669,9 +669,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 12]
+Keranen, et al.          Expires August 19, 2016               [Page 12]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    While we've described "frozen" here as a separate mechanism for
@@ -725,9 +725,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 13]
+Keranen, et al.          Expires August 19, 2016               [Page 13]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    stream is found.  Then, it picks amongst those that are valid, and
@@ -781,9 +781,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 14]
+Keranen, et al.          Expires August 19, 2016               [Page 14]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Once ICE is concluded, it can be restarted at any time for one or all
@@ -837,9 +837,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 15]
+Keranen, et al.          Expires August 19, 2016               [Page 15]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    This specification makes use of the following additional terminology:
@@ -893,9 +893,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 16]
+Keranen, et al.          Expires August 19, 2016               [Page 16]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       RTCP are multiplexed in the same port, there are two components
@@ -949,9 +949,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 17]
+Keranen, et al.          Expires August 19, 2016               [Page 17]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Candidate Pair:  A pairing containing a local candidate and a remote
@@ -1005,9 +1005,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 18]
+Keranen, et al.          Expires August 19, 2016               [Page 18]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Nominated:  If a valid candidate pair has its nominated flag set, it
@@ -1061,9 +1061,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 19]
+Keranen, et al.          Expires August 19, 2016               [Page 19]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
              Initiating                      Responding
@@ -1117,9 +1117,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 20]
+Keranen, et al.          Expires August 19, 2016               [Page 20]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The process for gathering candidates at the responding agent is
@@ -1173,9 +1173,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 21]
+Keranen, et al.          Expires August 19, 2016               [Page 21]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The base for each host candidate is set to the candidate itself.
@@ -1229,9 +1229,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 22]
+Keranen, et al.          Expires August 19, 2016               [Page 22]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The agent next pairs each host candidate with the STUN or TURN server
@@ -1285,9 +1285,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 23]
+Keranen, et al.          Expires August 19, 2016               [Page 23]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    reflexive and/or relayed candidates from IPv4-only STUN or TURN
@@ -1341,9 +1341,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 24]
+Keranen, et al.          Expires August 19, 2016               [Page 24]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    An agent SHOULD compute this priority using the formula in
@@ -1397,9 +1397,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 25]
+Keranen, et al.          Expires August 19, 2016               [Page 25]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    6724 [RFC6724].  If the host operating system provides an API for
@@ -1453,9 +1453,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 26]
+Keranen, et al.          Expires August 19, 2016               [Page 26]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Another criterion for selecting preferences is security.  If a user
@@ -1509,9 +1509,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 27]
+Keranen, et al.          Expires August 19, 2016               [Page 27]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    component ID of 2.  If an agent is using RTCP without multiplexing,
@@ -1565,9 +1565,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 28]
+Keranen, et al.          Expires August 19, 2016               [Page 28]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       Transport:  An indicator of the transport protocol for this
@@ -1621,9 +1621,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 29]
+Keranen, et al.          Expires August 19, 2016               [Page 29]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The using protocol may (or may not) need to deal with backwards
@@ -1677,9 +1677,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 30]
+Keranen, et al.          Expires August 19, 2016               [Page 30]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    the usage specifications.  One exception to the above is that an
@@ -1733,9 +1733,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 31]
+Keranen, et al.          Expires August 19, 2016               [Page 31]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       ICE processing for each media stream is considered to be Running,
@@ -1789,9 +1789,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 32]
+Keranen, et al.          Expires August 19, 2016               [Page 32]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    work, IPv6 link-local addresses [RFC4291] MUST NOT be paired with
@@ -1845,9 +1845,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 33]
+Keranen, et al.          Expires August 19, 2016               [Page 33]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
        +--------------------------------------------+
@@ -1901,9 +1901,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 34]
+Keranen, et al.          Expires August 19, 2016               [Page 34]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 5.1.3.2.  Computing Pair Priority and Ordering Pairs
@@ -1957,9 +1957,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 35]
+Keranen, et al.          Expires August 19, 2016               [Page 35]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Waiting:  A check has not been performed for this pair, and can be
@@ -2013,9 +2013,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 36]
+Keranen, et al.          Expires August 19, 2016               [Page 36]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       +-----------+
@@ -2069,9 +2069,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 37]
+Keranen, et al.          Expires August 19, 2016               [Page 37]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    2.  The agent examines the check list for the first media stream.
@@ -2125,9 +2125,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 38]
+Keranen, et al.          Expires August 19, 2016               [Page 38]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    Once the agent has computed the check lists as described in
@@ -2181,9 +2181,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 39]
+Keranen, et al.          Expires August 19, 2016               [Page 39]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The Initiator performs the ordinary checks on receiving the candidate
@@ -2237,9 +2237,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 40]
+Keranen, et al.          Expires August 19, 2016               [Page 40]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    CreatePermission request.  Once established, the agent MUST keep the
@@ -2293,9 +2293,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 41]
+Keranen, et al.          Expires August 19, 2016               [Page 41]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 6.1.2.3.  Forming Credentials
@@ -2349,9 +2349,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 42]
+Keranen, et al.          Expires August 19, 2016               [Page 42]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    A change in roles will require an agent to recompute pair priorities
@@ -2405,9 +2405,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 43]
+Keranen, et al.          Expires August 19, 2016               [Page 43]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    o  Its base is set equal to the local candidate of the candidate pair
@@ -2461,9 +2461,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 44]
+Keranen, et al.          Expires August 19, 2016               [Page 44]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    it is peer reflexive, it is equal to the PRIORITY attribute the agent
@@ -2517,9 +2517,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 45]
+Keranen, et al.          Expires August 19, 2016               [Page 45]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
           +  groups together all of the pairs with the same foundation,
@@ -2573,9 +2573,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 46]
+Keranen, et al.          Expires August 19, 2016               [Page 46]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 6.2.  STUN Server Procedures
@@ -2629,9 +2629,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 47]
+Keranen, et al.          Expires August 19, 2016               [Page 47]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    usages of ICE that require conflict resolution.  The usage document
@@ -2685,9 +2685,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 48]
+Keranen, et al.          Expires August 19, 2016               [Page 48]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The remaining sections in Section 6.2.1 are followed if the server
@@ -2741,9 +2741,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 49]
+Keranen, et al.          Expires August 19, 2016               [Page 49]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    obtain their priorities and compute the candidate pair priority.
@@ -2797,9 +2797,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 50]
+Keranen, et al.          Expires August 19, 2016               [Page 50]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 6.2.1.5.  Updating the Nominated Flag
@@ -2853,9 +2853,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 51]
+Keranen, et al.          Expires August 19, 2016               [Page 51]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    its peer is a full implementation and isn't using any ICE options or
@@ -2909,9 +2909,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 52]
+Keranen, et al.          Expires August 19, 2016               [Page 52]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    complete, causing another valid pair to have its nominated flag set.
@@ -2965,9 +2965,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 53]
+Keranen, et al.          Expires August 19, 2016               [Page 53]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       *  The agent MUST change the state of processing for its check
@@ -3021,9 +3021,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 54]
+Keranen, et al.          Expires August 19, 2016               [Page 54]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       The implementation is lite, and its peer is full.
@@ -3077,9 +3077,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 55]
+Keranen, et al.          Expires August 19, 2016               [Page 55]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
          media to begin flowing.  However, it is possible (and in fact
@@ -3133,9 +3133,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 56]
+Keranen, et al.          Expires August 19, 2016               [Page 56]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    o  An agent is changing its implementation level.  This typically
@@ -3189,9 +3189,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 57]
+Keranen, et al.          Expires August 19, 2016               [Page 57]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    used solely to keep the NAT bindings alive.  The Binding Indication
@@ -3245,9 +3245,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 58]
+Keranen, et al.          Expires August 19, 2016               [Page 58]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    o  equal to the highest-priority nominated pair for that component in
@@ -3301,9 +3301,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 59]
+Keranen, et al.          Expires August 19, 2016               [Page 59]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    changes will sometimes occur as the media streams switch between
@@ -3357,9 +3357,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 60]
+Keranen, et al.          Expires August 19, 2016               [Page 60]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 12.  Setting Ta and RTO
@@ -3413,9 +3413,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 61]
+Keranen, et al.          Expires August 19, 2016               [Page 61]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    In addition, the retransmission timer for the STUN transactions, RTO,
@@ -3469,9 +3469,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 62]
+Keranen, et al.          Expires August 19, 2016               [Page 62]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 12.2.  Non-real-time Sessions
@@ -3525,9 +3525,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 63]
+Keranen, et al.          Expires August 19, 2016               [Page 63]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
                             +-------+
@@ -3581,9 +3581,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 64]
+Keranen, et al.          Expires August 19, 2016               [Page 64]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The STUN server has advertised transport address STUN-PUB-1 (which is
@@ -3637,9 +3637,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 65]
+Keranen, et al.          Expires August 19, 2016               [Page 65]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
              |(8) R's Candidate Information|              |
@@ -3693,9 +3693,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 66]
+Keranen, et al.          Expires August 19, 2016               [Page 66]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
                           Figure 10: Example Flow
@@ -3749,9 +3749,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 67]
+Keranen, et al.          Expires August 19, 2016               [Page 67]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    When agent L gets the R's candidates, it performs its one and only
@@ -3805,9 +3805,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 68]
+Keranen, et al.          Expires August 19, 2016               [Page 68]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
       cause an agent to prefer a different candidate (such as one
@@ -3861,9 +3861,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 69]
+Keranen, et al.          Expires August 19, 2016               [Page 69]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    invalid attack, this attack is mitigated by the STUN short-term
@@ -3917,9 +3917,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 70]
+Keranen, et al.          Expires August 19, 2016               [Page 70]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    to play the media packets, but will only be able to discard them,
@@ -3973,9 +3973,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 71]
+Keranen, et al.          Expires August 19, 2016               [Page 71]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 14.3.  Attacks on Relayed Candidate Gathering
@@ -4029,9 +4029,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 72]
+Keranen, et al.          Expires August 19, 2016               [Page 72]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    total number of connectivity checks they perform to 100.
@@ -4085,9 +4085,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 73]
+Keranen, et al.          Expires August 19, 2016               [Page 73]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 15.2.  New Error Response Codes
@@ -4141,9 +4141,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 74]
+Keranen, et al.          Expires August 19, 2016               [Page 74]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    require N*1.7bps.  For one million users, this is 1.7 Mbps, a very
@@ -4197,9 +4197,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 75]
+Keranen, et al.          Expires August 19, 2016               [Page 75]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 16.3.  ICE and ICE-lite
@@ -4253,9 +4253,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 76]
+Keranen, et al.          Expires August 19, 2016               [Page 76]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 17.  IANA Considerations
@@ -4309,9 +4309,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 77]
+Keranen, et al.          Expires August 19, 2016               [Page 77]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    The specific problems being solved by ICE are:
@@ -4365,9 +4365,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 78]
+Keranen, et al.          Expires August 19, 2016               [Page 78]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    that requires an agent to try to classify the type of NAT it is
@@ -4421,9 +4421,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 79]
+Keranen, et al.          Expires August 19, 2016               [Page 79]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 18.5.  Issues with Existing NAPT Boxes
@@ -4477,15 +4477,15 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 80]
+Keranen, et al.          Expires August 19, 2016               [Page 80]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
-   to this revision of the specification we would like to thank Christer
-   Holmberg, Emil Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon
-   Perrault, Eric Rescorla, Thomas Stach, Peter Thatcher, Martin
-   Thomson, Justin Uberti, and Suhas Nandakumar.
+   to this revision of the specification we would like to thank Emil
+   Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric
+   Rescorla, Thomas Stach, Peter Thatcher, Martin Thomson, Justin
+   Uberti, and Suhas Nandakumar.
 
 21.  References
 
@@ -4533,9 +4533,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 81]
+Keranen, et al.          Expires August 19, 2016               [Page 81]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    [RFC3489]  Rosenberg, J., Weinberger, J., Huitema, C., and R. Mahy,
@@ -4589,9 +4589,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 82]
+Keranen, et al.          Expires August 19, 2016               [Page 82]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    [RFC3879]  Huitema, C. and B. Carpenter, "Deprecating Site Local
@@ -4645,9 +4645,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 83]
+Keranen, et al.          Expires August 19, 2016               [Page 83]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    [RFC5761]  Perkins, C. and M. Westerlund, "Multiplexing RTP Data and
@@ -4701,9 +4701,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 84]
+Keranen, et al.          Expires August 19, 2016               [Page 84]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    [I-D.ietf-mmusic-ice-sip-sdp]
@@ -4757,9 +4757,9 @@ Appendix A.  Lite and Full Implementations
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 85]
+Keranen, et al.          Expires August 19, 2016               [Page 85]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    select between its IPv4 and IPv6 addresses, and none of its IP
@@ -4813,9 +4813,9 @@ B.1.  Pacing of STUN Transactions
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 86]
+Keranen, et al.          Expires August 19, 2016               [Page 86]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    ensures that the NAT device does not get overloaded and that traffic
@@ -4869,9 +4869,9 @@ B.2.  Candidates with Multiple Bases
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 87]
+Keranen, et al.          Expires August 19, 2016               [Page 87]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    an agent have two candidates that have the same IP address and port,
@@ -4925,9 +4925,9 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 88]
+Keranen, et al.          Expires August 19, 2016               [Page 88]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    is also connected to network A, which is 192.168/16 and has an IP
@@ -4981,9 +4981,9 @@ B.3.  Purpose of the Related Address and Related Port Attributes
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 89]
+Keranen, et al.          Expires August 19, 2016               [Page 89]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 B.4.  Importance of the STUN Username
@@ -5037,9 +5037,9 @@ B.4.  Importance of the STUN Username
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 90]
+Keranen, et al.          Expires August 19, 2016               [Page 90]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
    for Internet applications -- be prepared for unknown packets on any
@@ -5093,9 +5093,9 @@ B.6.  Why Are Keepalives Needed?
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 91]
+Keranen, et al.          Expires August 19, 2016               [Page 91]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
 
 
 B.7.  Why Prefer Peer Reflexive Candidates?
@@ -5149,9 +5149,18 @@ Authors' Addresses
 
 
 
-Keranen & Rosenberg      Expires August 2, 2016                [Page 92]
+Keranen, et al.          Expires August 19, 2016               [Page 92]
 
-Internet-Draft                     ICE                      January 2016
+Internet-Draft                     ICE                     February 2016
+
+
+   Christer Holmberg
+   Ericsson
+   Hirsalantie 11
+   02420 Jorvas
+   Finland
+
+   Email: christer.holmberg@ericsson.com
 
 
    Jonathan Rosenberg
@@ -5196,13 +5205,4 @@ Internet-Draft                     ICE                      January 2016
 
 
 
-
-
-
-
-
-
-
-
-
-Keranen & Rosenberg      Expires August 2, 2016                [Page 93]
+Keranen, et al.          Expires August 19, 2016               [Page 93]

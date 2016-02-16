@@ -393,12 +393,12 @@ ol, ul {
 <link href="#rfc.authors" rel="Chapter"/>
 
 
-  <meta name="generator" content="xml2rfc version 2.4.10 - http://tools.ietf.org/tools/xml2rfc" />
+  <meta name="generator" content="xml2rfc version 2.5.0 - http://tools.ietf.org/tools/xml2rfc" />
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
-  <meta name="dct.creator" content="Keranen, A. and J. Rosenberg" />
+  <meta name="dct.creator" content="Keranen, A., Holmberg, C., and J. Rosenberg" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-ietf-ice-rfc5245bis-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2016-1-30" />
+  <meta name="dct.issued" scheme="ISO8601" content="2016-2-16" />
   <meta name="dct.abstract" content="This document describes a protocol for Network Address Translator (NAT) traversal for UDP-based multimedia. This protocol is called Interactive Connectivity Establishment (ICE). ICE makes use of the Session Traversal Utilities for NAT (STUN) protocol and its extension, Traversal Using Relay NAT (TURN)." />
   <meta name="description" content="This document describes a protocol for Network Address Translator (NAT) traversal for UDP-based multimedia. This protocol is called Interactive Connectivity Establishment (ICE). ICE makes use of the Session Traversal Utilities for NAT (STUN) protocol and its extension, Traversal Using Relay NAT (TURN)." />
 
@@ -415,19 +415,23 @@ ol, ul {
 </tr>
 <tr>
   <td class="left">Internet-Draft</td>
-  <td class="right">Ericsson</td>
+  <td class="right">C. Holmberg</td>
 </tr>
 <tr>
   <td class="left">Obsoletes: 5245 (if approved)</td>
-  <td class="right">J. Rosenberg</td>
+  <td class="right">Ericsson</td>
 </tr>
 <tr>
   <td class="left">Intended status: Standards Track</td>
+  <td class="right">J. Rosenberg</td>
+</tr>
+<tr>
+  <td class="left">Expires: August 19, 2016</td>
   <td class="right">jdrosen.net</td>
 </tr>
 <tr>
-  <td class="left">Expires: August 2, 2016</td>
-  <td class="right">January 30, 2016</td>
+  <td class="left"></td>
+  <td class="right">February 16, 2016</td>
 </tr>
 
     	
@@ -448,7 +452,7 @@ ol, ul {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at http://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on August 2, 2016.</p>
+<p>This Internet-Draft will expire on August 19, 2016.</p>
 <h1 id="rfc.copyrightnotice">
   <a href="#rfc.copyrightnotice">Copyright Notice</a>
 </h1>
@@ -593,9 +597,9 @@ ol, ul {
   </ul>
 
   <h1 id="rfc.section.1"><a href="#rfc.section.1">1.</a> Introduction</h1>
-<p id="rfc.section.1.p.1">Protocols establishing multimedia sessions between peers typically involve exchanging IP addresses and ports for the media sources and sinks. However this poses challenges when operated through Network Address Translators (NATs) [RFC3235]. These protocols also seek to create a media flow directly between participants, so that there is no application layer intermediary between them.  This is done to reduce media latency, decrease packet loss, and reduce the operational costs of deploying the application.  However, this is difficult to accomplish through NAT.  A full treatment of the reasons for this is beyond the scope of this specification.  </p>
+<p id="rfc.section.1.p.1">Protocols establishing multimedia sessions between peers typically involve exchanging IP addresses and ports for the media sources and sinks. However this poses challenges when operated through Network Address Translators (NATs) <a href="#RFC3235">[RFC3235]</a>. These protocols also seek to create a media flow directly between participants, so that there is no application layer intermediary between them.  This is done to reduce media latency, decrease packet loss, and reduce the operational costs of deploying the application.  However, this is difficult to accomplish through NAT.  A full treatment of the reasons for this is beyond the scope of this specification.  </p>
 <p id="rfc.section.1.p.2">Numerous solutions have been defined for allowing these protocols to operate through NAT. These include Application Layer Gateways (ALGs), the <a href="#RFC3303">Middlebox Control Protocol</a> <cite title="NONE">[RFC3303]</cite>, the original <a href="#RFC3489">Simple Traversal of UDP Through NAT (STUN)</a> <cite title="NONE">[RFC3489]</cite> specification, and <a href="#RFC3102">Realm Specific IP</a> <cite title="NONE">[RFC3102]</cite> <a href="#RFC3103">[RFC3103]</a> along with session description extensions needed to make them work, such as the Session Description Protocol (SDP) <a href="#RFC4566">[RFC4566]</a> attribute for the Real Time Control Protocol (RTCP) <a href="#RFC3605">[RFC3605]</a>. Unfortunately, these techniques all have pros and cons which, make each one optimal in some network topologies, but a poor choice in others. The result is that administrators and implementors are making assumptions about the topologies of the networks in which their solutions will be deployed. This introduces complexity and brittleness into the system. What is needed is a single solution that is flexible enough to work well in all situations.  </p>
-<p id="rfc.section.1.p.3">This specification defines Interactive Connectivity Establishment (ICE) as a technique for NAT traversal for UDP-based media streams (though ICE has been extended to handle other transport protocols, such as TCP <a href="#RFC6544">[RFC6544]</a>). ICE works by exchanging a multiplicity of IP addresses and ports which are then tested for connectivity by peer-to-peer connectivity checks. The IP addresses and ports are exchanged via mechanisms (for example, including in a offer/answer exchange) and the connectivity checks are performed using Session Traversal Utilities for NAT (STUN) specification [RFC5389]. ICE also makes use of Traversal Using Relays around NAT (TURN) [RFC5766], an extension to STUN.  Because ICE exchanges a multiplicity of IP addresses and ports for each media stream, it also allows for address selection for multihomed and dual-stack hosts, and for this reason it deprecates [RFC4091] and [RFC4092].  </p>
+<p id="rfc.section.1.p.3">This specification defines Interactive Connectivity Establishment (ICE) as a technique for NAT traversal for UDP-based media streams (though ICE has been extended to handle other transport protocols, such as TCP <a href="#RFC6544">[RFC6544]</a>). ICE works by exchanging a multiplicity of IP addresses and ports which are then tested for connectivity by peer-to-peer connectivity checks. The IP addresses and ports are exchanged via mechanisms (for example, including in a offer/answer exchange) and the connectivity checks are performed using Session Traversal Utilities for NAT (STUN) specification <a href="#RFC5389">[RFC5389]</a>. ICE also makes use of Traversal Using Relays around NAT (TURN) <a href="#RFC5766">[RFC5766]</a>, an extension to STUN.  Because ICE exchanges a multiplicity of IP addresses and ports for each media stream, it also allows for address selection for multihomed and dual-stack hosts, and for this reason it deprecates <a href="#RFC4091">[RFC4091]</a> and <a href="#RFC4092">[RFC4092]</a>.  </p>
 <h1 id="rfc.section.2"><a href="#rfc.section.2">2.</a> Overview of ICE</h1>
 <p id="rfc.section.2.p.1">In a typical ICE deployment, we have two endpoints (known as ICE AGENTS) that want to communicate.  They are able to communicate indirectly via some signaling protocol (such as SIP), by which they can exchange ICE candidates. Note that ICE is not intended for NAT traversal for the signaling protocol, which is assumed to be provided via another mechanism. At the beginning of the ICE process, the agents are ignorant of their own topologies.  In particular, they might or might not be behind a NAT (or multiple tiers of NATs). ICE allows the agents to discover enough information about their topologies to potentially find one or more paths by which they can communicate.  </p>
 <p><a href="#fig-ice-ref-arch">Figure 1</a> shows a typical environment for ICE deployment. The two endpoints are labelled L and R (for left and right, which helps visualize call flows). Both L and R are behind their own respective NATs though they may not be aware of it. The type of NAT and its properties are also unknown. Agents L and R are capable of engaging in an candidate exchange process, whose purpose is to set up a media session between L and R. Typically, this exchange will occur through a signaling (e.g., SIP) server.  </p>
@@ -1685,8 +1689,8 @@ For each media stream i:
 <p id="rfc.section.17.2.p.1">IANA has registered following STUN error response code: </p>
 <pre>
 
-   487   Role Conflict: The client asserted an ICE role (controlling or
-         controlled) that is in conflict with the role of the server.
+ 487   Role Conflict: The client asserted an ICE role (controlling or
+       controlled) that is in conflict with the role of the server.
 </pre>
 <h1 id="rfc.section.18"><a href="#rfc.section.18">18.</a> <a href="#sec-iab" id="sec-iab">IAB Considerations</a></h1>
 <p id="rfc.section.18.p.1">The IAB has studied the problem of "Unilateral Self-Address Fixing", which is the general process by which a agent attempts to determine its address in another realm on the other side of a NAT through a collaborative protocol reflection mechanism <a href="#RFC3424">[RFC3424]</a>.  ICE is an example of a protocol that performs this type of function. Interestingly, the process for ICE is not unilateral, but bilateral, and the difference has a significant impact on the issues raised by IAB. Indeed, ICE can be considered a B-SAF (Bilateral Self-Address Fixing) protocol, rather than an UNSAF protocol. Regardless, the IAB has mandated that any protocols developed for this purpose document a specific set of considerations. This section meets those requirements.  </p>
@@ -1763,7 +1767,7 @@ For each media stream i:
 
 <p> </p>
 <h1 id="rfc.section.20"><a href="#rfc.section.20">20.</a> Acknowledgements</h1>
-<p id="rfc.section.20.p.1">Most of the text in this document comes from the original ICE specification, RFC 5245. The authors would like to thank everyone who has contributed to that document. For additional contributions to this revision of the specification we would like to thank Christer Holmberg, Emil Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas Stach, Peter Thatcher, Martin Thomson, Justin Uberti, and Suhas Nandakumar.</p>
+<p id="rfc.section.20.p.1">Most of the text in this document comes from the original ICE specification, RFC 5245. The authors would like to thank everyone who has contributed to that document. For additional contributions to this revision of the specification we would like to thank Emil Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas Stach, Peter Thatcher, Martin Thomson, Justin Uberti, and Suhas Nandakumar. </p>
 <h1 id="rfc.references"><a href="#rfc.references">21.</a> References</h1>
 <h1 id="rfc.references.1"><a href="#rfc.references.1">21.1.</a> Normative References</h1>
 <table>
@@ -2135,6 +2139,28 @@ For each media stream i:
 	  <span class="country-name vcardline">Finland</span>
 	</span>
 	<span class="vcardline">EMail: <a href="mailto:ari.keranen@ericsson.com">ari.keranen@ericsson.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Christer Holmberg</span> 
+	  <span class="n hidden">
+		<span class="family-name">Holmberg</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Ericsson</span>
+	<span class="adr">
+	  <span class="vcardline">Hirsalantie 11</span>
+
+	  <span class="vcardline">
+		<span class="locality">02420 Jorvas</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">Finland</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:christer.holmberg@ericsson.com">christer.holmberg@ericsson.com</a></span>
 
   </address>
 </div><div class="avoidbreak">
