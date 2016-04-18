@@ -4085,7 +4085,7 @@ tie-breaking of role conflicts.
 
 <t>This specification defines a single error response code:</t>
 
-<t><list style="hanging"> 
+<t><list style="hanging">
 
 <t hangText="487 (Role Conflict):"> The Binding request contained
 either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating a
