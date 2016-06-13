@@ -538,12 +538,11 @@ better than one with higher priority.
 Consequently, ICE assigns one of the agents in the role of the
 CONTROLLING AGENT, and the other of the CONTROLLED AGENT. The
 controlling agent gets to nominate which candidate pairs will get used
-for media amongst the ones that are valid. It can do this in one of
-two ways -- using REGULAR NOMINATION or AGGRESSIVE NOMINATION.
+for media amongst the ones that are valid.
 </t>
 
 <t>
-With regular nomination, the controlling agent lets the checks continue
+When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
 found. Then, it picks amongst those that are valid, and sends a second
 STUN request on its NOMINATED candidate pair, but this time with a
@@ -551,7 +550,7 @@ flag set to tell the peer that this pair has been nominated for use.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
 
-<figure title="Regular Nomination"
+<figure title="Nomination"
 anchor="fig-regular-select" align="center"><artwork>
 <![CDATA[
 L                        R
@@ -573,31 +572,6 @@ any future checks for that media stream. ICE will now send media using
 this pair. The pair an ICE agent is using for media is called the
 SELECTED PAIR.
 </t>
-
-<t>
-In aggressive nomination, the controlling agent puts the flag in every
-connectivity check STUN request it sends. This way, once the first
-check succeeds, ICE processing is complete for that media stream and
-the controlling agent doesn't have to send a second STUN request. The
-selected pair will be the highest-priority valid pair whose check
-succeeded. Aggressive nomination is faster than regular nomination,
-but gives less flexibility. Aggressive nomination is shown in <xref
-target="fig-aggressive-select"/>.
-</t>
-
-<figure title="Aggressive Nomination"
-anchor="fig-aggressive-select" align="center"><artwork>
-<![CDATA[
-L                        R
--                        -
-STUN request + flag ->      \  L's
-          <- STUN response  /  check
-
-           <- STUN request  \  R's
-STUN response ->            /  check
-
-]]></artwork></figure>
-
 
 <t>
 Once ICE is concluded, it can be restarted at any time for one or all
@@ -830,16 +804,10 @@ other is the controlled agent.
 controlling agent to select the final choice of candidate pairs.
 </t>
 
-<t hangText="Regular Nomination:"> The process of picking a valid
+<t hangText="Nomination, Regular Nomination:"> The process of picking a valid
 candidate pair for media traffic by validating the pair with one
 STUN request, and then picking it by sending a second STUN request
 with a flag indicating its nomination.
-</t>
-
-<t hangText="Aggressive Nomination:"> The process of picking a valid
-candidate pair for media traffic by including a flag in every
-connectivity check STUN request, such that the first one to produce a
-valid candidate pair is used for media.
 </t>
 
 <t hangText="Nominated:"> If a valid candidate pair has its nominated
@@ -1911,8 +1879,7 @@ progress for this media stream.
 </t>
 
 <t hangText="Completed:"> In this state, ICE checks have produced
-nominated pairs for each component of the media stream. Consequently,
-ICE has succeeded and media can be sent.
+nominated pairs for each component of the media stream.
 </t>
 
 <t hangText="Failed:"> In this state, the ICE checks have not
@@ -2111,7 +2078,7 @@ described in the subsections below. These STUN extensions are
 applicable only to connectivity checks used for ICE.
 </t>
 
-<section title="PRIORITY and USE-CANDIDATE">
+<section title="PRIORITY">
 
 <t>
 An agent MUST include the PRIORITY attribute in its Binding
@@ -2125,14 +2092,15 @@ the pair was computed, except that the type preference is set to the
 value for peer reflexive candidate types.
 </t>
 
+</section>
+
+<section title="USE-CANDIDATE">
+
 <t>
-The controlling agent MAY include the USE-CANDIDATE attribute in the
-Binding request. The controlled agent MUST NOT include it in its
-Binding request. This attribute signals that the controlling agent
-wishes to cease checks for this component, and use the candidate pair
-resulting from the check for this component. <xref
-target="sec-choose-favor"/> provides guidance on determining when to
-include it.
+The controlling agent includes the USE-CANDIDATE attribute in order
+to nominate a candidate pair <xref target="sec-choose-favor"/>.
+The controlled agent MUST NOT include the USE-CANDIDATE attribute in its
+Binding request.
 </t>
 
 </section>
@@ -2402,9 +2370,9 @@ with the highest-priority is used.
 If the agent was a controlling agent, and it had included a
 USE-CANDIDATE attribute in the Binding request, the valid pair
 generated from that check has its nominated flag set to true. This
-flag indicates that this valid pair should be used for media if it is
-the highest-priority one amongst those whose nominated flag is
-set. This may conclude ICE processing for this media stream or all
+flag indicates that this valid pair SHOULD be used for media, unless
+the sending agent detects that the candidiate pair does not work.
+This concludes the ICE processing for this media stream or all
 media streams; see <xref target="sec-conclude"/>.
 </t>
 
@@ -2414,6 +2382,12 @@ of a triggered check that was sent in response to a request that
 itself had the USE-CANDIDATE attribute. This case is described in
 <xref target="sec-up-fav"/>, and may now result in setting the
 nominated flag for the pair learned from the original request.
+</t>
+
+<t>
+An agent MUST NOT select a candidate pair until it has sent a
+Binding request, and received the corresponding Binding response,
+associated with the candidiate pair.
 </t>
 
 </section>
@@ -2778,22 +2752,7 @@ updating of state machinery.
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
 <t>
-The controlling agent nominates pairs to be selected by ICE by using
-one of two techniques: regular nomination or aggressive nomination. If
-its peer has a lite implementation, an agent MUST use a regular
-nomination algorithm. If its peer is using ICE options (present in an
-ice-options attribute from the peer) that the agent does not
-understand, the agent MUST use a regular nomination algorithm. If its
-peer is a full implementation and isn't using any ICE options or is
-using ICE options understood by the agent, the agent MAY use either
-the aggressive or the regular nomination algorithm. However, the
-regular algorithm is RECOMMENDED since it provides greater stability.
-</t>
-
-<section title="Regular Nomination">
-
-<t>
-With regular nomination, the agent lets some number of checks
+When nominating, the controlling agent lets some number of checks
 complete, each of which omit the USE-CANDIDATE attribute. Once one or
 more checks complete successfully for a component of a media stream,
 valid pairs are generated and added to the valid list. The agent lets
@@ -2816,57 +2775,28 @@ sending and receiving media for that component.
 </t>
 
 <t>
-Regular nomination provides the most flexibility, since the agent has
-control over the stopping and selection criteria for checks. The only
-requirement is that the agent MUST eventually pick one and only one
-candidate pair and generate a check for that pair with the
-USE-CANDIDATE attribute present. Regular nomination also improves
-ICE's resilience to variations in implementation (see <xref
-target="sec-futureproof"/>). Regular nomination is also more stable,
-allowing both agents to converge on a single pair for media without
-any transient selections, which can happen with the aggressive
-algorithm. The drawback of regular nomination is that it is guaranteed
-to increase latencies because it requires an additional check to be
-done.
-</t>
-
-</section>
-
-<section title="Aggressive Nomination">
-
-<t>
-With aggressive nomination, the controlling agent includes the
-USE-CANDIDATE attribute in every check it sends. Once the first check
-for a component succeeds, it will be added to the valid list and have
-its nominated flag set. When all components have a nominated pair in
-the valid list, media can begin to flow using the highest-priority
-nominated pair. However, because the agent included the USE-CANDIDATE
-attribute in all of its checks, another check may yet complete,
-causing another valid pair to have its nominated flag set. ICE always
-selects the highest-priority nominated candidate pair from the valid
-list as the one used for media. Consequently, the selected pair may
-actually change briefly as ICE checks complete, resulting in a set of
-transient selections until it stabilizes.
+The controlling agent has control over the stopping and selection criteria
+for checks. The only requirement is that the agent MUST eventually pick
+one and only one candidate pair and generate a check for that pair with
+the USE-CANDIDATE attribute present.
 </t>
 
 <t>
-If certain connectivity check messages are lost, ICE agents using
-aggressive nomination may end up with different views on the selected
-candidate pair. In this case, if a security protocol that is able to
-authenticate the communicating parties (e.g., DTLS) is used, the
-controlled agent may receive valid secured traffic or handshake
-initialization originating from the controlling agent on a candidate
-pair that is different from the one the controlled agent considers as
-the selected pair. If this happens, the controlled agent MUST consider
-the pair with the secured traffic as the correct selected pair. If
-such security protocol is not used, both agents SHOULD continue
-sending connectivity check messages on the selected pair even after a
-pair has already been selected for use. In order to prevent the
-problem described here, at least one check from both agents needs to
-fully succeed on the selected pair.
+The controlled agent SHOULD select the nominated candidate pair if the agent
+is receiving Binding responses associated with that candidiate pair.
+Before the agent has received Binding responses associated with the candidiate
+pair, the agent can send media on any candidiate for which it has received
+Binding responses. If more than one candidate pair is nominated by the
+controlling agent, the controlled agent SHOULD select the candidate pair with
+the highest priority.
 </t>
-
-</section>
+<t>
+NOTE: A controlling agent that does not support this speification (i.e. it
+is implemented according to RFC 5245) might nominate more than one candidiate pair.
+This was referred to as aggressive nomination in RFC 5245. The usage of the
+'ice2' ice option by endpoints supporting this specifcation should prevent
+such controlling agents from using aggressive nomination.
+</t>
 
 </section>
 
@@ -2923,11 +2853,6 @@ described in <xref target="sec-send-media"/>.
 <t>Once the state of each check list is Completed:
 <list style="symbols">
 <t>The agent sets the state of ICE processing overall to Completed.</t>
-<t> If the controlling agent is using an aggressive nomination
-algorithm, this may result in several updated candidate exchanges as
-the pairs selected for media change. An agent MAY delay sending its
-candidates for a brief interval (one second is RECOMMENDED) in order
-to allow the selected pairs to stabilize.</t>
 </list>
 </t>
 
@@ -4731,8 +4656,7 @@ It is important to note that the lite implementation was added to this
 specification to provide a stepping stone to full implementation. Even
 for devices that are always connected to the public Internet with just
 a single IPv4 address, a full implementation is preferable if
-achievable. A full implementation will reduce call setup times, since
-ICE's aggressive mode can be used. Full implementations also obtain
+achievable. Full implementations also obtain
 the security benefits of ICE unrelated to NAT traversal; in
 particular, the voice hammer attack described in <xref
 target="sec-security"/> is prevented only for full implementations,
