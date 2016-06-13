@@ -13,7 +13,7 @@
 
     <front>
         <title abbrev="ICE">
-	  Interactive Connectivity Establishment (ICE): 
+	  Interactive Connectivity Establishment (ICE):
 	  A Protocol for Network Address Translator (NAT) Traversal
 	</title>
 
@@ -3103,6 +3103,30 @@ set of candidates.
 
 </section>
 
+
+<section anchor="sec-ice-option" title="ICE Option">
+
+<t>
+This section defines a new ICE option, 'ice2'. The ICE option
+indicates that the ICE agent that includes it (in an ice-options
+attribute) is compliant to this specification. For example, the
+ICE agent will not use the aggressive nomination procedure
+defined in <xref target="RFC5245"/>.
+</t>
+<t>
+An ICE agent compliant to this specification MUST inform the peer
+about the compliance using the 'ice2' ICE option.
+</t>
+<t>
+NOTE: The encoding of the 'ice2' ICE option, and the message(s)
+used to carry it to the peer, are protocol specific. The encoding
+for the Session Description Protocol (SDP) <xref target="RFC4566"/>
+is defined in <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
+</t>
+
+</section>
+
+
 <section anchor="sec-keepalives" title="Keepalives">
 
 <t> All endpoints MUST send keepalives for each media session. These
@@ -4283,7 +4307,8 @@ standard solutions such as the configuration framework
 <t>
 The original ICE specification registered four new STUN attributes,
 and one new STUN error response. The STUN attributes and error
-response are reproduced here.
+response are reproduced here. In addition, this specification
+registers a new ICE option.
 </t>
 
 
@@ -4313,6 +4338,45 @@ IANA has registered following STUN error response code:
 <![CDATA[
  487   Role Conflict: The client asserted an ICE role (controlling or
        controlled) that is in conflict with the role of the server.
+]]></artwork></figure>
+
+
+</section>
+
+<section title="ICE Options">
+
+<t>
+IANA is requested to register the following ICE option in the "ICE Options"
+sub-registry of the "Interactive Connectivity Establishment (ICE) registry",
+following the procedures defined in <xref target="RFC6336"/>.
+</t>
+
+<figure><artwork>
+<![CDATA[
+
+   ICE Option name:
+
+      ice2
+
+   Contact:
+
+      Name:    Christer Holmberg
+      E-mail:  christer.holmberg(at)ericsson(dot)com
+      Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
+
+   Change control:
+
+      IESG
+
+   Description:
+
+      The ICE option indicates that the ICE agent using the ICE option
+      is compliant and implemented according to RFC XXXX.
+
+   Reference:
+
+      RFC XXXX
+
 ]]></artwork></figure>
 
 
@@ -4574,6 +4638,7 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.2119"?>
 <?rfc include="reference.RFC.5389"?>
 <?rfc include="reference.RFC.5766"?>
+<?rfc include="reference.RFC.6336"?>
 <?rfc include="reference.RFC.6724"?>
 </references>
 
@@ -4610,11 +4675,8 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.6147"?>
 <?rfc include="reference.RFC.6544"?>
 <?rfc include="reference.RFC.7050"?>
-
 <?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.I-D.ietf-6man-ipv6-address-generation-privacy"?>
-
-
 
 </references>
 
