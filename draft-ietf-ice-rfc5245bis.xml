@@ -12,10 +12,7 @@
 >
 
     <front>
-        <title abbrev="ICE">
-	  Interactive Connectivity Establishment (ICE):
-	  A Protocol for Network Address Translator (NAT) Traversal
-	</title>
+    <title abbrev="ICE">Interactive Connectivity Establishment (ICE): A Protocol for Network Address Translator (NAT) Traversal</title>
 
     <author fullname="Ari Keranen" initials="A." surname="Keranen">
       <organization abbrev="Ericsson">Ericsson</organization>
@@ -3288,109 +3285,32 @@ all, various steps in the ICE processing differ from UDP.
 
 </section>
 
-<section anchor="sec-ta" title="Setting Ta and RTO">
+<section anchor="sec-ta" title="Computing Ta and RTO">
+
+<section anchor="sec-ta-gen" title="General">
 
 <t>
-During the gathering phase of ICE (<xref target="sec-gathering"/>) and
-while ICE is performing connectivity checks (<xref
-target="sec-connectivity_check"/>), an agent sends STUN and TURN
-transactions. These transactions are paced at a rate of one every Ta
-milliseconds, and utilize a specific RTO.  This section describes how
-the values of Ta and RTO are computed.  This computation depends on
-whether ICE is being used with a real-time media stream (such as RTP)
-or something else. When ICE is used for a stream with a known maximum
-bandwidth, the computation in <xref target="sec-rtp-based"/> MAY be
-followed to rate-control the ICE exchanges. For all other streams, the
-computation in <xref target="sec-non-rtp"/> MUST be followed.
-</t>
-
-<section anchor="sec-rtp-based" title="Real-time Media Streams">
-
-<t>
-The values of RTO and Ta change during the lifetime of ICE
-processing. One set of values applies during the gathering phase, and
-the other, for connectivity checks.
-</t>
-
-<t>The value of Ta SHOULD be configurable, and SHOULD have a default
-of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-
-For each media stream i:
- Ta_i = (stun_packet_size / rtp_packet_size) * rtp_ptime
-
-                        1
-  Ta = MAX (20ms, ------------------- )
-                        k
-                      ----
-                      \        1
-                       >    ------
-                      /       Ta_i
-                      ----
-                       i=1
-
-]]></artwork></figure>
-
-<t>where k is the number of media streams. During the gathering phase,
-Ta is computed based on the number of media streams the agent has
-indicated in the candidate information, and the RTP packet size and
-RTP ptime are those of the most preferred codec for each media
-stream. Once the candidate exchange is completed, the agent recomputes
-Ta to pace the connectivity checks. In that case, the value of Ta is
-based on the number of media streams that will actually be used in the
-session, and the RTP packet size and RTP ptime are those of the most
-preferred codec with which the agent will send.
-</t>
-
-<t>In addition, the retransmission timer for the STUN transactions,
-RTO, defined in <xref target="RFC5389"/>, SHOULD be configurable and
-during the gathering phase, SHOULD have a default of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-  RTO = MAX (100ms, Ta * (number of pairs))
-]]></artwork></figure>
-
-<t>
-where the number of pairs refers to the number of pairs of candidates
-with STUN or TURN servers.
+During the ICE gathering phase (<xref target="sec-gathering"/>) and
+while ICE is performing connectivity checks (<xref target="sec-connectivity_check"/>),
+an agent triggers STUN and TURN transactions. These transactions are paced at
+a rate indicated by Ta, and the retransmission interval for each transaction
+is calculated based on the the retransmission timer for the STUN transactions
+(RTO) <xref target="RFC5389"/>.
 </t>
 
 <t>
-For connectivity checks, RTO SHOULD be configurable and SHOULD have a
-default of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-  RTO = MAX (100ms, Ta*N * (Num-Waiting + Num-In-Progress))
-]]></artwork></figure>
-
-<t>
-where Num-Waiting is the number of checks in the check list in the
-Waiting state, and Num-In-Progress is the number of checks in the
-In-Progress state. Note that the RTO will be different for each
-transaction as the number of checks in the Waiting and In-Progress
-states change.
-</t>
-
-<t>These formulas are aimed at causing STUN transactions to be paced
-at the same rate as media. This ensures that ICE will work properly
-under the same network conditions needed to support the media as well.
-See <xref target="sec-pacing"/> for additional discussion and
-motivations.  Because of this pacing, it will take a certain amount of
-time to obtain all of the server reflexive and relayed
-candidates. Implementations should be aware of the time required to do
-this, and if the application requires a time budget, limit the number
-of candidates that are gathered.
+This section describes how the Ta and RTO values are computed during the ICE
+gathering pahse and while ICE is performing connectivity checks.
 </t>
 
 <t>
-The formulas result in a behavior whereby an agent will send its first
+NOTE: Previously, in RFC 5245, different formulas were defined for
+comupting Ta and RTO, depending on whether ICE was used for a real-time
+media stream (e.g. RTP) or not.
+</t>
+
+<t>
+The formulas below result in a behavior whereby an agent will send its first
 packet for every single connectivity check before performing a
 retransmit. This can be seen in the formulas for the RTO (which
 represents the retransmit interval). Those formulas scale with N, the
@@ -3407,24 +3327,37 @@ should utilize the timer values described here.
 
 </section>
 
-<section anchor="sec-non-rtp" title="Non-real-time Sessions">
+<section anchor="sec-ta-ta" title="Ta">
 
 <t>
-In cases where ICE is used to establish some kind of session that is
-not real time, and has no fixed rate associated with it that is known
-to work on the network in which ICE is deployed, Ta and RTO revert to
-more conservative values.  Ta SHOULD be configurable, SHOULD have a
-default of 500 ms, and MUST NOT be configurable to be less than 500
-ms.
+ICE agents SHOULD use a default Ta value of 50 ms, but MAY use another
+value based on the characteristics of the associated media. ICE agents
+MUST NOT use a Ta value less than 5 ms.
 </t>
 
-<t> If other Ta value than the default is used, the agent MUST
-indicate the value it prefers to use in the ICE exchange. Both agents
-MUST use the higher out of the two proposed values. </t>
+<t>
+If an ICE agent wants to use another Ta value than the default value, the
+agent MUST indicate the proposed value to its peer during the ICE
+exchange. Both agents MUST use the higher value of the proposed values.
+If an agent does not propose a value, the default value is used for that
+agent when comparing which value is higher.
+</t>
 
-<t>In addition, the retransmission timer for the STUN transactions,
-RTO, SHOULD be configurable and during the gathering phase, SHOULD
-have a default of:
+<t>
+NOTE: <xref target="sec-concheckbw"/> shows examples of required bandwidth,
+using different Ta values.
+</t>
+
+</section>
+
+<section anchor="sec-ta-rto" title="RTO">
+
+<t>
+During the ICE gathering phase, the RTO value SHOULD be caluclated using the
+following formula:
+
+During the ICE gathering pahse, the retransmission timer for the STUN transactions,
+RTO <xref target="RFC5389"/>, SHOULD be configurable, and SHOULD have a default of:
 </t>
 
 <figure><artwork>
@@ -3446,6 +3379,14 @@ default of:
 <![CDATA[
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
 ]]></artwork></figure>
+
+<t>
+where Num-Waiting is the number of checks in the check list in the
+Waiting state, and Num-In-Progress is the number of checks in the
+In-Progress state. Note that the RTO will be different for each
+transaction as the number of checks in the Waiting and In-Progress
+states change.
+</t>
 
 </section>
 
@@ -5046,6 +4987,56 @@ large-scale endpoints, such as PSTN gateways and SBCs.
 </t>
 
 </section>
+
+</section>
+
+
+<section anchor="sec-concheckbw" title="Connectivity Check Bandwidth">
+
+<t>
+The tables below show, for IPv4 and IPv6, the bandwidth required for
+performing connectivity checks, using different Ta values (given in ms)
+and different ufrag sizes (given in bytes).
+</t>
+<t>
+The results were provided by Jusin Uberti (Google) 11th April 2016.
+</t>
+<figure title="Connectivity Check Bandwidth"
+anchor="fig-concheckbw"><artwork>
+<![CDATA[
+
+IP version: IPv4
+Packet len (bytes): 108 + ufrag
+     |
+  ms |     4     8    12    16
+-----|------------------------
+ 500 | 1.86k 1.98k 2.11k 2.24k
+ 200 | 4.64k 4.96k 5.28k  5.6k
+ 100 | 9.28k 9.92k 10.6k 11.2k
+  50 | 18.6k 19.8k 21.1k 22.4k
+  20 | 46.4k 49.6k 52.8k 56.0k
+  10 | 92.8k 99.2k  105k  112k
+   5 |  185k  198k  211k  224k
+   2 |  464k  496k  528k  560k
+   1 |  928k  992k 1.06M 1.12M
+
+IP version: IPv6
+Packet len (bytes): 128 + ufrag
+     |
+  ms |     4     8    12    16
+-----|------------------------
+ 500 | 2.18k  2.3k 2.43k 2.56k
+ 200 | 5.44k 5.76k 6.08k  6.4k
+ 100 | 10.9k 11.5k 12.2k 12.8k
+  50 | 21.8k 23.0k 24.3k 25.6k
+  20 | 54.4k 57.6k 60.8k 64.0k
+  10 |  108k  115k  121k  128k
+   5 |  217k  230k  243k  256k
+   2 |  544k  576k  608k  640k
+   1 | 1.09M 1.15M 1.22M 1.28M
+
+]]></artwork></figure>
+
 
 </section>
 
