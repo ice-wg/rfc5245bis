@@ -3285,7 +3285,7 @@ all, various steps in the ICE processing differ from UDP.
 
 </section>
 
-<section anchor="sec-ta" title="Computing Ta and RTO">
+<section anchor="sec-ta" title="Setting Ta and RTO">
 
 <section anchor="sec-ta-gen" title="General">
 
@@ -3330,9 +3330,9 @@ should utilize the timer values described here.
 <section anchor="sec-ta-ta" title="Ta">
 
 <t>
-ICE agents SHOULD use a default Ta value of 50 ms, but MAY use another
+ICE agents SHOULD use the default Ta value, 50 ms, but MAY use another
 value based on the characteristics of the associated media. ICE agents
-MUST NOT use a Ta value less than 5 ms.
+MUST NOT use a Ta value smaller than 5 ms.
 </t>
 
 <t>
@@ -3353,39 +3353,46 @@ using different Ta values.
 <section anchor="sec-ta-rto" title="RTO">
 
 <t>
-During the ICE gathering phase, the RTO value SHOULD be caluclated using the
-following formula:
 
-During the ICE gathering pahse, the retransmission timer for the STUN transactions,
-RTO <xref target="RFC5389"/>, SHOULD be configurable, and SHOULD have a default of:
+During the ICE gathering phase, ICE agents SHOULD calculate the
+RTO value using the following formula:
 </t>
 
 <figure><artwork>
+
 <![CDATA[
-  RTO = MAX (500ms, Ta * (number of pairs))
+  RTO = MAX (500ms, Ta * (Num-Of-Pairs))
+
+
+  Num-Of-Pairs: the number of pairs of candidates
+  with STUN or TURN servers.
+
 ]]></artwork></figure>
 
 <t>
-where the number of pairs refers to the number of pairs of candidates
-with STUN or TURN servers.
-</t>
-
-<t>
-For connectivity checks, RTO SHOULD be configurable and SHOULD have a
-default of:
+For connectivity checks, ICE agents SHOULD calculate the RTO value
+using the following formula:
 </t>
 
 <figure><artwork>
+
 <![CDATA[
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
+
+
+  Num-Waiting: the number of checks in the check list in the
+  Waiting state.
+
+  Num-In-Progress: the number of checks in the In-Progress state.
+
+  Note that the RTO will be different for each transaction as the
+  number of checks in the Waiting and In-Progress states change.
+
 ]]></artwork></figure>
 
 <t>
-where Num-Waiting is the number of checks in the check list in the
-Waiting state, and Num-In-Progress is the number of checks in the
-In-Progress state. Note that the RTO will be different for each
-transaction as the number of checks in the Waiting and In-Progress
-states change.
+ICE agents MAY calculate the RTO value using other mechanisms than those
+described above. ICE agents MUST NOT use a RTO value smaller than 500 ms.
 </t>
 
 </section>
