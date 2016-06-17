@@ -1,13 +1,12 @@
 
 
 
-
 ICE                                                           A. Keranen
 Internet-Draft                                               C. Holmberg
 Obsoletes: 5245 (if approved)                                   Ericsson
 Intended status: Standards Track                            J. Rosenberg
-Expires: November 28, 2016                                   jdrosen.net
-                                                            May 27, 2016
+Expires: December 18, 2016                                   jdrosen.net
+                                                           June 16, 2016
 
 
   Interactive Connectivity Establishment (ICE): A Protocol for Network
@@ -39,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on November 28, 2016.
+   This Internet-Draft will expire on December 18, 2016.
 
 Copyright Notice
 
@@ -53,9 +52,9 @@ Copyright Notice
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 1]
+Keranen, et al.         Expires December 18, 2016               [Page 1]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -86,153 +85,152 @@ Table of Contents
      2.4.  Frozen Candidates . . . . . . . . . . . . . . . . . . . .  12
      2.5.  Security for Checks . . . . . . . . . . . . . . . . . . .  13
      2.6.  Concluding ICE  . . . . . . . . . . . . . . . . . . . . .  13
-     2.7.  Lite Implementations  . . . . . . . . . . . . . . . . . .  15
+     2.7.  Lite Implementations  . . . . . . . . . . . . . . . . . .  14
      2.8.  Usages of ICE . . . . . . . . . . . . . . . . . . . . . .  15
    3.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .  15
-   4.  ICE Candidate Gathering and Exchange  . . . . . . . . . . . .  19
-     4.1.  Procedures for Full Implementation  . . . . . . . . . . .  20
-       4.1.1.  Gathering Candidates  . . . . . . . . . . . . . . . .  20
-         4.1.1.1.  Host Candidates . . . . . . . . . . . . . . . . .  21
-         4.1.1.2.  Server Reflexive and Relayed Candidates . . . . .  22
-         4.1.1.3.  Computing Foundations . . . . . . . . . . . . . .  24
-         4.1.1.4.  Keeping Candidates Alive  . . . . . . . . . . . .  24
-       4.1.2.  Prioritizing Candidates . . . . . . . . . . . . . . .  24
-         4.1.2.1.  Recommended Formula . . . . . . . . . . . . . . .  25
+   4.  ICE Candidate Gathering and Exchange  . . . . . . . . . . . .  18
+     4.1.  Procedures for Full Implementation  . . . . . . . . . . .  19
+       4.1.1.  Gathering Candidates  . . . . . . . . . . . . . . . .  19
+         4.1.1.1.  Host Candidates . . . . . . . . . . . . . . . . .  20
+         4.1.1.2.  Server Reflexive and Relayed Candidates . . . . .  21
+         4.1.1.3.  Computing Foundations . . . . . . . . . . . . . .  23
+         4.1.1.4.  Keeping Candidates Alive  . . . . . . . . . . . .  23
+       4.1.2.  Prioritizing Candidates . . . . . . . . . . . . . . .  23
+         4.1.2.1.  Recommended Formula . . . . . . . . . . . . . . .  24
          4.1.2.2.  Guidelines for Choosing Type and Local
-                   Preferences . . . . . . . . . . . . . . . . . . .  26
-       4.1.3.  Eliminating Redundant Candidates  . . . . . . . . . .  27
-     4.2.  Lite Implementation Procedures  . . . . . . . . . . . . .  27
-     4.3.  Encoding the Candidate Information  . . . . . . . . . . .  28
-   5.  ICE Candidate Processing  . . . . . . . . . . . . . . . . . .  30
-     5.1.  Procedures for Full Implementation  . . . . . . . . . . .  30
-       5.1.1.  Verifying ICE Support . . . . . . . . . . . . . . . .  30
+                   Preferences . . . . . . . . . . . . . . . . . . .  25
+       4.1.3.  Eliminating Redundant Candidates  . . . . . . . . . .  26
+     4.2.  Lite Implementation Procedures  . . . . . . . . . . . . .  26
+     4.3.  Encoding the Candidate Information  . . . . . . . . . . .  27
+   5.  ICE Candidate Processing  . . . . . . . . . . . . . . . . . .  29
+     5.1.  Procedures for Full Implementation  . . . . . . . . . . .  29
+       5.1.1.  Verifying ICE Support . . . . . . . . . . . . . . . .  29
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 2]
+Keranen, et al.         Expires December 18, 2016               [Page 2]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
-       5.1.2.  Determining Role  . . . . . . . . . . . . . . . . . .  31
-       5.1.3.  Forming the Check Lists . . . . . . . . . . . . . . .  32
-         5.1.3.1.  Forming Candidate Pairs . . . . . . . . . . . . .  32
-         5.1.3.2.  Computing Pair Priority and Ordering Pairs  . . .  35
-         5.1.3.3.  Pruning the Pairs . . . . . . . . . . . . . . . .  35
-         5.1.3.4.  Computing States  . . . . . . . . . . . . . . . .  35
-       5.1.4.  Scheduling Checks . . . . . . . . . . . . . . . . . .  38
-     5.2.  Lite Implementation Procedures  . . . . . . . . . . . . .  40
-   6.  Performing Connectivity Checks  . . . . . . . . . . . . . . .  40
-     6.1.  STUN Client Procedures  . . . . . . . . . . . . . . . . .  40
-       6.1.1.  Creating Permissions for Relayed Candidates . . . . .  40
-       6.1.2.  Sending the Request . . . . . . . . . . . . . . . . .  41
-         6.1.2.1.  PRIORITY and USE-CANDIDATE  . . . . . . . . . . .  41
-         6.1.2.2.  ICE-CONTROLLED and ICE-CONTROLLING  . . . . . . .  41
-         6.1.2.3.  Forming Credentials . . . . . . . . . . . . . . .  42
-         6.1.2.4.  DiffServ Treatment  . . . . . . . . . . . . . . .  42
-       6.1.3.  Processing the Response . . . . . . . . . . . . . . .  42
-         6.1.3.1.  Failure Cases . . . . . . . . . . . . . . . . . .  42
-         6.1.3.2.  Success Cases . . . . . . . . . . . . . . . . . .  43
-           6.1.3.2.1.  Discovering Peer Reflexive Candidates . . . .  43
-           6.1.3.2.2.  Constructing a Valid Pair . . . . . . . . . .  44
-           6.1.3.2.3.  Updating Pair States  . . . . . . . . . . . .  45
-           6.1.3.2.4.  Updating the Nominated Flag . . . . . . . . .  46
-         6.1.3.3.  Check List and Timer State Updates  . . . . . . .  46
-     6.2.  STUN Server Procedures  . . . . . . . . . . . . . . . . .  47
-       6.2.1.  Additional Procedures for Full Implementations  . . .  47
+       5.1.2.  Determining Role  . . . . . . . . . . . . . . . . . .  30
+       5.1.3.  Forming the Check Lists . . . . . . . . . . . . . . .  31
+         5.1.3.1.  Forming Candidate Pairs . . . . . . . . . . . . .  31
+         5.1.3.2.  Computing Pair Priority and Ordering Pairs  . . .  34
+         5.1.3.3.  Pruning the Pairs . . . . . . . . . . . . . . . .  34
+         5.1.3.4.  Computing States  . . . . . . . . . . . . . . . .  34
+       5.1.4.  Scheduling Checks . . . . . . . . . . . . . . . . . .  37
+     5.2.  Lite Implementation Procedures  . . . . . . . . . . . . .  39
+   6.  Performing Connectivity Checks  . . . . . . . . . . . . . . .  39
+     6.1.  STUN Client Procedures  . . . . . . . . . . . . . . . . .  39
+       6.1.1.  Creating Permissions for Relayed Candidates . . . . .  39
+       6.1.2.  Sending the Request . . . . . . . . . . . . . . . . .  40
+         6.1.2.1.  PRIORITY  . . . . . . . . . . . . . . . . . . . .  40
+         6.1.2.2.  USE-CANDIDATE . . . . . . . . . . . . . . . . . .  40
+         6.1.2.3.  ICE-CONTROLLED and ICE-CONTROLLING  . . . . . . .  40
+         6.1.2.4.  Forming Credentials . . . . . . . . . . . . . . .  41
+         6.1.2.5.  DiffServ Treatment  . . . . . . . . . . . . . . .  41
+       6.1.3.  Processing the Response . . . . . . . . . . . . . . .  41
+         6.1.3.1.  Failure Cases . . . . . . . . . . . . . . . . . .  41
+         6.1.3.2.  Success Cases . . . . . . . . . . . . . . . . . .  42
+           6.1.3.2.1.  Discovering Peer Reflexive Candidates . . . .  42
+           6.1.3.2.2.  Constructing a Valid Pair . . . . . . . . . .  43
+           6.1.3.2.3.  Updating Pair States  . . . . . . . . . . . .  44
+           6.1.3.2.4.  Updating the Nominated Flag . . . . . . . . .  45
+         6.1.3.3.  Check List and Timer State Updates  . . . . . . .  45
+     6.2.  STUN Server Procedures  . . . . . . . . . . . . . . . . .  46
+       6.2.1.  Additional Procedures for Full Implementations  . . .  46
          6.2.1.1.  Detecting and Repairing Role Conflicts  . . . . .  47
-         6.2.1.2.  Computing Mapped Address  . . . . . . . . . . . .  49
-         6.2.1.3.  Learning Peer Reflexive Candidates  . . . . . . .  49
+         6.2.1.2.  Computing Mapped Address  . . . . . . . . . . . .  48
+         6.2.1.3.  Learning Peer Reflexive Candidates  . . . . . . .  48
          6.2.1.4.  Triggered Checks  . . . . . . . . . . . . . . . .  49
-         6.2.1.5.  Updating the Nominated Flag . . . . . . . . . . .  51
-       6.2.2.  Additional Procedures for Lite Implementations  . . .  51
-   7.  Concluding ICE Processing . . . . . . . . . . . . . . . . . .  51
+         6.2.1.5.  Updating the Nominated Flag . . . . . . . . . . .  50
+       6.2.2.  Additional Procedures for Lite Implementations  . . .  50
+   7.  Concluding ICE Processing . . . . . . . . . . . . . . . . . .  50
      7.1.  Procedures for Full Implementations . . . . . . . . . . .  51
        7.1.1.  Nominating Pairs  . . . . . . . . . . . . . . . . . .  51
-         7.1.1.1.  Regular Nomination  . . . . . . . . . . . . . . .  52
-         7.1.1.2.  Aggressive Nomination . . . . . . . . . . . . . .  52
-       7.1.2.  Updating States . . . . . . . . . . . . . . . . . . .  53
-     7.2.  Procedures for Lite Implementations . . . . . . . . . . .  54
-       7.2.1.  Peer Is Full  . . . . . . . . . . . . . . . . . . . .  55
-       7.2.2.  Peer Is Lite  . . . . . . . . . . . . . . . . . . . .  55
-     7.3.  Freeing Candidates  . . . . . . . . . . . . . . . . . . .  56
-       7.3.1.  Full Implementation Procedures  . . . . . . . . . . .  56
-       7.3.2.  Lite Implementation Procedures  . . . . . . . . . . .  56
-   8.  ICE Restarts  . . . . . . . . . . . . . . . . . . . . . . . .  56
-   9.  ICE Option  . . . . . . . . . . . . . . . . . . . . . . . . .  57
-   10. Keepalives  . . . . . . . . . . . . . . . . . . . . . . . . .  57
-   11. Media Handling  . . . . . . . . . . . . . . . . . . . . . . .  58
+       7.1.2.  Updating States . . . . . . . . . . . . . . . . . . .  52
+     7.2.  Procedures for Lite Implementations . . . . . . . . . . .  53
+       7.2.1.  Peer Is Full  . . . . . . . . . . . . . . . . . . . .  53
+       7.2.2.  Peer Is Lite  . . . . . . . . . . . . . . . . . . . .  53
+     7.3.  Freeing Candidates  . . . . . . . . . . . . . . . . . . .  54
+       7.3.1.  Full Implementation Procedures  . . . . . . . . . . .  54
+       7.3.2.  Lite Implementation Procedures  . . . . . . . . . . .  54
+   8.  ICE Restarts  . . . . . . . . . . . . . . . . . . . . . . . .  55
+   9.  ICE Option  . . . . . . . . . . . . . . . . . . . . . . . . .  55
+   10. Keepalives  . . . . . . . . . . . . . . . . . . . . . . . . .  56
+   11. Media Handling  . . . . . . . . . . . . . . . . . . . . . . .  56
+     11.1.  Sending Media  . . . . . . . . . . . . . . . . . . . . .  56
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 3]
+Keranen, et al.         Expires December 18, 2016               [Page 3]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
-     11.1.  Sending Media  . . . . . . . . . . . . . . . . . . . . .  58
-       11.1.1.  Procedures for Full Implementations  . . . . . . . .  58
-       11.1.2.  Procedures for Lite Implementations  . . . . . . . .  59
-       11.1.3.  Procedures for All Implementations . . . . . . . . .  59
-     11.2.  Receiving Media  . . . . . . . . . . . . . . . . . . . .  60
-   12. Extensibility Considerations  . . . . . . . . . . . . . . . .  60
-   13. Setting Ta and RTO  . . . . . . . . . . . . . . . . . . . . .  61
-     13.1.  Real-time Media Streams  . . . . . . . . . . . . . . . .  61
-     13.2.  Non-real-time Sessions . . . . . . . . . . . . . . . . .  63
-   14. Example . . . . . . . . . . . . . . . . . . . . . . . . . . .  64
-   15. Security Considerations . . . . . . . . . . . . . . . . . . .  68
-     15.1.  Attacks on Connectivity Checks . . . . . . . . . . . . .  69
-     15.2.  Attacks on Server Reflexive Address Gathering  . . . . .  71
-     15.3.  Attacks on Relayed Candidate Gathering . . . . . . . . .  72
-     15.4.  Insider Attacks  . . . . . . . . . . . . . . . . . . . .  72
-       15.4.1.  STUN Amplification Attack  . . . . . . . . . . . . .  72
-   16. STUN Extensions . . . . . . . . . . . . . . . . . . . . . . .  73
-     16.1.  New Attributes . . . . . . . . . . . . . . . . . . . . .  73
-     16.2.  New Error Response Codes . . . . . . . . . . . . . . . .  74
-   17. Operational Considerations  . . . . . . . . . . . . . . . . .  74
-     17.1.  NAT and Firewall Types . . . . . . . . . . . . . . . . .  74
-     17.2.  Bandwidth Requirements . . . . . . . . . . . . . . . . .  74
-       17.2.1.  STUN and TURN Server Capacity Planning . . . . . . .  75
-       17.2.2.  Gathering and Connectivity Checks  . . . . . . . . .  75
-       17.2.3.  Keepalives . . . . . . . . . . . . . . . . . . . . .  76
-     17.3.  ICE and ICE-lite . . . . . . . . . . . . . . . . . . . .  76
-     17.4.  Troubleshooting and Performance Management . . . . . . .  76
-     17.5.  Endpoint Configuration . . . . . . . . . . . . . . . . .  77
-   18. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  77
-     18.1.  STUN Attributes  . . . . . . . . . . . . . . . . . . . .  77
-     18.2.  STUN Error Responses . . . . . . . . . . . . . . . . . .  77
-     18.3.  ICE Options  . . . . . . . . . . . . . . . . . . . . . .  77
-   19. IAB Considerations  . . . . . . . . . . . . . . . . . . . . .  78
-     19.1.  Problem Definition . . . . . . . . . . . . . . . . . . .  78
-     19.2.  Exit Strategy  . . . . . . . . . . . . . . . . . . . . .  79
-     19.3.  Brittleness Introduced by ICE  . . . . . . . . . . . . .  79
-     19.4.  Requirements for a Long-Term Solution  . . . . . . . . .  80
-     19.5.  Issues with Existing NAPT Boxes  . . . . . . . . . . . .  81
-   20. Changes from RFC 5245 . . . . . . . . . . . . . . . . . . . .  81
-   21. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  81
-   22. References  . . . . . . . . . . . . . . . . . . . . . . . . .  82
-     22.1.  Normative References . . . . . . . . . . . . . . . . . .  82
-     22.2.  Informative References . . . . . . . . . . . . . . . . .  82
-   Appendix A.  Lite and Full Implementations  . . . . . . . . . . .  86
-   Appendix B.  Design Motivations . . . . . . . . . . . . . . . . .  87
-     B.1.  Pacing of STUN Transactions . . . . . . . . . . . . . . .  87
-     B.2.  Candidates with Multiple Bases  . . . . . . . . . . . . .  89
+       11.1.1.  Procedures for Full Implementations  . . . . . . . .  57
+       11.1.2.  Procedures for Lite Implementations  . . . . . . . .  57
+       11.1.3.  Procedures for All Implementations . . . . . . . . .  58
+     11.2.  Receiving Media  . . . . . . . . . . . . . . . . . . . .  58
+   12. Extensibility Considerations  . . . . . . . . . . . . . . . .  58
+   13. Setting Ta and RTO  . . . . . . . . . . . . . . . . . . . . .  59
+     13.1.  Real-time Media Streams  . . . . . . . . . . . . . . . .  60
+     13.2.  Non-real-time Sessions . . . . . . . . . . . . . . . . .  61
+   14. Example . . . . . . . . . . . . . . . . . . . . . . . . . . .  62
+   15. Security Considerations . . . . . . . . . . . . . . . . . . .  67
+     15.1.  Attacks on Connectivity Checks . . . . . . . . . . . . .  67
+     15.2.  Attacks on Server Reflexive Address Gathering  . . . . .  69
+     15.3.  Attacks on Relayed Candidate Gathering . . . . . . . . .  70
+     15.4.  Insider Attacks  . . . . . . . . . . . . . . . . . . . .  70
+       15.4.1.  STUN Amplification Attack  . . . . . . . . . . . . .  71
+   16. STUN Extensions . . . . . . . . . . . . . . . . . . . . . . .  71
+     16.1.  New Attributes . . . . . . . . . . . . . . . . . . . . .  71
+     16.2.  New Error Response Codes . . . . . . . . . . . . . . . .  72
+   17. Operational Considerations  . . . . . . . . . . . . . . . . .  72
+     17.1.  NAT and Firewall Types . . . . . . . . . . . . . . . . .  72
+     17.2.  Bandwidth Requirements . . . . . . . . . . . . . . . . .  73
+       17.2.1.  STUN and TURN Server Capacity Planning . . . . . . .  73
+       17.2.2.  Gathering and Connectivity Checks  . . . . . . . . .  73
+       17.2.3.  Keepalives . . . . . . . . . . . . . . . . . . . . .  74
+     17.3.  ICE and ICE-lite . . . . . . . . . . . . . . . . . . . .  74
+     17.4.  Troubleshooting and Performance Management . . . . . . .  74
+     17.5.  Endpoint Configuration . . . . . . . . . . . . . . . . .  75
+   18. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  75
+     18.1.  STUN Attributes  . . . . . . . . . . . . . . . . . . . .  75
+     18.2.  STUN Error Responses . . . . . . . . . . . . . . . . . .  75
+     18.3.  ICE Options  . . . . . . . . . . . . . . . . . . . . . .  75
+   19. IAB Considerations  . . . . . . . . . . . . . . . . . . . . .  76
+     19.1.  Problem Definition . . . . . . . . . . . . . . . . . . .  76
+     19.2.  Exit Strategy  . . . . . . . . . . . . . . . . . . . . .  77
+     19.3.  Brittleness Introduced by ICE  . . . . . . . . . . . . .  77
+     19.4.  Requirements for a Long-Term Solution  . . . . . . . . .  78
+     19.5.  Issues with Existing NAPT Boxes  . . . . . . . . . . . .  79
+   20. Changes from RFC 5245 . . . . . . . . . . . . . . . . . . . .  79
+   21. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  79
+   22. References  . . . . . . . . . . . . . . . . . . . . . . . . .  80
+     22.1.  Normative References . . . . . . . . . . . . . . . . . .  80
+     22.2.  Informative References . . . . . . . . . . . . . . . . .  80
+   Appendix A.  Lite and Full Implementations  . . . . . . . . . . .  84
+   Appendix B.  Design Motivations . . . . . . . . . . . . . . . . .  85
+     B.1.  Pacing of STUN Transactions . . . . . . . . . . . . . . .  85
+     B.2.  Candidates with Multiple Bases  . . . . . . . . . . . . .  87
      B.3.  Purpose of the Related Address and Related Port
+           Attributes  . . . . . . . . . . . . . . . . . . . . . . .  89
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 4]
+Keranen, et al.         Expires December 18, 2016               [Page 4]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
-           Attributes  . . . . . . . . . . . . . . . . . . . . . . .  91
-     B.4.  Importance of the STUN Username . . . . . . . . . . . . .  91
-     B.5.  The Candidate Pair Priority Formula . . . . . . . . . . .  93
-     B.6.  Why Are Keepalives Needed?  . . . . . . . . . . . . . . .  93
-     B.7.  Why Prefer Peer Reflexive Candidates? . . . . . . . . . .  94
-     B.8.  Why Are Binding Indications Used for Keepalives?  . . . .  94
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  94
+     B.4.  Importance of the STUN Username . . . . . . . . . . . . .  89
+     B.5.  The Candidate Pair Priority Formula . . . . . . . . . . .  91
+     B.6.  Why Are Keepalives Needed?  . . . . . . . . . . . . . . .  91
+     B.7.  Why Prefer Peer Reflexive Candidates? . . . . . . . . . .  92
+     B.8.  Why Are Binding Indications Used for Keepalives?  . . . .  92
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  92
 
 1.  Introduction
 
@@ -274,15 +272,15 @@ Internet-Draft                     ICE                          May 2016
    Traversal Utilities for NAT (STUN) specification [RFC5389].  ICE also
    makes use of Traversal Using Relays around NAT (TURN) [RFC5766], an
    extension to STUN.  Because ICE exchanges a multiplicity of IP
-
-
-
-Keranen, et al.         Expires November 28, 2016               [Page 5]
-
-Internet-Draft                     ICE                          May 2016
-
-
    addresses and ports for each media stream, it also allows for address
+
+
+
+Keranen, et al.         Expires December 18, 2016               [Page 5]
+
+Internet-Draft                     ICE                         June 2016
+
+
    selection for multihomed and dual-stack hosts, and for this reason it
    deprecates [RFC4091] and [RFC4092].
 
@@ -333,9 +331,10 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 6]
+
+Keranen, et al.         Expires December 18, 2016               [Page 6]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
                      +---------+
@@ -389,9 +388,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 7]
+Keranen, et al.         Expires December 18, 2016               [Page 7]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
 2.1.  Gathering Candidate Addresses
@@ -445,9 +444,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 8]
+Keranen, et al.         Expires December 18, 2016               [Page 8]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
                  To Internet
@@ -501,9 +500,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016               [Page 9]
+Keranen, et al.         Expires December 18, 2016               [Page 9]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    server) will be discovered by the agent.  If the agent is not behind
@@ -557,9 +556,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 10]
+Keranen, et al.         Expires December 18, 2016              [Page 10]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    L                        R
@@ -613,9 +612,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 11]
+Keranen, et al.         Expires December 18, 2016              [Page 11]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The second property is important for getting ICE to work when there
@@ -669,9 +668,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 12]
+Keranen, et al.         Expires December 18, 2016              [Page 12]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    While we've described "frozen" here as a separate mechanism for
@@ -717,23 +716,22 @@ Internet-Draft                     ICE                          May 2016
    Consequently, ICE assigns one of the agents in the role of the
    CONTROLLING AGENT, and the other of the CONTROLLED AGENT.  The
    controlling agent gets to nominate which candidate pairs will get
-   used for media amongst the ones that are valid.  It can do this in
-   one of two ways -- using REGULAR NOMINATION or AGGRESSIVE NOMINATION.
+   used for media amongst the ones that are valid.
 
-   With regular nomination, the controlling agent lets the checks
-   continue until at least one valid candidate pair for each media
+   When nominating, the controlling agent lets the checks continue until
+   at least one valid candidate pair for each media stream is found.
+   Then, it picks amongst those that are valid, and sends a second STUN
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 13]
+Keranen, et al.         Expires December 18, 2016              [Page 13]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
-   stream is found.  Then, it picks amongst those that are valid, and
-   sends a second STUN request on its NOMINATED candidate pair, but this
-   time with a flag set to tell the peer that this pair has been
-   nominated for use.  This is shown in Figure 4.
+   request on its NOMINATED candidate pair, but this time with a flag
+   set to tell the peer that this pair has been nominated for use.  This
+   is shown in Figure 4.
 
 
    L                        R
@@ -748,43 +746,12 @@ Internet-Draft                     ICE                          May 2016
              <- STUN response  /  check
 
 
-                       Figure 4: Regular Nomination
+                           Figure 4: Nomination
 
    Once the STUN transaction with the flag completes, both sides cancel
    any future checks for that media stream.  ICE will now send media
    using this pair.  The pair an ICE agent is using for media is called
    the SELECTED PAIR.
-
-   In aggressive nomination, the controlling agent puts the flag in
-   every connectivity check STUN request it sends.  This way, once the
-   first check succeeds, ICE processing is complete for that media
-   stream and the controlling agent doesn't have to send a second STUN
-   request.  The selected pair will be the highest-priority valid pair
-   whose check succeeded.  Aggressive nomination is faster than regular
-   nomination, but gives less flexibility.  Aggressive nomination is
-   shown in Figure 5.
-
-
-   L                        R
-   -                        -
-   STUN request + flag ->      \  L's
-             <- STUN response  /  check
-
-              <- STUN request  \  R's
-   STUN response ->            /  check
-
-
-                      Figure 5: Aggressive Nomination
-
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 14]
-
-Internet-Draft                     ICE                          May 2016
-
 
    Once ICE is concluded, it can be restarted at any time for one or all
    of the media streams by either agent.  This is done by sending an
@@ -808,6 +775,15 @@ Internet-Draft                     ICE                          May 2016
 
    For guidance on when a lite implementation is appropriate, see the
    discussion in Appendix A.
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 14]
+
+Internet-Draft                     ICE                         June 2016
+
 
    It is important to note that the lite implementation was added to
    this specification to provide a stepping stone to full
@@ -835,13 +811,6 @@ Internet-Draft                     ICE                          May 2016
    Readers should be familiar with the terminology defined in the STUN
    [RFC5389], and NAT Behavioral requirements for UDP [RFC4787].
 
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 15]
-
-Internet-Draft                     ICE                          May 2016
-
-
    This specification makes use of the following additional terminology:
 
    ICE Agent:  An agent is the protocol implementation involved in the
@@ -862,6 +831,15 @@ Internet-Draft                     ICE                          May 2016
       that is needed to perform ICE.  [RFC3264] Offer/Answer with SDP
       encoding is one example of a protocol that can be used for
       exchanging the candidate information.
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 15]
+
+Internet-Draft                     ICE                         June 2016
+
 
    Peer:  From the perspective of one of the agents in a session, its
       peer is the other agent.  Specifically, from the perspective of
@@ -889,15 +867,6 @@ Internet-Draft                     ICE                          May 2016
       single transport address; a media stream may require multiple
       components, each of which has to work for the media stream as a
       whole to work.  For media streams based on RTP, unless RTP and
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 16]
-
-Internet-Draft                     ICE                          May 2016
-
-
       RTCP are multiplexed in the same port, there are two components
       per media stream -- one for RTP, and one for RTCP.
 
@@ -920,6 +889,14 @@ Internet-Draft                     ICE                          May 2016
 
    Relayed Candidate:  A candidate obtained by sending a TURN Allocate
       request from a host candidate to a TURN server.  The relayed
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 16]
+
+Internet-Draft                     ICE                         June 2016
+
+
       candidate is resident on the TURN server, and the TURN server
       relays packets back towards the agent.
 
@@ -946,14 +923,6 @@ Internet-Draft                     ICE                          May 2016
       component is one whose transport address matches the default
       destination for that component.
 
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 17]
-
-Internet-Draft                     ICE                          May 2016
-
-
    Candidate Pair:  A pairing containing a local candidate and a remote
       candidate.
 
@@ -975,6 +944,15 @@ Internet-Draft                     ICE                          May 2016
    Valid List:  An ordered set of candidate pairs for a media stream
       that have been validated by a successful STUN transaction.
 
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 17]
+
+Internet-Draft                     ICE                         June 2016
+
+
    Full:  An ICE implementation that performs the complete set of
       functionality defined by this specification.
 
@@ -992,23 +970,10 @@ Internet-Draft                     ICE                          May 2016
    Controlled Agent:  An ICE agent that waits for the controlling agent
       to select the final choice of candidate pairs.
 
-   Regular Nomination:  The process of picking a valid candidate pair
-      for media traffic by validating the pair with one STUN request,
-      and then picking it by sending a second STUN request with a flag
-      indicating its nomination.
-
-   Aggressive Nomination:  The process of picking a valid candidate pair
-      for media traffic by including a flag in every connectivity check
-      STUN request, such that the first one to produce a valid candidate
-      pair is used for media.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 18]
-
-Internet-Draft                     ICE                          May 2016
-
+   Nomination, Regular Nomination:  The process of picking a valid
+      candidate pair for media traffic by validating the pair with one
+      STUN request, and then picking it by sending a second STUN request
+      with a flag indicating its nomination.
 
    Nominated:  If a valid candidate pair has its nominated flag set, it
       means that it may be selected by ICE for sending and receiving
@@ -1039,31 +1004,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 19]
+Keranen, et al.         Expires December 18, 2016              [Page 18]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
              Initiating                      Responding
@@ -1089,7 +1032,7 @@ Internet-Draft                     ICE                          May 2016
                 |<------------------------------|
                 |                               |
 
-            Figure 6: Candidate Gathering and Exchange Sequence
+            Figure 5: Candidate Gathering and Exchange Sequence
 
    As shown, the agents involved in the candidate exchange perform (1)
    candidate gathering, (2) candidate prioritization, (3) eliminating
@@ -1117,9 +1060,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 20]
+Keranen, et al.         Expires December 18, 2016              [Page 19]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The process for gathering candidates at the responding agent is
@@ -1173,9 +1116,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 21]
+Keranen, et al.         Expires December 18, 2016              [Page 20]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The base for each host candidate is set to the candidate itself.
@@ -1229,9 +1172,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 22]
+Keranen, et al.         Expires December 18, 2016              [Page 21]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The agent next pairs each host candidate with the STUN or TURN server
@@ -1285,9 +1228,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 23]
+Keranen, et al.         Expires December 18, 2016              [Page 22]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    reflexive and/or relayed candidates from IPv4-only STUN or TURN
@@ -1341,9 +1284,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 24]
+Keranen, et al.         Expires December 18, 2016              [Page 23]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    An agent SHOULD compute this priority using the formula in
@@ -1397,9 +1340,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 25]
+Keranen, et al.         Expires December 18, 2016              [Page 24]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    6724 [RFC6724].  If the host operating system provides an API for
@@ -1453,9 +1396,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 26]
+Keranen, et al.         Expires December 18, 2016              [Page 25]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    Another criterion for selecting preferences is security.  If a user
@@ -1509,9 +1452,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 27]
+Keranen, et al.         Expires December 18, 2016              [Page 26]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    component ID of 2.  If an agent is using RTCP without multiplexing,
@@ -1565,9 +1508,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 28]
+Keranen, et al.         Expires December 18, 2016              [Page 27]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
       Transport:  An indicator of the transport protocol for this
@@ -1621,9 +1564,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 29]
+Keranen, et al.         Expires December 18, 2016              [Page 28]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The using protocol may (or may not) need to deal with backwards
@@ -1677,9 +1620,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 30]
+Keranen, et al.         Expires December 18, 2016              [Page 29]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    the usage specifications.  One exception to the above is that an
@@ -1733,9 +1676,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 31]
+Keranen, et al.         Expires December 18, 2016              [Page 30]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
       ICE processing for each media stream is considered to be Running,
@@ -1789,9 +1732,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 32]
+Keranen, et al.         Expires December 18, 2016              [Page 31]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    work, IPv6 link-local addresses [RFC4291] MUST NOT be paired with
@@ -1803,7 +1746,7 @@ Internet-Draft                     ICE                          May 2016
    is the pair that would be used to transmit media if both agents had
    not been ICE aware.
 
-   In order to aid understanding, Figure 7 shows the relationships
+   In order to aid understanding, Figure 6 shows the relationships
    between several key concepts -- transport addresses, candidates,
    candidate pairs, and check lists, in addition to indicating the main
    properties of candidates and candidate pairs.
@@ -1845,9 +1788,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 33]
+Keranen, et al.         Expires December 18, 2016              [Page 32]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
        +--------------------------------------------+
@@ -1894,16 +1837,16 @@ Internet-Draft                     ICE                          May 2016
             List
 
 
-               Figure 7: Conceptual Diagram of a Check List
+               Figure 6: Conceptual Diagram of a Check List
 
 
 
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 34]
+Keranen, et al.         Expires December 18, 2016              [Page 33]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
 5.1.3.2.  Computing Pair Priority and Ordering Pairs
@@ -1957,9 +1900,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 35]
+Keranen, et al.         Expires December 18, 2016              [Page 34]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    Waiting:  A check has not been performed for this pair, and can be
@@ -1980,7 +1923,7 @@ Internet-Draft                     ICE                          May 2016
       yet be performed until some other check succeeds, allowing this
       pair to unfreeze and move into the Waiting state.
 
-   As ICE runs, the pairs will move between states as shown in Figure 8.
+   As ICE runs, the pairs will move between states as shown in Figure 7.
 
 
 
@@ -2013,9 +1956,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 36]
+Keranen, et al.         Expires December 18, 2016              [Page 35]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
       +-----------+
@@ -2057,7 +2000,7 @@ Internet-Draft                     ICE                          May 2016
       |           |         |           |
       +-----------+         +-----------+
 
-                         Figure 8: Pair State FSM
+                         Figure 7: Pair State FSM
 
    The initial states for each pair in a check list are computed by
    performing the following sequence of steps:
@@ -2069,9 +2012,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 37]
+Keranen, et al.         Expires December 18, 2016              [Page 36]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    2.  The agent examines the check list for the first media stream.
@@ -2095,8 +2038,7 @@ Internet-Draft                     ICE                          May 2016
       media stream.
 
    Completed:  In this state, ICE checks have produced nominated pairs
-      for each component of the media stream.  Consequently, ICE has
-      succeeded and media can be sent.
+      for each component of the media stream.
 
    Failed:  In this state, the ICE checks have not completed
       successfully for this media stream.
@@ -2125,9 +2067,10 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 38]
+
+Keranen, et al.         Expires December 18, 2016              [Page 37]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    Once the agent has computed the check lists as described in
@@ -2181,9 +2124,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 39]
+Keranen, et al.         Expires December 18, 2016              [Page 38]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The Initiator performs the ordinary checks on receiving the candidate
@@ -2237,9 +2180,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 40]
+Keranen, et al.         Expires December 18, 2016              [Page 39]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    CreatePermission request.  Once established, the agent MUST keep the
@@ -2261,7 +2204,7 @@ Internet-Draft                     ICE                          May 2016
    is described in the subsections below.  These STUN extensions are
    applicable only to connectivity checks used for ICE.
 
-6.1.2.1.  PRIORITY and USE-CANDIDATE
+6.1.2.1.  PRIORITY
 
    An agent MUST include the PRIORITY attribute in its Binding request.
    The attribute MUST be set equal to the priority that would be
@@ -2273,14 +2216,13 @@ Internet-Draft                     ICE                          May 2016
    that the type preference is set to the value for peer reflexive
    candidate types.
 
-   The controlling agent MAY include the USE-CANDIDATE attribute in the
-   Binding request.  The controlled agent MUST NOT include it in its
-   Binding request.  This attribute signals that the controlling agent
-   wishes to cease checks for this component, and use the candidate pair
-   resulting from the check for this component.  Section 7.1.1 provides
-   guidance on determining when to include it.
+6.1.2.2.  USE-CANDIDATE
 
-6.1.2.2.  ICE-CONTROLLED and ICE-CONTROLLING
+   The controlling agent includes the USE-CANDIDATE attribute in order
+   to nominate a candidate pair Section 7.1.1.  The controlled agent
+   MUST NOT include the USE-CANDIDATE attribute in its Binding request.
+
+6.1.2.3.  ICE-CONTROLLED and ICE-CONTROLLING
 
    The agent MUST include the ICE-CONTROLLED attribute in the request if
    it is in the controlled role, and MUST include the ICE-CONTROLLING
@@ -2293,12 +2235,13 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 41]
+
+Keranen, et al.         Expires December 18, 2016              [Page 40]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
-6.1.2.3.  Forming Credentials
+6.1.2.4.  Forming Credentials
 
    A Binding request serving as a connectivity check MUST utilize the
    STUN short-term credential mechanism.  The username for the
@@ -2316,7 +2259,7 @@ Internet-Draft                     ICE                          May 2016
    passwords as the requests (note that the USERNAME attribute is not
    present in the response).
 
-6.1.2.4.  DiffServ Treatment
+6.1.2.5.  DiffServ Treatment
 
    If the agent is using Diffserv Codepoint markings [RFC2475] in its
    media packets, it SHOULD apply those same markings to its
@@ -2349,9 +2292,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 42]
+Keranen, et al.         Expires December 18, 2016              [Page 41]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    A change in roles will require an agent to recompute pair priorities
@@ -2405,9 +2348,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 43]
+Keranen, et al.         Expires December 18, 2016              [Page 42]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    o  Its base is set equal to the local candidate of the candidate pair
@@ -2461,9 +2404,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 44]
+Keranen, et al.         Expires December 18, 2016              [Page 43]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    it is peer reflexive, it is equal to the PRIORITY attribute the agent
@@ -2517,9 +2460,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 45]
+Keranen, et al.         Expires December 18, 2016              [Page 44]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
           +  groups together all of the pairs with the same foundation,
@@ -2534,9 +2477,9 @@ Internet-Draft                     ICE                          May 2016
    If the agent was a controlling agent, and it had included a USE-
    CANDIDATE attribute in the Binding request, the valid pair generated
    from that check has its nominated flag set to true.  This flag
-   indicates that this valid pair should be used for media if it is the
-   highest-priority one amongst those whose nominated flag is set.  This
-   may conclude ICE processing for this media stream or all media
+   indicates that this valid pair SHOULD be used for media, unless the
+   sending agent detects that the candidiate pair does not work.  This
+   concludes the ICE processing for this media stream or all media
    streams; see Section 7.
 
    If the agent is the controlled agent, the response may be the result
@@ -2544,6 +2487,10 @@ Internet-Draft                     ICE                          May 2016
    itself had the USE-CANDIDATE attribute.  This case is described in
    Section 6.2.1.5, and may now result in setting the nominated flag for
    the pair learned from the original request.
+
+   An agent MUST NOT select a candidate pair until it has sent a Binding
+   request, and received the corresponding Binding response, associated
+   with the candidiate pair.
 
 6.1.3.3.  Check List and Timer State Updates
 
@@ -2565,18 +2512,19 @@ Internet-Draft                     ICE                          May 2016
          component ID to Waiting.  If there is more than one such pair,
          the one with the highest-priority is used.
 
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 45]
+
+Internet-Draft                     ICE                         June 2016
+
+
    If none of the pairs in the check list are in the Waiting or Frozen
    state, the check list is no longer considered active, and will not
    count towards the value of N in the computation of timers for
    ordinary checks as described in Section 5.1.4.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 46]
-
-Internet-Draft                     ICE                          May 2016
-
 
 6.2.  STUN Server Procedures
 
@@ -2618,6 +2566,17 @@ Internet-Draft                     ICE                          May 2016
    This subsection defines the additional server procedures applicable
    to full implementations.
 
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 46]
+
+Internet-Draft                     ICE                         June 2016
+
+
 6.2.1.1.  Detecting and Repairing Role Conflicts
 
    Normally, the rules for selection of a role in Section 5.1.2 will
@@ -2626,14 +2585,6 @@ Internet-Draft                     ICE                          May 2016
    utilizing third party call control, it is possible for both agents to
    select the same role.  This section describes procedures for checking
    for this case and repairing it.  These procedures apply only to
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 47]
-
-Internet-Draft                     ICE                          May 2016
-
-
    usages of ICE that require conflict resolution.  The usage document
    MUST specify whether this mechanism is needed.
 
@@ -2675,20 +2626,19 @@ Internet-Draft                     ICE                          May 2016
       controlling role and the ICE-CONTROLLED attribute was present in
       the request, there is no conflict.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 47]
+
+Internet-Draft                     ICE                         June 2016
+
+
    A change in roles will require an agent to recompute pair priorities
    (Section 5.1.3.2), since those priorities are a function of
    controlling and controlled roles.  The change in role will also
    impact whether the agent is responsible for selecting nominated pairs
    and initiating exchange with updated candidate information upon
    conclusion of ICE.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 48]
-
-Internet-Draft                     ICE                          May 2016
-
 
    The remaining sections in Section 6.2.1 are followed if the server
    generated a successful response to the Binding request, even if the
@@ -2727,6 +2677,18 @@ Internet-Draft                     ICE                          May 2016
    This candidate is added to the list of remote candidates.  However,
    the agent does not pair this candidate with any local candidates.
 
+
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 48]
+
+Internet-Draft                     ICE                         June 2016
+
+
 6.2.1.4.  Triggered Checks
 
    Next, the agent constructs a pair whose local candidate is equal to
@@ -2738,14 +2700,6 @@ Internet-Draft                     ICE                          May 2016
    relay) or a relayed candidate (for cases where it is received through
    a relay).  The local candidate can never be a server reflexive
    candidate.  Since both candidates are known to the agent, it can
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 49]
-
-Internet-Draft                     ICE                          May 2016
-
-
    obtain their priorities and compute the candidate pair priority.
    This pair is then looked up in the check list.  There can be one of
    several outcomes:
@@ -2783,6 +2737,14 @@ Internet-Draft                     ICE                          May 2016
 
       *  Its state is set to Waiting.
 
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 49]
+
+Internet-Draft                     ICE                         June 2016
+
+
       *  The pair is enqueued into the triggered check queue.
 
    When a triggered check is to be sent, it is constructed and processed
@@ -2794,13 +2756,6 @@ Internet-Draft                     ICE                          May 2016
    candidates received from its peer (there may be more than one in
    cases of forking), and find this username fragment.  The
    corresponding password is then selected.
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 50]
-
-Internet-Draft                     ICE                          May 2016
-
 
 6.2.1.5.  Updating the Nominated Flag
 
@@ -2837,6 +2792,15 @@ Internet-Draft                     ICE                          May 2016
 
    This section describes how an agent completes ICE.
 
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 50]
+
+Internet-Draft                     ICE                         June 2016
+
+
 7.1.  Procedures for Full Implementations
 
    Concluding ICE involves nominating pairs by the controlling agent and
@@ -2844,29 +2808,7 @@ Internet-Draft                     ICE                          May 2016
 
 7.1.1.  Nominating Pairs
 
-   The controlling agent nominates pairs to be selected by ICE by using
-   one of two techniques: regular nomination or aggressive nomination.
-   If its peer has a lite implementation, an agent MUST use a regular
-   nomination algorithm.  If its peer is using ICE options (present in
-   an ice-options attribute from the peer) that the agent does not
-   understand, the agent MUST use a regular nomination algorithm.  If
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 51]
-
-Internet-Draft                     ICE                          May 2016
-
-
-   its peer is a full implementation and isn't using any ICE options or
-   is using ICE options understood by the agent, the agent MAY use
-   either the aggressive or the regular nomination algorithm.  However,
-   the regular algorithm is RECOMMENDED since it provides greater
-   stability.
-
-7.1.1.1.  Regular Nomination
-
-   With regular nomination, the agent lets some number of checks
+   When nominating, the controlling agent lets some number of checks
    complete, each of which omit the USE-CANDIDATE attribute.  Once one
    or more checks complete successfully for a component of a media
    stream, valid pairs are generated and added to the valid list.  The
@@ -2885,55 +2827,35 @@ Internet-Draft                     ICE                          May 2016
    list moves to completed, that exact pair is selected by ICE for
    sending and receiving media for that component.
 
-   Regular nomination provides the most flexibility, since the agent has
-   control over the stopping and selection criteria for checks.  The
-   only requirement is that the agent MUST eventually pick one and only
-   one candidate pair and generate a check for that pair with the USE-
-   CANDIDATE attribute present.  Regular nomination also improves ICE's
-   resilience to variations in implementation (see Section 12).  Regular
-   nomination is also more stable, allowing both agents to converge on a
-   single pair for media without any transient selections, which can
-   happen with the aggressive algorithm.  The drawback of regular
-   nomination is that it is guaranteed to increase latencies because it
-   requires an additional check to be done.
+   The controlling agent has control over the stopping and selection
+   criteria for checks.  The only requirement is that the agent MUST
+   eventually pick one and only one candidate pair and generate a check
+   for that pair with the USE-CANDIDATE attribute present.
 
-7.1.1.2.  Aggressive Nomination
+   The controlled agent SHOULD select the nominated candidate pair if
+   the agent is receiving Binding responses associated with that
+   candidiate pair.  Before the agent has received Binding responses
+   associated with the candidiate pair, the agent can send media on any
+   candidiate for which it has received Binding responses.  If more than
+   one candidate pair is nominated by the controlling agent, the
+   controlled agent SHOULD select the candidate pair with the highest
+   priority.
 
-   With aggressive nomination, the controlling agent includes the USE-
-   CANDIDATE attribute in every check it sends.  Once the first check
-   for a component succeeds, it will be added to the valid list and have
-   its nominated flag set.  When all components have a nominated pair in
-   the valid list, media can begin to flow using the highest-priority
-   nominated pair.  However, because the agent included the USE-
-   CANDIDATE attribute in all of its checks, another check may yet
-
+   NOTE: A controlling agent that does not support this speification
+   (i.e. it is implemented according to RFC 5245) might nominate more
+   than one candidiate pair.  This was referred to as aggressive
+   nomination in RFC 5245.  The usage of the 'ice2' ice option by
+   endpoints supporting this specifcation should prevent such
+   controlling agents from using aggressive nomination.
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 52]
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 51]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
-
-   complete, causing another valid pair to have its nominated flag set.
-   ICE always selects the highest-priority nominated candidate pair from
-   the valid list as the one used for media.  Consequently, the selected
-   pair may actually change briefly as ICE checks complete, resulting in
-   a set of transient selections until it stabilizes.
-
-   If certain connectivity check messages are lost, ICE agents using
-   aggressive nomination may end up with different views on the selected
-   candidate pair.  In this case, if a security protocol that is able to
-   authenticate the communicating parties (e.g., DTLS) is used, the
-   controlled agent may receive valid secured traffic or handshake
-   initialization originating from the controlling agent on a candidate
-   pair that is different from the one the controlled agent considers as
-   the selected pair.  If this happens, the controlled agent MUST
-   consider the pair with the secured traffic as the correct selected
-   pair.  If such security protocol is not used, both agents SHOULD
-   continue sending connectivity check messages on the selected pair
-   even after a pair has already been selected for use.  In order to
-   prevent the problem described here, at least one check from both
-   agents needs to fully succeed on the selected pair.
 
 7.1.2.  Updating States
 
@@ -2962,14 +2884,6 @@ Internet-Draft                     ICE                          May 2016
       every component of at least one media stream and the state of the
       check list is Running:
 
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 53]
-
-Internet-Draft                     ICE                          May 2016
-
-
       *  The agent MUST change the state of processing for its check
          list for that media stream to Completed.
 
@@ -2988,16 +2902,16 @@ Internet-Draft                     ICE                          May 2016
       *  The agent sets the state of ICE processing overall to
          Completed.
 
-      *  If the controlling agent is using an aggressive nomination
-         algorithm, this may result in several updated candidate
-         exchanges as the pairs selected for media change.  An agent MAY
-         delay sending its candidates for a brief interval (one second
-         is RECOMMENDED) in order to allow the selected pairs to
-         stabilize.
-
    o  If the state of the check list is Failed, ICE has not been able to
       complete for this media stream.  The correct behavior depends on
       the state of the check lists for other media streams:
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 52]
+
+Internet-Draft                     ICE                         June 2016
+
 
       *  If all check lists are Failed, ICE processing overall is
          considered to be in the Failed state, and the agent SHOULD
@@ -3017,14 +2931,6 @@ Internet-Draft                     ICE                          May 2016
 
    Concluding ICE for a lite implementation is relatively
    straightforward.  There are two cases to consider:
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 54]
-
-Internet-Draft                     ICE                          May 2016
-
 
       The implementation is lite, and its peer is full.
 
@@ -3055,6 +2961,14 @@ Internet-Draft                     ICE                          May 2016
    pairs up its own candidates with the candidates of its peer for that
    media stream.  Two candidates are paired up when they are for the
    same component, utilize the same transport protocol (UDP in this
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 53]
+
+Internet-Draft                     ICE                         June 2016
+
+
    specification), and are from the same IP address family (IPv4 or
    IPv6).
 
@@ -3074,14 +2988,6 @@ Internet-Draft                     ICE                          May 2016
 
       *  The agent adds the selected pair for each component to the
          valid list.  As described in Section 11.1, this will permit
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 55]
-
-Internet-Draft                     ICE                          May 2016
-
-
          media to begin flowing.  However, it is possible (and in fact
          likely) that both agents have chosen different pairs.
 
@@ -3112,6 +3018,13 @@ Internet-Draft                     ICE                          May 2016
    as ICE processing has reached the Completed state for all peers for
    all media streams using those candidates.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 54]
+
+Internet-Draft                     ICE                         June 2016
+
+
 8.  ICE Restarts
 
    An agent MAY restart ICE processing for an existing media stream.  An
@@ -3128,15 +3041,6 @@ Internet-Draft                     ICE                          May 2016
       to generate an updated candidate information that, had ICE not
       been in use, would result in a new value for the destination of a
       media component.
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 56]
-
-Internet-Draft                     ICE                          May 2016
-
 
    o  An agent is changing its implementation level.  This typically
       only happens in third party call control use cases, where the
@@ -3166,46 +3070,41 @@ Internet-Draft                     ICE                          May 2016
    Session Description Protocol (SDP) [RFC4566] is defined in
    [I-D.ietf-mmusic-ice-sip-sdp].
 
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 55]
+
+Internet-Draft                     ICE                         June 2016
+
+
 10.  Keepalives
 
    All endpoints MUST send keepalives for each media session.  These
    keepalives serve the purpose of keeping NAT bindings alive for the
-   media session.  These keepalives MUST be sent even if ICE is not
-   being utilized for the session at all.  The keepalive SHOULD be sent
-   using a format that is supported by its peer.  ICE endpoints allow
-   for STUN-based keepalives for UDP streams, and as such, STUN
-   keepalives MUST be used when an agent is a full ICE implementation
-   and is communicating with a peer that supports ICE (lite or full).
-   If the peer does not support ICE, the choice of a packet format for
-   keepalives is a matter of local implementation.  A format that allows
-   packets to easily be sent in the absence of actual media content is
-   RECOMMENDED.  Examples of formats that readily meet this goal are RTP
-   No-Op [I-D.ietf-avt-rtp-no-op], and in cases where both sides support
-   it, RTP comfort noise [RFC3389].  If the peer doesn't support any
-   formats that are particularly well suited for keepalives, an agent
-   SHOULD send RTP packets with an incorrect version number, or some
-   other form of error that would cause them to be discarded by the
-   peer.
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 57]
-
-Internet-Draft                     ICE                          May 2016
-
+   media session.  The keepalive SHOULD be sent using a format that is
+   supported by its peer.  ICE endpoints allow for STUN-based keepalives
+   for UDP streams, and as such, STUN keepalives MUST be used when an
+   agent is a full ICE implementation and is communicating with a peer
+   that supports ICE (lite or full).
 
    If there has been no packet sent on the candidate pair ICE is using
    for a media component for Tr seconds (where packets include those
    defined for the component (RTP or RTCP) and previous keepalives), an
-   agent MUST generate a keepalive on that pair.  Tr SHOULD be
-   configurable and SHOULD have a default of 15 seconds.  Tr MUST NOT be
-   configured to less than 15 seconds.  Alternatively, if an agent has a
-   dynamic way to discover the binding lifetimes of the intervening
-   NATs, it can use that value to determine Tr.  Administrators
-   deploying ICE in more controlled networking environments SHOULD set
-   Tr to the longest duration possible in their environment.
+   agent MUST generate a keepalive on that pair.  ICE endpoints SHOULD
+   use a Tr value of 15 seconds, but MAY use another value, e.g. based
+   on configuration or network/NAT characteristics.  For example, if an
+   agent has a dynamic way to discover the binding lifetimes of the
+   intervening NATs, it can use that value to determine Tr.
+   Administrators deploying ICE in more controlled networking
+   environments SHOULD set Tr to the longest duration possible in their
+   environment.  ICE endpoints MUST NOT use a Tr value smaller than 15
+   seconds.
 
-   If STUN is being used for keepalives, a STUN Binding Indication is
+   When STUN is being used for keepalives, a STUN Binding Indication is
    used [RFC5389].  The Indication MUST NOT utilize any authentication
    mechanism.  It SHOULD contain the FINGERPRINT attribute to aid in
    demultiplexing, but SHOULD NOT contain any other attributes.  It is
@@ -3229,6 +3128,15 @@ Internet-Draft                     ICE                          May 2016
    Procedures for sending media differ for full and lite
    implementations.
 
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 56]
+
+Internet-Draft                     ICE                         June 2016
+
+
 11.1.1.  Procedures for Full Implementations
 
    Agents always send media using a candidate pair, called the selected
@@ -3242,14 +3150,6 @@ Internet-Draft                     ICE                          May 2016
 
    If the local candidate is a relayed candidate, it is RECOMMENDED that
    an agent create a channel on the TURN server towards the remote
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 58]
-
-Internet-Draft                     ICE                          May 2016
-
-
    candidate.  This is done using the procedures for channel creation as
    defined in Section 11 of [RFC5766].
 
@@ -3282,6 +3182,17 @@ Internet-Draft                     ICE                          May 2016
    pair (setting the destination address and port of the packet equal to
    that remote candidate), and will send it from the local candidate.
 
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 57]
+
+Internet-Draft                     ICE                         June 2016
+
+
 11.1.3.  Procedures for All Implementations
 
    ICE has interactions with jitter buffer adaptation mechanisms.  An
@@ -3296,15 +3207,6 @@ Internet-Draft                     ICE                          May 2016
    codecs, it is RECOMMENDED that the sender set the marker bit
    [RFC3550] when an agent switches transmission of media from one
    candidate pair to another.
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 59]
-
-Internet-Draft                     ICE                          May 2016
-
 
 11.2.  Receiving Media
 
@@ -3338,6 +3240,15 @@ Internet-Draft                     ICE                          May 2016
    algorithm.  When such a change is made, providing interoperability
    between the two agents in a session is critical.
 
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 58]
+
+Internet-Draft                     ICE                         June 2016
+
+
    First, ICE provides the ice-options attribute.  Each extension or
    change to ICE is associated with a token.  When an agent supporting
    such an extension or change triggers candidate exchange, it MUST
@@ -3354,14 +3265,6 @@ Internet-Draft                     ICE                          May 2016
    Section 7 eliminates some of the tight coordination by delegating the
    selection algorithm completely to the controlling agent.
    Consequently, when a controlling agent is communicating with a peer
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 60]
-
-Internet-Draft                     ICE                          May 2016
-
-
    that supports options it doesn't know about, the agent MUST run a
    regular nomination algorithm.  When regular nomination is used, ICE
    will converge perfectly even when both agents use different pair
@@ -3390,6 +3293,18 @@ Internet-Draft                     ICE                          May 2016
    Section 13.1 MAY be followed to rate-control the ICE exchanges.  For
    all other streams, the computation in Section 13.2 MUST be followed.
 
+
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 59]
+
+Internet-Draft                     ICE                         June 2016
+
+
 13.1.  Real-time Media Streams
 
    The values of RTO and Ta change during the lifetime of ICE
@@ -3398,24 +3313,6 @@ Internet-Draft                     ICE                          May 2016
 
    The value of Ta SHOULD be configurable, and SHOULD have a default of:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 61]
-
-Internet-Draft                     ICE                          May 2016
 
 
    For each media stream i:
@@ -3457,6 +3354,13 @@ Internet-Draft                     ICE                          May 2016
    default of:
 
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 60]
+
+Internet-Draft                     ICE                         June 2016
+
+
      RTO = MAX (100ms, Ta*N * (Num-Waiting + Num-In-Progress))
 
    where Num-Waiting is the number of checks in the check list in the
@@ -3464,15 +3368,6 @@ Internet-Draft                     ICE                          May 2016
    Progress state.  Note that the RTO will be different for each
    transaction as the number of checks in the Waiting and In-Progress
    states change.
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 62]
-
-Internet-Draft                     ICE                          May 2016
-
 
    These formulas are aimed at causing STUN transactions to be paced at
    the same rate as media.  This ensures that ICE will work properly
@@ -3512,6 +3407,16 @@ Internet-Draft                     ICE                          May 2016
    the value it prefers to use in the ICE exchange.  Both agents MUST
    use the higher out of the two proposed values.
 
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 61]
+
+Internet-Draft                     ICE                         June 2016
+
+
    In addition, the retransmission timer for the STUN transactions, RTO,
    SHOULD be configurable and during the gathering phase, SHOULD have a
    default of:
@@ -3522,14 +3427,6 @@ Internet-Draft                     ICE                          May 2016
    where the number of pairs refers to the number of pairs of candidates
    with STUN or TURN servers.
 
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 63]
-
-Internet-Draft                     ICE                          May 2016
-
-
    For connectivity checks, RTO SHOULD be configurable and SHOULD have a
    default of:
 
@@ -3538,7 +3435,7 @@ Internet-Draft                     ICE                          May 2016
 
 14.  Example
 
-   The example is based on the simplified topology of Figure 9.
+   The example is based on the simplified topology of Figure 8.
 
 
                             +-------+
@@ -3562,12 +3459,20 @@ Internet-Draft                     ICE                          May 2016
                   |  L  |            |  R  |
                   +-----+            +-----+
 
-                        Figure 9: Example Topology
+                        Figure 8: Example Topology
 
    Two agents, L and R, are using ICE.  Both are full-mode ICE
    implementations and use aggressive nomination when they are
    controlling.  Both agents have a single IPv4 address.  For agent L,
    it is 10.0.1.1 in private address space [RFC1918], and for agent R,
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 62]
+
+Internet-Draft                     ICE                         June 2016
+
+
    192.0.2.1 on the public Internet.  Both are configured with the same
    STUN server (shown in this example for simplicity, although in
    practice the agents do not need to use the same STUN server), which
@@ -3577,14 +3482,6 @@ Internet-Draft                     ICE                          May 2016
    an endpoint independent mapping property and an address dependent
    filtering property.  The public side of the NAT has an IP address of
    192.0.2.3.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 64]
-
-Internet-Draft                     ICE                          May 2016
-
 
    To facilitate understanding, transport addresses are listed using
    variables that have mnemonic names.  The format of the name is
@@ -3624,6 +3521,14 @@ Internet-Draft                     ICE                          May 2016
              |              |D=$STUN-PUB-1 |              |
              |              |------------->|              |
              |              |(3) STUN Res  |              |
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 63]
+
+Internet-Draft                     ICE                         June 2016
+
+
              |              |S=$STUN-PUB-1 |              |
              |              |D=$NAT-PUB-1  |              |
              |              |MA=$NAT-PUB-1 |              |
@@ -3634,14 +3539,6 @@ Internet-Draft                     ICE                          May 2016
              |MA=$NAT-PUB-1 |              |              |
              |<-------------|              |              |
              |(5) L's Candidate Information|              |
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 65]
-
-Internet-Draft                     ICE                          May 2016
-
-
              |------------------------------------------->|
              |              |              |              | RTP STUN
              |              |              |              | alloc.
@@ -3680,6 +3577,14 @@ Internet-Draft                     ICE                          May 2016
              |S=$R-PUB-1    |              |              |
              |D=$L-PRIV-1   |              |              |
              |MA=$NAT-PUB-1 |              |              |
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 64]
+
+Internet-Draft                     ICE                         June 2016
+
+
              |<-------------|              |              |
              |RTP flows     |              |              |
              |              |(14) Bind Req |              |
@@ -3690,14 +3595,6 @@ Internet-Draft                     ICE                          May 2016
              |S=$R-PUB-1    |              |              |
              |D=$L-PRIV-1   |              |              |
              |<-------------|              |              |
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 66]
-
-Internet-Draft                     ICE                          May 2016
-
-
              |(16) Bind Res |              |              |
              |S=$L-PRIV-1   |              |              |
              |D=$R-PUB-1    |              |              |
@@ -3711,7 +3608,7 @@ Internet-Draft                     ICE                          May 2016
              |              |              |              |RTP flows
 
 
-                          Figure 10: Example Flow
+                          Figure 9: Example Flow
 
    First, agent L obtains a host candidate from its local IP address
    (not shown), and from that, sends a STUN Binding request to the STUN
@@ -3737,6 +3634,13 @@ Internet-Draft                     ICE                          May 2016
    chooses a foundation of 1 for its single candidate.  Then R's
    candidates are then sent to L.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 65]
+
+Internet-Draft                     ICE                         June 2016
+
+
    Since neither side indicated that it is lite, the initiating agent
    that began ICE processing (agent L) becomes the controlling agent.
 
@@ -3746,14 +3650,6 @@ Internet-Draft                     ICE                          May 2016
    pair has a local candidate of $L_PRIV_1 and remote candidate of
    $R_PUB_1, and has a candidate pair priority of 4.57566E+18 (note that
    an implementation would represent this as a 64-bit integer so as not
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 67]
-
-Internet-Draft                     ICE                          May 2016
-
-
    to lose precision).  At agent R, there are two pairs.  The highest
    priority has a local candidate of $R_PUB_1 and remote candidate of
    $L_PRIV_1 and has a priority of 4.57566E+18, and the second has a
@@ -3793,6 +3689,14 @@ Internet-Draft                     ICE                          May 2016
    is marked as selected.  Consequently, processing for this stream
    moves into the Completed state, and agent R can also send media.
 
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 66]
+
+Internet-Draft                     ICE                         June 2016
+
+
 15.  Security Considerations
 
    There are several types of attacks possible in an ICE system.  This
@@ -3801,14 +3705,6 @@ Internet-Draft                     ICE                          May 2016
 
    o  Using ICE in conjunction with secure signaling techniques, such as
       SIPS.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 68]
-
-Internet-Draft                     ICE                          May 2016
-
 
    o  Limiting the total number of connectivity checks to 100, and
       optionally limiting the number of candidates they'll accept in an
@@ -3849,6 +3745,14 @@ Internet-Draft                     ICE                          May 2016
       valid on a false candidate, it can launch any of the attacks
       described in [RFC5389].
 
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 67]
+
+Internet-Draft                     ICE                         June 2016
+
+
    To force the false invalid result, the attacker has to wait for the
    connectivity check from one of the agents to be sent.  When it is,
    the attacker needs to inject a fake response with an unrecoverable
@@ -3858,14 +3762,6 @@ Internet-Draft                     ICE                          May 2016
    packet or its response to be dropped, through a DoS attack, layer 2
    network disruption, or other technique.  If it doesn't do this, the
    success response will also reach the originator, alerting it to a
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 69]
-
-Internet-Draft                     ICE                          May 2016
-
-
    possible attack.  Fortunately, this attack is mitigated completely
    through the STUN short-term credential mechanism.  The attacker needs
    to inject a fake response, and in order for this response to be
@@ -3905,6 +3801,14 @@ Internet-Draft                     ICE                          May 2016
    false candidate.  The attacker must then receive it and relay it
    towards the originator.
 
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 68]
+
+Internet-Draft                     ICE                         June 2016
+
+
    The other agent will then initiate a connectivity check towards that
    false candidate.  This validation needs to succeed.  This requires
    the attacker to force a false valid on a false candidate.  Injecting
@@ -3914,13 +3818,6 @@ Internet-Draft                     ICE                          May 2016
    attacker must intercept the check towards this false candidate, and
    replay it towards the other agent.  Then, it must intercept the
    response and replay that back as well.
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 70]
-
-Internet-Draft                     ICE                          May 2016
-
 
    This attack is very hard to launch unless the attacker is identified
    by the fake candidate.  This is because it requires the attacker to
@@ -3960,6 +3857,14 @@ Internet-Draft                     ICE                          May 2016
    o  An attacker can compromise a STUN server by means of a virus, and
       cause it to send responses with incorrect mapped addresses.
 
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 69]
+
+Internet-Draft                     ICE                         June 2016
+
+
    A false mapped address learned by these attacks will be used as a
    server reflexive candidate in the ICE exchange.  For this candidate
    to actually be used for media, the attacker must also attack the
@@ -3969,14 +3874,6 @@ Internet-Draft                     ICE                          May 2016
    nor attacker), since it requires attacking the checks generated by
    each agent in the session, and is prevented by SRTP if it identifies
    the attacker themself.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 71]
-
-Internet-Draft                     ICE                          May 2016
-
 
    If the attacker elects not to attack the connectivity checks, the
    worst it can do is prevent the server reflexive candidate from being
@@ -4017,6 +3914,13 @@ Internet-Draft                     ICE                          May 2016
    possible with ICE when the attacker is an authenticated and valid
    participant in the ICE exchange.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 70]
+
+Internet-Draft                     ICE                         June 2016
+
+
 15.4.1.  STUN Amplification Attack
 
    The STUN amplification attack is similar to the voice hammer.
@@ -4026,14 +3930,6 @@ Internet-Draft                     ICE                          May 2016
    receives the candidate information, and starts its checks, which are
    directed at the target, and consequently, never generate a response.
    The answerer will start a new connectivity check every Ta ms (say,
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 72]
-
-Internet-Draft                     ICE                          May 2016
-
-
    Ta=20ms).  However, the retransmission timers are set to a large
    number due to the large number of candidates.  As a consequence,
    packets will be sent at an interval of one every Ta milliseconds, and
@@ -4073,6 +3969,14 @@ Internet-Draft                     ICE                          May 2016
 
    The PRIORITY attribute indicates the priority that is to be
    associated with a peer reflexive candidate, should one be discovered
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 71]
+
+Internet-Draft                     ICE                         June 2016
+
+
    by this check.  It is a 32-bit unsigned integer, and has an attribute
    value of 0x0024.
 
@@ -4080,15 +3984,6 @@ Internet-Draft                     ICE                          May 2016
    resulting from this check should be used for transmission of media.
    The attribute has no content (the Length field of the attribute is
    zero); it serves as a flag.  It has an attribute value of 0x0025.
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 73]
-
-Internet-Draft                     ICE                          May 2016
-
 
    The ICE-CONTROLLED attribute is present in a Binding request and
    indicates that the client believes it is currently in the controlled
@@ -4130,6 +4025,14 @@ Internet-Draft                     ICE                          May 2016
    "behave" compliant, meeting the recommendations defined in [RFC4787]
    and [RFC5382].  In networks with behave-compliant NAT, ICE will work
    without the need for a TURN server, thus improving voice quality,
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 72]
+
+Internet-Draft                     ICE                         June 2016
+
+
    decreasing call setup times, and reducing the bandwidth demands on
    the network operator.
 
@@ -4137,14 +4040,6 @@ Internet-Draft                     ICE                          May 2016
 
    Deployment of ICE can have several interactions with available
    network capacity that operators should take into consideration.
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 74]
-
-Internet-Draft                     ICE                          May 2016
-
 
 17.2.1.  STUN and TURN Server Capacity Planning
 
@@ -4187,6 +4082,13 @@ Internet-Draft                     ICE                          May 2016
    will cause a marginal increase in the total utilization; however,
    this will typically be an extremely small increase.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 73]
+
+Internet-Draft                     ICE                         June 2016
+
+
    Congestion due to the gathering and check phases has proven to be a
    problem in deployments that did not utilize pacing.  Typically,
    access links became congested as the endpoints flooded the network
@@ -4194,13 +4096,6 @@ Internet-Draft                     ICE                          May 2016
    operators should make sure that their ICE implementations support the
    pacing feature.  Though this pacing does increase call setup times,
    it makes ICE network friendly and easier to deploy.
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 75]
-
-Internet-Draft                     ICE                          May 2016
-
 
 17.2.3.  Keepalives
 
@@ -4243,20 +4138,17 @@ Internet-Draft                     ICE                          May 2016
    diagnostic tool attached to a SIP server) about the results of ICE
    processing.
 
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 74]
+
+Internet-Draft                     ICE                         June 2016
+
+
    As a consequence, through the logs generated by the SIP server, a
    network operator can observe what types of candidates are being used
    for each call, and what address was selected by ICE.  This is the
    primary information that helps evaluate how ICE is performing.
-
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 76]
-
-Internet-Draft                     ICE                          May 2016
-
 
 17.5.  Endpoint Configuration
 
@@ -4304,14 +4196,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 77]
+Keranen, et al.         Expires December 18, 2016              [Page 75]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
      ICE Option name:
@@ -4365,9 +4252,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 78]
+Keranen, et al.         Expires December 18, 2016              [Page 76]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The specific problems being solved by ICE are:
@@ -4421,9 +4308,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 79]
+Keranen, et al.         Expires December 18, 2016              [Page 77]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    that requires an agent to try to classify the type of NAT it is
@@ -4477,9 +4364,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 80]
+Keranen, et al.         Expires December 18, 2016              [Page 78]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
 19.5.  Issues with Existing NAPT Boxes
@@ -4533,9 +4420,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 81]
+Keranen, et al.         Expires December 18, 2016              [Page 79]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    to this revision of the specification we would like to thank Emil
@@ -4589,9 +4476,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 82]
+Keranen, et al.         Expires December 18, 2016              [Page 80]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    [RFC3264]  Rosenberg, J. and H. Schulzrinne, "An Offer/Answer Model
@@ -4645,9 +4532,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 83]
+Keranen, et al.         Expires December 18, 2016              [Page 81]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    [RFC3056]  Carpenter, B. and K. Moore, "Connection of IPv6 Domains
@@ -4701,19 +4588,15 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 84]
+Keranen, et al.         Expires December 18, 2016              [Page 82]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    [RFC4787]  Audet, F., Ed. and C. Jennings, "Network Address
               Translation (NAT) Behavioral Requirements for Unicast
               UDP", BCP 127, RFC 4787, DOI 10.17487/RFC4787, January
               2007, <http://www.rfc-editor.org/info/rfc4787>.
-
-   [I-D.ietf-avt-rtp-no-op]
-              Andreasen, F., "A No-Op Payload Format for RTP", draft-
-              ietf-avt-rtp-no-op-04 (work in progress), May 2007.
 
    [RFC5761]  Perkins, C. and M. Westerlund, "Multiplexing RTP Data and
               Control Packets on a Single Port", RFC 5761,
@@ -4751,21 +4634,20 @@ Internet-Draft                     ICE                          May 2016
               DOI 10.17487/RFC6147, April 2011,
               <http://www.rfc-editor.org/info/rfc6147>.
 
-
-
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 85]
-
-Internet-Draft                     ICE                          May 2016
-
-
    [RFC6544]  Rosenberg, J., Keranen, A., Lowekamp, B., and A. Roach,
               "TCP Candidates with Interactive Connectivity
               Establishment (ICE)", RFC 6544, DOI 10.17487/RFC6544,
               March 2012, <http://www.rfc-editor.org/info/rfc6544>.
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 83]
+
+Internet-Draft                     ICE                         June 2016
+
 
    [RFC7050]  Savolainen, T., Korhonen, J., and D. Wing, "Discovery of
               the IPv6 Prefix Used for IPv6 Address Synthesis",
@@ -4773,11 +4655,11 @@ Internet-Draft                     ICE                          May 2016
               <http://www.rfc-editor.org/info/rfc7050>.
 
    [I-D.ietf-mmusic-ice-sip-sdp]
-              Petit-Huguenin, M., Keranen, A., and S. Nandakumar, "Using
-              Interactive Connectivity Establishment (ICE) with Session
-              Description Protocol (SDP) offer/answer and Session
-              Initiation Protocol (SIP)", draft-ietf-mmusic-ice-sip-
-              sdp-08 (work in progress), March 2016.
+              Petit-Huguenin, M., Keraenen, A., and S. Nandakumar,
+              "Using Interactive Connectivity Establishment (ICE) with
+              Session Description Protocol (SDP) offer/answer and
+              Session Initiation Protocol (SIP)", draft-ietf-mmusic-ice-
+              sip-sdp-08 (work in progress), March 2016.
 
    [I-D.ietf-6man-ipv6-address-generation-privacy]
               Cooper, A., Gont, F., and D. Thaler, "Privacy
@@ -4809,21 +4691,20 @@ Appendix A.  Lite and Full Implementations
    Consequently, a lite implementation is only appropriate for devices
    that will *always* be connected to the public Internet and have a
    public IP address at which it can receive packets from any
-
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 86]
-
-Internet-Draft                     ICE                          May 2016
-
-
    correspondent.  ICE will not function when a lite implementation is
    placed behind a NAT.
 
    ICE allows a lite implementation to have a single IPv4 host candidate
    and several IPv6 addresses.  In that case, candidate pairs are
    selected by the controlling agent using a static algorithm, such as
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 84]
+
+Internet-Draft                     ICE                         June 2016
+
+
    the one in RFC 6724, which is recommended by this specification.
    However, static mechanisms for address selection are always prone to
    error, since they cannot ever reflect the actual topology and can
@@ -4837,17 +4718,16 @@ Internet-Draft                     ICE                          May 2016
    this specification to provide a stepping stone to full
    implementation.  Even for devices that are always connected to the
    public Internet with just a single IPv4 address, a full
-   implementation is preferable if achievable.  A full implementation
-   will reduce call setup times, since ICE's aggressive mode can be
-   used.  Full implementations also obtain the security benefits of ICE
-   unrelated to NAT traversal; in particular, the voice hammer attack
-   described in Section 15 is prevented only for full implementations,
-   not lite.  Finally, it is often the case that a device that finds
-   itself with a public address today will be placed in a network
-   tomorrow where it will be behind a NAT.  It is difficult to
-   definitively know, over the lifetime of a device or product, that it
-   will always be used on the public Internet.  Full implementation
-   provides assurance that communications will always work.
+   implementation is preferable if achievable.  Full implementations
+   also obtain the security benefits of ICE unrelated to NAT traversal;
+   in particular, the voice hammer attack described in Section 15 is
+   prevented only for full implementations, not lite.  Finally, it is
+   often the case that a device that finds itself with a public address
+   today will be placed in a network tomorrow where it will be behind a
+   NAT.  It is difficult to definitively know, over the lifetime of a
+   device or product, that it will always be used on the public
+   Internet.  Full implementation provides assurance that communications
+   will always work.
 
 Appendix B.  Design Motivations
 
@@ -4866,14 +4746,6 @@ B.1.  Pacing of STUN Transactions
    retransmission timer RTO that is a function of Ta as well.  Why are
    these transactions paced, and why are these formulas used?
 
-
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 87]
-
-Internet-Draft                     ICE                          May 2016
-
-
    Sending of these STUN requests will often have the effect of creating
    bindings on NAT devices between the client and the STUN servers.
    Experience has shown that many NAT devices have upper limits on the
@@ -4881,6 +4753,14 @@ Internet-Draft                     ICE                          May 2016
    that once every 20 ms is well supported, but not much lower than
    that.  This is why Ta has a lower bound of 20 ms.  Furthermore,
    transmission of these packets on the network makes use of bandwidth
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 85]
+
+Internet-Draft                     ICE                         June 2016
+
+
    and needs to be rate limited by the agent.  Deployments based on
    earlier draft versions of [RFC5245] tended to overload rate-
    constrained access links and perform poorly overall, in addition to
@@ -4923,16 +4803,19 @@ Internet-Draft                     ICE                          May 2016
    The retransmit timer is set so that the first retransmission on the
    first transaction (packet A2) is sent at time 3Ta.
 
-
-
-Keranen, et al.         Expires November 28, 2016              [Page 88]
-
-Internet-Draft                     ICE                          May 2016
-
-
    Subsequent retransmits after the first will occur even less
    frequently than Ta milliseconds apart, since STUN uses an exponential
    back-off on its retransmissions.
+
+
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 86]
+
+Internet-Draft                     ICE                         June 2016
+
 
 B.2.  Candidates with Multiple Bases
 
@@ -4940,7 +4823,7 @@ B.2.  Candidates with Multiple Bases
    transport address and base.  However, candidates with the same
    transport addresses but different bases are not redundant.  When can
    an agent have two candidates that have the same IP address and port,
-   but different bases?  Consider the topology of Figure 11:
+   but different bases?  Consider the topology of Figure 10:
 
 
 
@@ -4981,9 +4864,13 @@ B.2.  Candidates with Multiple Bases
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 89]
+
+
+
+
+Keranen, et al.         Expires December 18, 2016              [Page 87]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
           +----------+
@@ -5024,7 +4911,7 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-           Figure 11: Identical Candidates with Different Bases
+           Figure 10: Identical Candidates with Different Bases
 
    In this case, the initiating agent is multihomed.  It has one IP
    address, 10.0.1.100, on network C, which is a net 10 private network.
@@ -5037,9 +4924,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 90]
+Keranen, et al.         Expires December 18, 2016              [Page 88]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    The initiating agent obtains a host candidate on its IP address on
@@ -5093,9 +4980,9 @@ B.4.  Importance of the STUN Username
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 91]
+Keranen, et al.         Expires December 18, 2016              [Page 89]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    candidate exchange.  The need for this mechanism goes beyond just
@@ -5149,9 +5036,9 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 92]
+Keranen, et al.         Expires December 18, 2016              [Page 90]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
 B.5.  The Candidate Pair Priority Formula
@@ -5205,9 +5092,9 @@ B.6.  Why Are Keepalives Needed?
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 93]
+Keranen, et al.         Expires December 18, 2016              [Page 91]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
 B.7.  Why Prefer Peer Reflexive Candidates?
@@ -5261,9 +5148,9 @@ Authors' Addresses
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 94]
+Keranen, et al.         Expires December 18, 2016              [Page 92]
 
-Internet-Draft                     ICE                          May 2016
+Internet-Draft                     ICE                         June 2016
 
 
    Christer Holmberg
@@ -5317,4 +5204,4 @@ Internet-Draft                     ICE                          May 2016
 
 
 
-Keranen, et al.         Expires November 28, 2016              [Page 95]
+Keranen, et al.         Expires December 18, 2016              [Page 93]
