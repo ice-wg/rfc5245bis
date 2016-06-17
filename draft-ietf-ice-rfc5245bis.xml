@@ -3057,14 +3057,15 @@ is defined in <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
 <t>
 All endpoints MUST send keepalives for each media session. These
 keepalives serve the purpose of keeping NAT bindings alive for the
-media session. The keepalive SHOULD be sent using a
+media session. The keepalives SHOULD be sent using a
 format that is supported by its peer. ICE endpoints allow for
 STUN-based keepalives for UDP streams, and as such, STUN keepalives
 MUST be used when an agent is a full ICE implementation and is
 communicating with a peer that supports ICE (lite or full).
 </t>
 
-<t>If there has been no packet sent on the candidate pair ICE is using
+<t>
+If there has been no packet sent on the candidate pair ICE is using
 for a media component for Tr seconds (where packets include those
 defined for the component (RTP or RTCP) and previous keepalives), an
 agent MUST generate a keepalive on that pair. ICE endpoints SHOULD use

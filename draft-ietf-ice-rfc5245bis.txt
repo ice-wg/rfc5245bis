@@ -1,6 +1,7 @@
 
 
 
+
 ICE                                                           A. Keranen
 Internet-Draft                                               C. Holmberg
 Obsoletes: 5245 (if approved)                                   Ericsson
@@ -3085,7 +3086,7 @@ Internet-Draft                     ICE                         June 2016
 
    All endpoints MUST send keepalives for each media session.  These
    keepalives serve the purpose of keeping NAT bindings alive for the
-   media session.  The keepalive SHOULD be sent using a format that is
+   media session.  The keepalives SHOULD be sent using a format that is
    supported by its peer.  ICE endpoints allow for STUN-based keepalives
    for UDP streams, and as such, STUN keepalives MUST be used when an
    agent is a full ICE implementation and is communicating with a peer
@@ -4650,11 +4651,11 @@ Internet-Draft                     ICE                         June 2016
 
 
    [I-D.ietf-mmusic-ice-sip-sdp]
-              Petit-Huguenin, M., Keraenen, A., and S. Nandakumar,
-              "Using Interactive Connectivity Establishment (ICE) with
-              Session Description Protocol (SDP) offer/answer and
-              Session Initiation Protocol (SIP)", draft-ietf-mmusic-ice-
-              sip-sdp-08 (work in progress), March 2016.
+              Petit-Huguenin, M., Keranen, A., and S. Nandakumar, "Using
+              Interactive Connectivity Establishment (ICE) with Session
+              Description Protocol (SDP) offer/answer and Session
+              Initiation Protocol (SIP)", draft-ietf-mmusic-ice-sip-
+              sdp-08 (work in progress), March 2016.
 
    [I-D.ietf-6man-ipv6-address-generation-privacy]
               Cooper, A., Gont, F., and D. Thaler, "Privacy
