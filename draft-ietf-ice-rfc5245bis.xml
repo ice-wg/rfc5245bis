@@ -1575,12 +1575,17 @@ for each media stream is considered to be Running, and the state of
 ICE overall is Running.
 </t>
 
-</list></t>
+</list>
+</t>
 
 <t>
 Once roles are determined for a session, they persist unless ICE is
 restarted. An ICE restart causes a new selection of roles and
-tie-breakers.
+tie-breaker values.
+</t>
+<t>
+OPEN ISSUE: We need to decide whether it's allowed to change the
+tie-breaker value.
 </t>
 
 </section>
@@ -2110,10 +2115,15 @@ Binding request.
 <t>
 The agent MUST include the ICE-CONTROLLED attribute in the request if
 it is in the controlled role, and MUST include the ICE-CONTROLLING
-attribute in the request if it is in the controlling role. The content
-of either attribute MUST be the tie-breaker that was determined in
-<xref target="sec-role"/>. These attributes are defined fully in <xref
-target="sec-ice-newatts"/>.
+attribute in the request if it is in the controlling role.
+</t>
+<t>
+The content of either attribute are used as tie-breaker values
+when an ICE role conflict occurs <xref target="sec-role-conflict"/>.
+</t>
+<t>
+The ICE-CONTROLLED and ICE-CONTROLLING attributes are defined
+in <xref target="sec-ice-newatts"/>.
 </t>
 
 </section>
@@ -2180,6 +2190,10 @@ Waiting. When the triggered check is sent, it will contain an
 ICE-CONTROLLING or ICE-CONTROLLED attribute reflecting its new
 role. Note, however, that the tie-breaker value MUST NOT be
 reselected.
+</t>
+<t>
+OPEN ISSUE: We need to decide whether it's allowed to change the
+tie-breaker value.
 </t>
 
 <t>
@@ -2487,17 +2501,16 @@ any layer 2 markings the endpoint might be applying to media packets.
 to full implementations.
 </t>
 
-<section title="Detecting and Repairing Role Conflicts">
+<section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
-Normally, the rules for selection of a role in <xref
-target="sec-role"/> will result in each agent selecting a different
-role -- one controlling and one controlled. However, in unusual call
-flows, typically utilizing third party call control, it is possible
-for both agents to select the same role. This section describes
-procedures for checking for this case and repairing it. These
-procedures apply only to usages of ICE that require conflict
-resolution. The usage document MUST specify whether this mechanism is
-needed.
+Normally, the rules for selection of a role in <xref target="sec-role"/>
+will result in each agent selecting a different role -- one controlling
+and one controlled. However, in unusual call flows, typically utilizing
+third party call control, it is possible for both agents to select the
+same role. This section describes procedures for checking for this case
+and repairing it. These procedures apply only to usages of ICE that
+require conflict resolution. The usage document MUST specify whether this
+mechanism is needed.
 </t>
 
 <t>
@@ -2505,41 +2518,51 @@ An agent MUST examine the Binding request for either the
 ICE-CONTROLLING or ICE-CONTROLLED attribute. It MUST follow these
 procedures:
 <list style="symbols">
-<t>If neither ICE-CONTROLLING nor ICE-CONTROLLED is present in the
+<t>
+If neither ICE-CONTROLLING nor ICE-CONTROLLED is present in the
 request, the peer agent may have implemented a previous version of
 this specification. There may be a conflict, but it cannot be
-detected. </t>
+detected.
+</t>
 
-<t>If the agent is in the controlling role, and the ICE-CONTROLLING
+<t>
+If the agent is in the controlling role, and the ICE-CONTROLLING
 attribute is present in the request:
 <list style="symbols">
-<t>If the agent's tie-breaker is larger than or equal to the contents
+<t>
+If the agent's tie-breaker value is larger than or equal to the contents
 of the ICE-CONTROLLING attribute, the agent generates a Binding error
 response and includes an ERROR-CODE attribute with a value of 487
 (Role Conflict) but retains its role.
 </t>
-<t>If the agent's tie-breaker is less than the contents of the
+<t>
+If the agent's tie-breaker value is less than the contents of the
 ICE-CONTROLLING attribute, the agent switches to the controlled
 role.
 </t>
 </list>
 </t>
 
-<t>If the agent is in the controlled role, and the ICE-CONTROLLED
+<t>
+If the agent is in the controlled role, and the ICE-CONTROLLED
 attribute is present in the request:
 <list style="symbols">
-<t>If the agent's tie-breaker is larger than or equal to the contents
+<t>
+If the agent's tie-breaker value is larger than or equal to the contents
 of the ICE-CONTROLLED attribute, the agent switches to the
 controlling role.
 </t>
-<t>If the agent's tie-breaker is less than the contents of the
+<t>
+If the agent's tie-breaker value is less than the contents of the
 ICE-CONTROLLED attribute, the agent generates a Binding error response
 and includes an ERROR-CODE attribute with a value of 487 (Role
 Conflict) but retains its role.
 </t>
-</list></t>
+</list>
+</t>
 
-<t>If the agent is in the controlled role and the ICE-CONTROLLING
+<t>
+If the agent is in the controlled role and the ICE-CONTROLLING
 attribute was present in the request, or the agent was in the
 controlling role and the ICE-CONTROLLED attribute was present in the
 request, there is no conflict.
@@ -3997,11 +4020,13 @@ sent.
 
 <section anchor="sec-ice-newatts" title="New Attributes">
 
-<t>This specification defines four new attributes, PRIORITY,
+<t>
+This specification defines four new attributes, PRIORITY,
 USE-CANDIDATE, ICE-CONTROLLED, and ICE-CONTROLLING.
 </t>
 
-<t>The PRIORITY attribute indicates the priority that is to be
+<t>
+The PRIORITY attribute indicates the priority that is to be
 associated with a peer reflexive candidate, should one be discovered
 by this check. It is a 32-bit unsigned integer, and has an attribute
 value of 0x0024.
@@ -4014,18 +4039,36 @@ media. The attribute has no content (the Length field of the attribute
 is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
 
-<t>The ICE-CONTROLLED attribute is present in a Binding request and
+<t>
+The ICE-CONTROLLED attribute is present in a Binding request and
 indicates that the client believes it is currently in the controlled
 role. The content of the attribute is a 64-bit unsigned integer in
-network byte order, which contains a random number used for
-tie-breaking of role conflicts.
+network byte order, which contains a random number. The number is used
+for solving role conflicts, when it is referred to as the tie-breaker
+value. An ICE agent MUST use the same number for all Bining requests,
+for all streams, within an ICE session. The ICE agent MUST NOT change
+the number when an ICE restart occurs, even if the ICE roles are
+re-negotiated.
+</t>
+<t>
+OPEN ISSUE: We need to decide whether it's allowed to change the
+tie-breaker value.
 </t>
 
-<t>The ICE-CONTROLLING attribute is present in a Binding request and
+<t>
+The ICE-CONTROLLING attribute is present in a Binding request and
 indicates that the client believes it is currently in the controlling
 role. The content of the attribute is a 64-bit unsigned integer in
-network byte order, which contains a random number used for
-tie-breaking of role conflicts.
+network byte order, which contains a random number. The number is used
+for solving role conflicts, when it is referred to as the tie-breaker
+value. An ICE agent MUST use the same number for all Bining requests,
+for all streams, within an ICE session. The ICE agent MUST NOT change
+the number when an ICE restart occurs, even if the ICE roles are
+re-negotiated.
+</t>
+<t>
+OPEN ISSUE: We need to decide whether it's allowed to change the
+tie-breaker value.
 </t>
 
 </section>
@@ -4037,10 +4080,10 @@ tie-breaking of role conflicts.
 <t><list style="hanging">
 
 <t hangText="487 (Role Conflict):"> The Binding request contained
-either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating a
-role that conflicted with the server. The server ran a tie-breaker
-based on the tie-breaker value in the request and determined that the
-client needs to switch roles.  </t>
+either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating an
+ICE role that conflicted with the server. The server compared the
+tie-breaker values of the client and the server and determined that
+the client needs to switch roles.  </t>
 
 </list></t>
 
@@ -4286,7 +4329,7 @@ following the procedures defined in <xref target="RFC6336"/>.
    Contact:
 
       Name:    Christer Holmberg
-      E-mail:  christer.holmberg(at)ericsson(dot)com
+      E-mail:  christer(dot)holmberg(at)ericsson(dot)com
       Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
 
    Change control:
