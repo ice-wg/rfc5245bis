@@ -1,13 +1,12 @@
 
 
 
-
 ICE                                                           A. Keranen
 Internet-Draft                                               C. Holmberg
 Obsoletes: 5245 (if approved)                                   Ericsson
 Intended status: Standards Track                            J. Rosenberg
-Expires: December 19, 2016                                   jdrosen.net
-                                                           June 17, 2016
+Expires: December 21, 2016                                   jdrosen.net
+                                                           June 19, 2016
 
 
   Interactive Connectivity Establishment (ICE): A Protocol for Network
@@ -39,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 19, 2016.
+   This Internet-Draft will expire on December 21, 2016.
 
 Copyright Notice
 
@@ -53,7 +52,7 @@ Copyright Notice
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 1]
+Keranen, et al.         Expires December 21, 2016               [Page 1]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -109,7 +108,7 @@ Table of Contents
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 2]
+Keranen, et al.         Expires December 21, 2016               [Page 2]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -140,7 +139,7 @@ Internet-Draft                     ICE                         June 2016
            6.1.3.2.4.  Updating the Nominated Flag . . . . . . . . .  45
          6.1.3.3.  Check List and Timer State Updates  . . . . . . .  45
      6.2.  STUN Server Procedures  . . . . . . . . . . . . . . . . .  46
-       6.2.1.  Additional Procedures for Full Implementations  . . .  47
+       6.2.1.  Additional Procedures for Full Implementations  . . .  46
          6.2.1.1.  Detecting and Repairing Role Conflicts  . . . . .  47
          6.2.1.2.  Computing Mapped Address  . . . . . . . . . . . .  48
          6.2.1.3.  Learning Peer Reflexive Candidates  . . . . . . .  48
@@ -165,7 +164,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 3]
+Keranen, et al.         Expires December 21, 2016               [Page 3]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -188,32 +187,32 @@ Internet-Draft                     ICE                         June 2016
    16. STUN Extensions . . . . . . . . . . . . . . . . . . . . . . .  71
      16.1.  New Attributes . . . . . . . . . . . . . . . . . . . . .  71
      16.2.  New Error Response Codes . . . . . . . . . . . . . . . .  72
-   17. Operational Considerations  . . . . . . . . . . . . . . . . .  73
-     17.1.  NAT and Firewall Types . . . . . . . . . . . . . . . . .  73
+   17. Operational Considerations  . . . . . . . . . . . . . . . . .  72
+     17.1.  NAT and Firewall Types . . . . . . . . . . . . . . . . .  72
      17.2.  Bandwidth Requirements . . . . . . . . . . . . . . . . .  73
        17.2.1.  STUN and TURN Server Capacity Planning . . . . . . .  73
-       17.2.2.  Gathering and Connectivity Checks  . . . . . . . . .  74
+       17.2.2.  Gathering and Connectivity Checks  . . . . . . . . .  73
        17.2.3.  Keepalives . . . . . . . . . . . . . . . . . . . . .  74
      17.3.  ICE and ICE-lite . . . . . . . . . . . . . . . . . . . .  74
-     17.4.  Troubleshooting and Performance Management . . . . . . .  75
+     17.4.  Troubleshooting and Performance Management . . . . . . .  74
      17.5.  Endpoint Configuration . . . . . . . . . . . . . . . . .  75
    18. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  75
      18.1.  STUN Attributes  . . . . . . . . . . . . . . . . . . . .  75
-     18.2.  STUN Error Responses . . . . . . . . . . . . . . . . . .  76
+     18.2.  STUN Error Responses . . . . . . . . . . . . . . . . . .  75
      18.3.  ICE Options  . . . . . . . . . . . . . . . . . . . . . .  76
-   19. IAB Considerations  . . . . . . . . . . . . . . . . . . . . .  77
+   19. IAB Considerations  . . . . . . . . . . . . . . . . . . . . .  76
      19.1.  Problem Definition . . . . . . . . . . . . . . . . . . .  77
      19.2.  Exit Strategy  . . . . . . . . . . . . . . . . . . . . .  77
      19.3.  Brittleness Introduced by ICE  . . . . . . . . . . . . .  78
      19.4.  Requirements for a Long-Term Solution  . . . . . . . . .  79
      19.5.  Issues with Existing NAPT Boxes  . . . . . . . . . . . .  79
-   20. Changes from RFC 5245 . . . . . . . . . . . . . . . . . . . .  80
+   20. Changes from RFC 5245 . . . . . . . . . . . . . . . . . . . .  79
    21. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  80
    22. References  . . . . . . . . . . . . . . . . . . . . . . . . .  80
      22.1.  Normative References . . . . . . . . . . . . . . . . . .  80
      22.2.  Informative References . . . . . . . . . . . . . . . . .  81
    Appendix A.  Lite and Full Implementations  . . . . . . . . . . .  84
-   Appendix B.  Design Motivations . . . . . . . . . . . . . . . . .  86
+   Appendix B.  Design Motivations . . . . . . . . . . . . . . . . .  85
      B.1.  Pacing of STUN Transactions . . . . . . . . . . . . . . .  86
      B.2.  Candidates with Multiple Bases  . . . . . . . . . . . . .  87
      B.3.  Purpose of the Related Address and Related Port
@@ -221,7 +220,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 4]
+Keranen, et al.         Expires December 21, 2016               [Page 4]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -277,7 +276,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 5]
+Keranen, et al.         Expires December 21, 2016               [Page 5]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -333,7 +332,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 6]
+Keranen, et al.         Expires December 21, 2016               [Page 6]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -389,7 +388,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 7]
+Keranen, et al.         Expires December 21, 2016               [Page 7]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -445,7 +444,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 8]
+Keranen, et al.         Expires December 21, 2016               [Page 8]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -501,7 +500,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016               [Page 9]
+Keranen, et al.         Expires December 21, 2016               [Page 9]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -557,7 +556,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 10]
+Keranen, et al.         Expires December 21, 2016              [Page 10]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -613,7 +612,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 11]
+Keranen, et al.         Expires December 21, 2016              [Page 11]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -669,7 +668,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 12]
+Keranen, et al.         Expires December 21, 2016              [Page 12]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -725,7 +724,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 13]
+Keranen, et al.         Expires December 21, 2016              [Page 13]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -781,7 +780,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 14]
+Keranen, et al.         Expires December 21, 2016              [Page 14]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -837,7 +836,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 15]
+Keranen, et al.         Expires December 21, 2016              [Page 15]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -893,7 +892,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 16]
+Keranen, et al.         Expires December 21, 2016              [Page 16]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -949,7 +948,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 17]
+Keranen, et al.         Expires December 21, 2016              [Page 17]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1005,7 +1004,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 18]
+Keranen, et al.         Expires December 21, 2016              [Page 18]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1061,7 +1060,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 19]
+Keranen, et al.         Expires December 21, 2016              [Page 19]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1117,7 +1116,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 20]
+Keranen, et al.         Expires December 21, 2016              [Page 20]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1173,7 +1172,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 21]
+Keranen, et al.         Expires December 21, 2016              [Page 21]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1229,7 +1228,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 22]
+Keranen, et al.         Expires December 21, 2016              [Page 22]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1285,7 +1284,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 23]
+Keranen, et al.         Expires December 21, 2016              [Page 23]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1341,7 +1340,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 24]
+Keranen, et al.         Expires December 21, 2016              [Page 24]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1397,7 +1396,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 25]
+Keranen, et al.         Expires December 21, 2016              [Page 25]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1453,7 +1452,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 26]
+Keranen, et al.         Expires December 21, 2016              [Page 26]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1509,7 +1508,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 27]
+Keranen, et al.         Expires December 21, 2016              [Page 27]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1565,7 +1564,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 28]
+Keranen, et al.         Expires December 21, 2016              [Page 28]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1621,7 +1620,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 29]
+Keranen, et al.         Expires December 21, 2016              [Page 29]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1677,7 +1676,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 30]
+Keranen, et al.         Expires December 21, 2016              [Page 30]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1685,12 +1684,13 @@ Internet-Draft                     ICE                         June 2016
       ICE processing for each media stream is considered to be Running,
       and the state of ICE overall is Running.
 
-   Once roles are determined for a session, they persist unless ICE is
-   restarted.  An ICE restart causes a new selection of roles and tie-
-   breaker values.
-
-   OPEN ISSUE: We need to decide whether it's allowed to change the tie-
-   breaker value.
+   Once the roles are determined for a session, they persist througout
+   the lifetime of the session.  ICE agents MAY re-determine the roles
+   as part of an ICE restart, but MUST NOT do so unless required by the
+   procedures in this specification.  Examples of where an ICE restart
+   requires the roles to be re-determined are e.g. if the controlling
+   agent switches to ICE lite mode, or if required by the outcome of a
+   role-conflict [add-ref].
 
 5.1.3.  Forming the Check Lists
 
@@ -1732,8 +1732,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-
-Keranen, et al.         Expires December 19, 2016              [Page 31]
+Keranen, et al.         Expires December 21, 2016              [Page 31]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1789,7 +1788,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 32]
+Keranen, et al.         Expires December 21, 2016              [Page 32]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1845,7 +1844,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 33]
+Keranen, et al.         Expires December 21, 2016              [Page 33]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1901,7 +1900,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 34]
+Keranen, et al.         Expires December 21, 2016              [Page 34]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1957,7 +1956,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 35]
+Keranen, et al.         Expires December 21, 2016              [Page 35]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2013,7 +2012,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 36]
+Keranen, et al.         Expires December 21, 2016              [Page 36]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2069,7 +2068,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 37]
+Keranen, et al.         Expires December 21, 2016              [Page 37]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2125,7 +2124,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 38]
+Keranen, et al.         Expires December 21, 2016              [Page 38]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2181,7 +2180,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 39]
+Keranen, et al.         Expires December 21, 2016              [Page 39]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2237,7 +2236,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 40]
+Keranen, et al.         Expires December 21, 2016              [Page 40]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2277,29 +2276,26 @@ Internet-Draft                     ICE                         June 2016
 6.1.3.1.  Failure Cases
 
    If the STUN transaction generates a 487 (Role Conflict) error
-   response, the agent checks whether it included the ICE-CONTROLLED or
-   ICE-CONTROLLING attribute in the Binding request.  If the request
-   contained the ICE-CONTROLLED attribute, the agent MUST switch to the
-   controlling role if it has not already done so.  If the request
-   contained the ICE-CONTROLLING attribute, the agent MUST switch to the
-   controlled role if it has not already done so.  Once it has switched,
-   the agent MUST enqueue the candidate pair whose check generated the
-   487 into the triggered check queue.  The state of that pair is set to
-   Waiting.  When the triggered check is sent, it will contain an ICE-
-   CONTROLLING or ICE-CONTROLLED attribute reflecting its new role.
-   Note, however, that the tie-breaker value MUST NOT be reselected.
+   response, the agent checks whether it included an ICE-CONTROLLED or
+   ICE-CONTROLLING attribute in the associated Binding request.  If the
+   request contained an ICE-CONTROLLED attribute, the agent MUST switch
+   to the controlling role if it has not already done so.  If the
+   request contained an ICE-CONTROLLING attribute, the agent MUST switch
+   to the controlled role if it has not already done so.
+
+   Once the agent has switched its role, the agent MUST enqueue the
+   candidate pair whose check generated the 487 into the triggered check
+   queue.  The state of that pair is set to Waiting.  When the triggered
+   check is sent, it will contain an ICE-CONTROLLING or ICE-CONTROLLED
+   attribute reflecting its new role.  The agent MUST NOT change the
+   tie-breaker value.
 
 
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 41]
+Keranen, et al.         Expires December 21, 2016              [Page 41]
 
 Internet-Draft                     ICE                         June 2016
 
-
-   OPEN ISSUE: We need to decide whether it's allowed to change the tie-
-   breaker value.
 
    A change in roles will require an agent to recompute pair priorities
    (Section 5.1.3.2), since those priorities are a function of
@@ -2346,15 +2342,16 @@ Internet-Draft                     ICE                         June 2016
    peer reflexive candidate.  Like other candidates, it has a type,
    base, priority, and foundation.  They are computed as follows:
 
+   o  Its type is equal to peer reflexive.
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 42]
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 42]
 
 Internet-Draft                     ICE                         June 2016
 
-
-   o  Its type is equal to peer reflexive.
 
    o  Its base is set equal to the local candidate of the candidate pair
       from which the STUN check was sent.
@@ -2402,16 +2399,16 @@ Internet-Draft                     ICE                         June 2016
    If the pair is not on any check list, the agent computes the priority
    for the pair based on the priority of each candidate, using the
    algorithm in Section 5.1.3.  The priority of the local candidate
+   depends on its type.  If it is not peer reflexive, it is equal to the
+   priority signaled for that candidate in the candidate exchange.  If
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 43]
+Keranen, et al.         Expires December 21, 2016              [Page 43]
 
 Internet-Draft                     ICE                         June 2016
 
 
-   depends on its type.  If it is not peer reflexive, it is equal to the
-   priority signaled for that candidate in the candidate exchange.  If
    it is peer reflexive, it is equal to the PRIORITY attribute the agent
    placed in the Binding request that just completed.  The priority of
    the remote candidate is taken from the candidate information of the
@@ -2457,18 +2454,16 @@ Internet-Draft                     ICE                         June 2016
           list to become active, and ordinary checks will begin for it,
           as described in Section 5.1.4.
 
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 44]
-
-Internet-Draft                     ICE                         June 2016
-
-
        *  If the check list is frozen, and there are no pairs in the
           check list whose foundation matches a pair in the valid list
           under consideration, the agent
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 44]
+
+Internet-Draft                     ICE                         June 2016
+
 
           +  groups together all of the pairs with the same foundation,
              and
@@ -2513,18 +2508,18 @@ Internet-Draft                     ICE                         June 2016
 
       *  groups together all of the pairs with the same foundation, and
 
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 45]
-
-Internet-Draft                     ICE                         June 2016
-
-
       *  for each group, sets the state of the pair with the lowest
          component ID to Waiting.  If there is more than one such pair,
          the one with the highest-priority is used.
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 45]
+
+Internet-Draft                     ICE                         June 2016
+
 
    If none of the pairs in the check list are in the Waiting or Frozen
    state, the check list is no longer considered active, and will not
@@ -2566,22 +2561,21 @@ Internet-Draft                     ICE                         June 2016
    to Binding requests.  The same would apply to any layer 2 markings
    the endpoint might be applying to media packets.
 
-
-
-
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 46]
-
-Internet-Draft                     ICE                         June 2016
-
-
 6.2.1.  Additional Procedures for Full Implementations
 
    This subsection defines the additional server procedures applicable
    to full implementations.
+
+
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 46]
+
+Internet-Draft                     ICE                         June 2016
+
 
 6.2.1.1.  Detecting and Repairing Role Conflicts
 
@@ -2627,17 +2621,17 @@ Internet-Draft                     ICE                         June 2016
          error response and includes an ERROR-CODE attribute with a
          value of 487 (Role Conflict) but retains its role.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 47]
-
-Internet-Draft                     ICE                         June 2016
-
-
    o  If the agent is in the controlled role and the ICE-CONTROLLING
       attribute was present in the request, or the agent was in the
       controlling role and the ICE-CONTROLLED attribute was present in
       the request, there is no conflict.
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 47]
+
+Internet-Draft                     ICE                         June 2016
+
 
    A change in roles will require an agent to recompute pair priorities
    (Section 5.1.3.2), since those priorities are a function of
@@ -2685,7 +2679,12 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 48]
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 48]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2741,7 +2740,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 49]
+Keranen, et al.         Expires December 21, 2016              [Page 49]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2797,7 +2796,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 50]
+Keranen, et al.         Expires December 21, 2016              [Page 50]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2853,7 +2852,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 51]
+Keranen, et al.         Expires December 21, 2016              [Page 51]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2909,7 +2908,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 52]
+Keranen, et al.         Expires December 21, 2016              [Page 52]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2965,7 +2964,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 53]
+Keranen, et al.         Expires December 21, 2016              [Page 53]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3021,7 +3020,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 54]
+Keranen, et al.         Expires December 21, 2016              [Page 54]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3077,7 +3076,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 55]
+Keranen, et al.         Expires December 21, 2016              [Page 55]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3133,7 +3132,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 56]
+Keranen, et al.         Expires December 21, 2016              [Page 56]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3189,7 +3188,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 57]
+Keranen, et al.         Expires December 21, 2016              [Page 57]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3245,7 +3244,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 58]
+Keranen, et al.         Expires December 21, 2016              [Page 58]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3301,7 +3300,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 59]
+Keranen, et al.         Expires December 21, 2016              [Page 59]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3357,7 +3356,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 60]
+Keranen, et al.         Expires December 21, 2016              [Page 60]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3413,7 +3412,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 61]
+Keranen, et al.         Expires December 21, 2016              [Page 61]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3469,7 +3468,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 62]
+Keranen, et al.         Expires December 21, 2016              [Page 62]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3525,7 +3524,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 63]
+Keranen, et al.         Expires December 21, 2016              [Page 63]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3581,7 +3580,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 64]
+Keranen, et al.         Expires December 21, 2016              [Page 64]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3637,7 +3636,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 65]
+Keranen, et al.         Expires December 21, 2016              [Page 65]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3693,7 +3692,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 66]
+Keranen, et al.         Expires December 21, 2016              [Page 66]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3749,7 +3748,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 67]
+Keranen, et al.         Expires December 21, 2016              [Page 67]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3805,7 +3804,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 68]
+Keranen, et al.         Expires December 21, 2016              [Page 68]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3861,7 +3860,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 69]
+Keranen, et al.         Expires December 21, 2016              [Page 69]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3917,7 +3916,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 70]
+Keranen, et al.         Expires December 21, 2016              [Page 70]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3973,7 +3972,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 71]
+Keranen, et al.         Expires December 21, 2016              [Page 71]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3992,12 +3991,8 @@ Internet-Draft                     ICE                         June 2016
    network byte order, which contains a random number.  The number is
    used for solving role conflicts, when it is referred to as the tie-
    breaker value.  An ICE agent MUST use the same number for all Bining
-   requests, for all streams, within an ICE session.  The ICE agent MUST
-   NOT change the number when an ICE restart occurs, even if the ICE
-   roles are re-negotiated.
-
-   OPEN ISSUE: We need to decide whether it's allowed to change the tie-
-   breaker value.
+   requests, for all streams, within an ICE session.  The ICE agent MAY
+   change the number when an ICE restart occurs.
 
    The ICE-CONTROLLING attribute is present in a Binding request and
    indicates that the client believes it is currently in the controlling
@@ -4005,12 +4000,8 @@ Internet-Draft                     ICE                         June 2016
    network byte order, which contains a random number.  The number is
    used for solving role conflicts, when it is referred to as the tie-
    breaker value.  An ICE agent MUST use the same number for all Bining
-   requests, for all streams, within an ICE session.  The ICE agent MUST
-   NOT change the number when an ICE restart occurs, even if the ICE
-   roles are re-negotiated.
-
-   OPEN ISSUE: We need to decide whether it's allowed to change the tie-
-   breaker value.
+   requests, for all streams, within an ICE session.  The ICE agent MAY
+   change the number when an ICE restart occurs.
 
 16.2.  New Error Response Codes
 
@@ -4021,18 +4012,6 @@ Internet-Draft                     ICE                         June 2016
       that conflicted with the server.  The server compared the tie-
       breaker values of the client and the server and determined that
       the client needs to switch roles.
-
-
-
-
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 72]
-
-Internet-Draft                     ICE                         June 2016
-
 
 17.  Operational Considerations
 
@@ -4045,6 +4024,15 @@ Internet-Draft                     ICE                         June 2016
    Consequently, it is not necessary to replace or reconfigure existing
    firewall and NAT equipment in order to facilitate deployment of ICE.
    Indeed, ICE was developed to be deployed in environments where the
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 72]
+
+Internet-Draft                     ICE                         June 2016
+
+
    Voice over IP (VoIP) operator has no control over the IP network
    infrastructure, including firewalls and NAT.
 
@@ -4082,14 +4070,6 @@ Internet-Draft                     ICE                         June 2016
    requiring TURN for media relay is highly dependent on network
    topologies, and can and will vary over time.  In a network with 100%
    behave-compliant NAT, it is exactly zero.  At time of writing, large-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 73]
-
-Internet-Draft                     ICE                         June 2016
-
-
    scale consumer deployments were seeing between 5 and 10 percent of
    calls requiring TURN servers.  Considering a voice-only deployment
    using G.711 (so 80 kbps in each direction), with .2 erlangs during
@@ -4101,6 +4081,14 @@ Internet-Draft                     ICE                         June 2016
    The process of gathering of candidates and performing of connectivity
    checks can be bandwidth intensive.  ICE has been designed to pace
    both of these processes.  The gathering phase and the connectivity
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 73]
+
+Internet-Draft                     ICE                         June 2016
+
+
    check phase are meant to generate traffic at roughly the same
    bandwidth as the media traffic itself.  This was done to ensure that,
    if a network is designed to support multimedia traffic of a certain
@@ -4139,13 +4127,6 @@ Internet-Draft                     ICE                         June 2016
    cases, and the caveats involved in doing so, are documented in
    Appendix A.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 74]
-
-Internet-Draft                     ICE                         June 2016
-
-
 17.4.  Troubleshooting and Performance Management
 
    ICE utilizes end-to-end connectivity checks, and places much of the
@@ -4156,6 +4137,14 @@ Internet-Draft                     ICE                         June 2016
    ICE has built-in features to help deal with these problems.  SIP
    servers on the signaling path, typically deployed in the data centers
    of the network operator, will see the contents of the candidate
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 74]
+
+Internet-Draft                     ICE                         June 2016
+
+
    exchanges that convey the ICE parameters.  These parameters include
    the type of each candidate (host, server reflexive, or relayed),
    along with their related addresses.  Once ICE processing has
@@ -4193,15 +4182,6 @@ Internet-Draft                     ICE                         June 2016
    IANA has registered four STUN attributes:
 
 
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 75]
-
-Internet-Draft                     ICE                         June 2016
-
-
       0x0024 PRIORITY
       0x0025 USE-CANDIDATE
       0x8029 ICE-CONTROLLED
@@ -4210,6 +4190,15 @@ Internet-Draft                     ICE                         June 2016
 18.2.  STUN Error Responses
 
    IANA has registered following STUN error response code:
+
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 75]
+
+Internet-Draft                     ICE                         June 2016
 
 
     487   Role Conflict: The client asserted an ICE role (controlling or
@@ -4247,17 +4236,6 @@ Internet-Draft                     ICE                         June 2016
         RFC XXXX
 
 
-
-
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 76]
-
-Internet-Draft                     ICE                         June 2016
-
-
 19.  IAB Considerations
 
    The IAB has studied the problem of "Unilateral Self-Address Fixing",
@@ -4270,6 +4248,15 @@ Internet-Draft                     ICE                         June 2016
    IAB.  Indeed, ICE can be considered a B-SAF (Bilateral Self-Address
    Fixing) protocol, rather than an UNSAF protocol.  Regardless, the IAB
    has mandated that any protocols developed for this purpose document a
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 76]
+
+Internet-Draft                     ICE                         June 2016
+
+
    specific set of considerations.  This section meets those
    requirements.
 
@@ -4306,14 +4293,6 @@ Internet-Draft                     ICE                         June 2016
    other UNSAF mechanisms.  ICE effectively selects amongst those
    mechanisms, prioritizing ones that are better, and deprioritizing
    ones that are worse.  Local IPv6 addresses can be preferred.  As NATs
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 77]
-
-Internet-Draft                     ICE                         June 2016
-
-
    begin to dissipate as IPv6 is introduced, server reflexive and
    relayed candidates (both forms of UNSAF addresses) simply never get
    used, because higher-priority connectivity exists to the native host
@@ -4325,6 +4304,14 @@ Internet-Draft                     ICE                         June 2016
    hosts communicate with SIP (IPv6 gets used).  It can also allow a
    network with both 6to4 and native v6 connectivity to determine which
    address to use when communicating with a peer.
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 77]
+
+Internet-Draft                     ICE                         June 2016
+
 
 19.3.  Brittleness Introduced by ICE
 
@@ -4363,13 +4350,6 @@ Internet-Draft                     ICE                         June 2016
    shared NAT between each agent and the STUN server, traditional STUN
    may not work.  With ICE, that restriction is removed.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 78]
-
-Internet-Draft                     ICE                         June 2016
-
-
    Classic STUN also introduces some security considerations.
    Fortunately, those security considerations are also mitigated by ICE.
 
@@ -4379,6 +4359,15 @@ Internet-Draft                     ICE                         June 2016
 
    The penalty of these improvements is that ICE increases session
    establishment times.
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 78]
+
+Internet-Draft                     ICE                         June 2016
+
 
 19.4.  Requirements for a Long-Term Solution
 
@@ -4416,16 +4405,6 @@ Internet-Draft                     ICE                         June 2016
    discover and control the minimum keepalive interval would be far
    better still.
 
-
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 79]
-
-Internet-Draft                     ICE                         June 2016
-
-
 20.  Changes from RFC 5245
 
    Following is the list of changes from RFC 5245
@@ -4437,6 +4416,14 @@ Internet-Draft                     ICE                         June 2016
    o  Default candidates, multiple components, ICE mismatch detection,
       subsequent offer/answer, and role conflict resolution were made
       optional since they are not needed with every protocol using ICE.
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 79]
+
+Internet-Draft                     ICE                         June 2016
+
 
    o  With IPv6, the precedence rules of RFC 6724 are used instead of
       the obsoleted RFC 3483 and using address preferences provided by
@@ -4475,13 +4462,6 @@ Internet-Draft                     ICE                         June 2016
               DOI 10.17487/RFC5766, April 2010,
               <http://www.rfc-editor.org/info/rfc5766>.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 80]
-
-Internet-Draft                     ICE                         June 2016
-
-
    [RFC6336]  Westerlund, M. and C. Perkins, "IANA Registry for
               Interactive Connectivity Establishment (ICE) Options",
               RFC 6336, DOI 10.17487/RFC6336, July 2011,
@@ -4491,6 +4471,15 @@ Internet-Draft                     ICE                         June 2016
               "Default Address Selection for Internet Protocol Version 6
               (IPv6)", RFC 6724, DOI 10.17487/RFC6724, September 2012,
               <http://www.rfc-editor.org/info/rfc6724>.
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 80]
+
+Internet-Draft                     ICE                         June 2016
+
 
 22.2.  Informative References
 
@@ -4531,13 +4520,6 @@ Internet-Draft                     ICE                         June 2016
               DOI 10.17487/RFC3102, October 2001,
               <http://www.rfc-editor.org/info/rfc3102>.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 81]
-
-Internet-Draft                     ICE                         June 2016
-
-
    [RFC3103]  Borella, M., Grabelsky, D., Lo, J., and K. Taniguchi,
               "Realm Specific IP: Protocol Specification", RFC 3103,
               DOI 10.17487/RFC3103, October 2001,
@@ -4547,6 +4529,13 @@ Internet-Draft                     ICE                         June 2016
               UNilateral Self-Address Fixing (UNSAF) Across Network
               Address Translation", RFC 3424, DOI 10.17487/RFC3424,
               November 2002, <http://www.rfc-editor.org/info/rfc3424>.
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 81]
+
+Internet-Draft                     ICE                         June 2016
+
 
    [RFC3550]  Schulzrinne, H., Casner, S., Frederick, R., and V.
               Jacobson, "RTP: A Transport Protocol for Real-Time
@@ -4587,13 +4576,6 @@ Internet-Draft                     ICE                         June 2016
               (SIP)", RFC 4092, DOI 10.17487/RFC4092, June 2005,
               <http://www.rfc-editor.org/info/rfc4092>.
 
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 82]
-
-Internet-Draft                     ICE                         June 2016
-
-
    [RFC4291]  Hinden, R. and S. Deering, "IP Version 6 Addressing
               Architecture", RFC 4291, DOI 10.17487/RFC4291, February
               2006, <http://www.rfc-editor.org/info/rfc4291>.
@@ -4601,6 +4583,15 @@ Internet-Draft                     ICE                         June 2016
    [RFC4566]  Handley, M., Jacobson, V., and C. Perkins, "SDP: Session
               Description Protocol", RFC 4566, DOI 10.17487/RFC4566,
               July 2006, <http://www.rfc-editor.org/info/rfc4566>.
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 82]
+
+Internet-Draft                     ICE                         June 2016
+
 
    [RFC2475]  Blake, S., Black, D., Carlson, M., Davies, E., Wang, Z.,
               and W. Weiss, "An Architecture for Differentiated
@@ -4641,15 +4632,6 @@ Internet-Draft                     ICE                         June 2016
               RFC 5382, DOI 10.17487/RFC5382, October 2008,
               <http://www.rfc-editor.org/info/rfc5382>.
 
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 83]
-
-Internet-Draft                     ICE                         June 2016
-
-
    [RFC6080]  Petrie, D. and S. Channabasappa, Ed., "A Framework for
               Session Initiation Protocol User Agent Profile Delivery",
               RFC 6080, DOI 10.17487/RFC6080, March 2011,
@@ -4659,6 +4641,13 @@ Internet-Draft                     ICE                         June 2016
               NAT64: Network Address and Protocol Translation from IPv6
               Clients to IPv4 Servers", RFC 6146, DOI 10.17487/RFC6146,
               April 2011, <http://www.rfc-editor.org/info/rfc6146>.
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 83]
+
+Internet-Draft                     ICE                         June 2016
+
 
    [RFC6147]  Bagnulo, M., Sullivan, A., Matthews, P., and I. van
               Beijnum, "DNS64: DNS Extensions for Network Address
@@ -4677,11 +4666,11 @@ Internet-Draft                     ICE                         June 2016
               <http://www.rfc-editor.org/info/rfc7050>.
 
    [I-D.ietf-mmusic-ice-sip-sdp]
-              Petit-Huguenin, M., Keranen, A., and S. Nandakumar, "Using
-              Interactive Connectivity Establishment (ICE) with Session
-              Description Protocol (SDP) offer/answer and Session
-              Initiation Protocol (SIP)", draft-ietf-mmusic-ice-sip-
-              sdp-08 (work in progress), March 2016.
+              Petit-Huguenin, M., Keraenen, A., and S. Nandakumar,
+              "Using Interactive Connectivity Establishment (ICE) with
+              Session Description Protocol (SDP) offer/answer and
+              Session Initiation Protocol (SIP)", draft-ietf-mmusic-ice-
+              sip-sdp-08 (work in progress), March 2016.
 
    [I-D.ietf-6man-ipv6-address-generation-privacy]
               Cooper, A., Gont, F., and D. Thaler, "Privacy
@@ -4697,15 +4686,6 @@ Appendix A.  Lite and Full Implementations
    is a minimalist implementation that does little but respond to STUN
    checks.
 
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 84]
-
-Internet-Draft                     ICE                         June 2016
-
-
    Because ICE requires both endpoints to support it in order to bring
    benefits to either endpoint, incremental deployment of ICE in a
    network is more complicated.  Many sessions involve an endpoint that
@@ -4716,6 +4696,15 @@ Internet-Draft                     ICE                         June 2016
    ICE implementation, ICE won't be used at all if the other device
    doesn't support it.  The lite implementation allows for a low-cost
    entry point for these devices.  Once they support the lite
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 84]
+
+Internet-Draft                     ICE                         June 2016
+
+
    implementation, full implementations can connect to them and get the
    full benefits of ICE.
 
@@ -4752,16 +4741,6 @@ Internet-Draft                     ICE                         June 2016
    Internet.  Full implementation provides assurance that communications
    will always work.
 
-
-
-
-
-
-Keranen, et al.         Expires December 19, 2016              [Page 85]
-
-Internet-Draft                     ICE                         June 2016
-
-
 Appendix B.  Design Motivations
 
    ICE contains a number of normative behaviors that may themselves be
@@ -4770,6 +4749,17 @@ Appendix B.  Design Motivations
    are not necessary to understand for purposes of implementation, they
    are discussed here in an appendix to the specification.  This section
    is non-normative.
+
+
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 85]
+
+Internet-Draft                     ICE                         June 2016
+
 
 B.1.  Pacing of STUN Transactions
 
@@ -4813,7 +4803,16 @@ B.1.  Pacing of STUN Transactions
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 86]
+
+
+
+
+
+
+
+
+
+Keranen, et al.         Expires December 21, 2016              [Page 86]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4869,7 +4868,7 @@ B.2.  Candidates with Multiple Bases
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 87]
+Keranen, et al.         Expires December 21, 2016              [Page 87]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4925,7 +4924,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 88]
+Keranen, et al.         Expires December 21, 2016              [Page 88]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4981,7 +4980,7 @@ B.4.  Importance of the STUN Username
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 89]
+Keranen, et al.         Expires December 21, 2016              [Page 89]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5037,7 +5036,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 90]
+Keranen, et al.         Expires December 21, 2016              [Page 90]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5093,7 +5092,7 @@ B.6.  Why Are Keepalives Needed?
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 91]
+Keranen, et al.         Expires December 21, 2016              [Page 91]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5149,7 +5148,7 @@ Authors' Addresses
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 92]
+Keranen, et al.         Expires December 21, 2016              [Page 92]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5205,4 +5204,4 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 19, 2016              [Page 93]
+Keranen, et al.         Expires December 21, 2016              [Page 93]

@@ -1520,7 +1520,7 @@ agent would never indicate ICE mismatch.
 
 <t>
 For each session, each agent (Initiating and Responding) takes on a
-role.  There are two roles -- controlling and controlled. The
+role. There are two roles -- controlling and controlled. The
 controlling agent is responsible for the choice of the final candidate
 pairs used for communications. For a full agent, this means nominating
 the candidate pairs that can be used by ICE for each media stream, and
@@ -1579,13 +1579,13 @@ ICE overall is Running.
 </t>
 
 <t>
-Once roles are determined for a session, they persist unless ICE is
-restarted. An ICE restart causes a new selection of roles and
-tie-breaker values.
-</t>
-<t>
-OPEN ISSUE: We need to decide whether it's allowed to change the
-tie-breaker value.
+Once the roles are determined for a session, they persist througout
+the lifetime of the session. ICE agents MAY re-determine the roles as
+part of an ICE restart, but MUST NOT do so unless required by the
+procedures in this specification. Examples of where an ICE restart
+requires the roles to be re-determined are e.g. if the controlling
+agent switches to ICE lite mode, or if required by the outcome of
+a role-conflict [add-ref]. 
 </t>
 
 </section>
@@ -2167,35 +2167,31 @@ markings to its connectivity checks.
 
 <t>
 When a Binding response is received, it is correlated to its Binding
-request using the transaction ID, as defined in <xref
-target="RFC5389"/>, which then ties it to the candidate pair for which
-the Binding request was sent. This section defines additional
-procedures for processing Binding responses specific to this usage of
-STUN.
+request using the transaction ID, as defined in <xref target="RFC5389"/>,
+which then ties it to the candidate pair for which the Binding request was
+sent. This section defines additional procedures for processing Binding
+responses specific to this usage of STUN.
 </t>
 
 <section title="Failure Cases">
 
 <t>
 If the STUN transaction generates a 487 (Role Conflict) error
-response, the agent checks whether it included the ICE-CONTROLLED or
-ICE-CONTROLLING attribute in the Binding request. If the request
-contained the ICE-CONTROLLED attribute, the agent MUST switch to the
+response, the agent checks whether it included an ICE-CONTROLLED or
+ICE-CONTROLLING attribute in the associated Binding request. If the request
+contained an ICE-CONTROLLED attribute, the agent MUST switch to the
 controlling role if it has not already done so. If the request
-contained the ICE-CONTROLLING attribute, the agent MUST switch to the
-controlled role if it has not already done so. Once it has switched,
-the agent MUST enqueue the candidate pair whose check generated the
-487 into the triggered check queue. The state of that pair is set to
-Waiting. When the triggered check is sent, it will contain an
-ICE-CONTROLLING or ICE-CONTROLLED attribute reflecting its new
-role. Note, however, that the tie-breaker value MUST NOT be
-reselected.
+contained an ICE-CONTROLLING attribute, the agent MUST switch to the
+controlled role if it has not already done so.
 </t>
 <t>
-OPEN ISSUE: We need to decide whether it's allowed to change the
-tie-breaker value.
+Once the agent has switched its role, the agent MUST enqueue the
+candidate pair whose check generated the 487 into the triggered
+check queue. The state of that pair is set to Waiting. When the
+triggered check is sent, it will contain an ICE-CONTROLLING or
+ICE-CONTROLLED attribute reflecting its new role. The agent
+MUST NOT change the tie-breaker value.
 </t>
-
 <t>
 A change in roles will require an agent to recompute pair priorities
 (<xref target="sec-comp-pair-prio"/>), since those priorities are a
@@ -4046,13 +4042,8 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Bining requests,
-for all streams, within an ICE session. The ICE agent MUST NOT change
-the number when an ICE restart occurs, even if the ICE roles are
-re-negotiated.
-</t>
-<t>
-OPEN ISSUE: We need to decide whether it's allowed to change the
-tie-breaker value.
+for all streams, within an ICE session. The ICE agent MAY change
+the number when an ICE restart occurs.
 </t>
 
 <t>
@@ -4062,13 +4053,8 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Bining requests,
-for all streams, within an ICE session. The ICE agent MUST NOT change
-the number when an ICE restart occurs, even if the ICE roles are
-re-negotiated.
-</t>
-<t>
-OPEN ISSUE: We need to decide whether it's allowed to change the
-tie-breaker value.
+for all streams, within an ICE session. The ICE agent MAY change
+the number when an ICE restart occurs.
 </t>
 
 </section>
