@@ -3054,39 +3054,32 @@ is defined in <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
 
 <section anchor="sec-keepalives" title="Keepalives">
 
-<t> All endpoints MUST send keepalives for each media session. These
+<t>
+All endpoints MUST send keepalives for each media session. These
 keepalives serve the purpose of keeping NAT bindings alive for the
-media session.  These keepalives MUST be sent even if ICE is not being
-utilized for the session at all. The keepalive SHOULD be sent using a
+media session. The keepalives SHOULD be sent using a
 format that is supported by its peer. ICE endpoints allow for
 STUN-based keepalives for UDP streams, and as such, STUN keepalives
 MUST be used when an agent is a full ICE implementation and is
-communicating with a peer that supports ICE (lite or full).  If the
-peer does not support ICE, the choice of a packet format for
-keepalives is a matter of local implementation. A format that allows
-packets to easily be sent in the absence of actual media content is
-RECOMMENDED. Examples of formats that readily meet this goal are RTP
-No-Op <xref target="I-D.ietf-avt-rtp-no-op"/>, and in cases where both
-sides support it, RTP comfort noise <xref target="RFC3389"/>. If the
-peer doesn't support any formats that are particularly well suited for
-keepalives, an agent SHOULD send RTP packets with an incorrect version
-number, or some other form of error that would cause them to be
-discarded by the peer. </t>
-
-<t>If there has been no packet sent on the candidate pair ICE is using
-for a media component for Tr seconds (where packets include those
-defined for the component (RTP or RTCP) and previous keepalives), an
-agent MUST generate a keepalive on that pair.  Tr SHOULD be
-configurable and SHOULD have a default of 15 seconds. Tr MUST NOT be
-configured to less than 15 seconds. Alternatively, if an agent has a
-dynamic way to discover the binding lifetimes of the intervening NATs,
-it can use that value to determine Tr.  Administrators deploying ICE
-in more controlled networking environments SHOULD set Tr to the
-longest duration possible in their environment.
+communicating with a peer that supports ICE (lite or full).
 </t>
 
 <t>
-If STUN is being used for keepalives, a STUN Binding Indication is
+If there has been no packet sent on the candidate pair ICE is using
+for a media component for Tr seconds (where packets include those
+defined for the component (RTP or RTCP) and previous keepalives), an
+agent MUST generate a keepalive on that pair. ICE endpoints SHOULD use
+a Tr value of 15 seconds, but MAY use another value, e.g. based on
+configuration or network/NAT characteristics. For example, if
+an agent has a dynamic way to discover the binding lifetimes of the
+intervening NATs, it can use that value to determine Tr. Administrators
+deploying ICE in more controlled networking environments SHOULD set Tr
+to the longest duration possible in their environment. ICE endpoints
+MUST NOT use a Tr value smaller than 15 seconds.
+</t>
+
+<t>
+When STUN is being used for keepalives, a STUN Binding Indication is
 used <xref target="RFC5389"/>. The Indication MUST NOT utilize any
 authentication mechanism. It SHOULD contain the FINGERPRINT attribute
 to aid in demultiplexing, but SHOULD NOT contain any other
@@ -4580,7 +4573,6 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.3550"?>
 <?rfc include="reference.RFC.3711"?>
 <?rfc include="reference.RFC.3056"?>
-<?rfc include="reference.RFC.3389"?>
 <?rfc include="reference.RFC.3879"?>
 <?rfc include="reference.RFC.4038"?>
 <?rfc include="reference.RFC.4091"?>
@@ -4590,7 +4582,6 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.2475"?>
 <?rfc include="reference.RFC.1918"?>
 <?rfc include="reference.RFC.4787"?>
-<?rfc include="reference.I-D.ietf-avt-rtp-no-op"?>
 <?rfc include="reference.RFC.5761"?>
 <?rfc include="reference.RFC.4103"?>
 <?rfc include="reference.RFC.5245"?>
