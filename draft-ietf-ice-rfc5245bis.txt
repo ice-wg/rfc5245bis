@@ -1,12 +1,13 @@
 
 
 
+
 ICE                                                           A. Keranen
 Internet-Draft                                               C. Holmberg
 Obsoletes: 5245 (if approved)                                   Ericsson
 Intended status: Standards Track                            J. Rosenberg
-Expires: December 21, 2016                                   jdrosen.net
-                                                           June 19, 2016
+Expires: December 22, 2016                                   jdrosen.net
+                                                           June 20, 2016
 
 
   Interactive Connectivity Establishment (ICE): A Protocol for Network
@@ -38,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 21, 2016.
+   This Internet-Draft will expire on December 22, 2016.
 
 Copyright Notice
 
@@ -52,7 +53,7 @@ Copyright Notice
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 1]
+Keranen, et al.         Expires December 22, 2016               [Page 1]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -108,7 +109,7 @@ Table of Contents
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 2]
+Keranen, et al.         Expires December 22, 2016               [Page 2]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -164,7 +165,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 3]
+Keranen, et al.         Expires December 22, 2016               [Page 3]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -220,7 +221,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 4]
+Keranen, et al.         Expires December 22, 2016               [Page 4]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -276,7 +277,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 5]
+Keranen, et al.         Expires December 22, 2016               [Page 5]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -332,7 +333,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 6]
+Keranen, et al.         Expires December 22, 2016               [Page 6]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -388,7 +389,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 7]
+Keranen, et al.         Expires December 22, 2016               [Page 7]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -444,7 +445,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 8]
+Keranen, et al.         Expires December 22, 2016               [Page 8]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -500,7 +501,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016               [Page 9]
+Keranen, et al.         Expires December 22, 2016               [Page 9]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -556,7 +557,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 10]
+Keranen, et al.         Expires December 22, 2016              [Page 10]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -612,7 +613,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 11]
+Keranen, et al.         Expires December 22, 2016              [Page 11]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -668,7 +669,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 12]
+Keranen, et al.         Expires December 22, 2016              [Page 12]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -724,7 +725,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 13]
+Keranen, et al.         Expires December 22, 2016              [Page 13]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -780,7 +781,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 14]
+Keranen, et al.         Expires December 22, 2016              [Page 14]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -836,7 +837,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 15]
+Keranen, et al.         Expires December 22, 2016              [Page 15]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -892,7 +893,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 16]
+Keranen, et al.         Expires December 22, 2016              [Page 16]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -948,7 +949,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 17]
+Keranen, et al.         Expires December 22, 2016              [Page 17]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1004,7 +1005,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 18]
+Keranen, et al.         Expires December 22, 2016              [Page 18]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1060,7 +1061,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 19]
+Keranen, et al.         Expires December 22, 2016              [Page 19]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1116,7 +1117,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 20]
+Keranen, et al.         Expires December 22, 2016              [Page 20]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1172,7 +1173,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 21]
+Keranen, et al.         Expires December 22, 2016              [Page 21]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1228,7 +1229,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 22]
+Keranen, et al.         Expires December 22, 2016              [Page 22]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1284,7 +1285,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 23]
+Keranen, et al.         Expires December 22, 2016              [Page 23]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1340,7 +1341,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 24]
+Keranen, et al.         Expires December 22, 2016              [Page 24]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1396,7 +1397,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 25]
+Keranen, et al.         Expires December 22, 2016              [Page 25]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1452,7 +1453,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 26]
+Keranen, et al.         Expires December 22, 2016              [Page 26]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1508,7 +1509,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 27]
+Keranen, et al.         Expires December 22, 2016              [Page 27]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1564,7 +1565,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 28]
+Keranen, et al.         Expires December 22, 2016              [Page 28]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1620,7 +1621,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 29]
+Keranen, et al.         Expires December 22, 2016              [Page 29]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1676,7 +1677,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 30]
+Keranen, et al.         Expires December 22, 2016              [Page 30]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1686,11 +1687,11 @@ Internet-Draft                     ICE                         June 2016
 
    Once the roles are determined for a session, they persist througout
    the lifetime of the session.  ICE agents MAY re-determine the roles
-   as part of an ICE restart, but MUST NOT do so unless required by the
-   procedures in this specification.  Examples of where an ICE restart
-   requires the roles to be re-determined are e.g. if the controlling
-   agent switches to ICE lite mode, or if required by the outcome of a
-   role-conflict [add-ref].
+   as part of an ICE restart (Section 8), but MUST NOT do so unless
+   required by the procedures in this specification.  Examples of where
+   an ICE restart requires the roles to be re-determined are e.g. if the
+   controlling agent switches to ICE lite mode, or if required by the
+   outcome of a role-conflict [add-ref].
 
 5.1.3.  Forming the Check Lists
 
@@ -1732,7 +1733,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 31]
+Keranen, et al.         Expires December 22, 2016              [Page 31]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1788,7 +1789,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 32]
+Keranen, et al.         Expires December 22, 2016              [Page 32]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1844,7 +1845,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 33]
+Keranen, et al.         Expires December 22, 2016              [Page 33]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1900,7 +1901,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 34]
+Keranen, et al.         Expires December 22, 2016              [Page 34]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -1956,7 +1957,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 35]
+Keranen, et al.         Expires December 22, 2016              [Page 35]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2012,7 +2013,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 36]
+Keranen, et al.         Expires December 22, 2016              [Page 36]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2068,7 +2069,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 37]
+Keranen, et al.         Expires December 22, 2016              [Page 37]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2124,7 +2125,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 38]
+Keranen, et al.         Expires December 22, 2016              [Page 38]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2180,7 +2181,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 39]
+Keranen, et al.         Expires December 22, 2016              [Page 39]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2236,7 +2237,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 40]
+Keranen, et al.         Expires December 22, 2016              [Page 40]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2292,7 +2293,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 41]
+Keranen, et al.         Expires December 22, 2016              [Page 41]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2348,7 +2349,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 42]
+Keranen, et al.         Expires December 22, 2016              [Page 42]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2404,7 +2405,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 43]
+Keranen, et al.         Expires December 22, 2016              [Page 43]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2460,7 +2461,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 44]
+Keranen, et al.         Expires December 22, 2016              [Page 44]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2516,7 +2517,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 45]
+Keranen, et al.         Expires December 22, 2016              [Page 45]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2572,7 +2573,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 46]
+Keranen, et al.         Expires December 22, 2016              [Page 46]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2628,7 +2629,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 47]
+Keranen, et al.         Expires December 22, 2016              [Page 47]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2684,7 +2685,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 48]
+Keranen, et al.         Expires December 22, 2016              [Page 48]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2740,7 +2741,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 49]
+Keranen, et al.         Expires December 22, 2016              [Page 49]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2796,7 +2797,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 50]
+Keranen, et al.         Expires December 22, 2016              [Page 50]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2852,7 +2853,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 51]
+Keranen, et al.         Expires December 22, 2016              [Page 51]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2908,7 +2909,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 52]
+Keranen, et al.         Expires December 22, 2016              [Page 52]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -2964,7 +2965,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 53]
+Keranen, et al.         Expires December 22, 2016              [Page 53]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3020,7 +3021,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 54]
+Keranen, et al.         Expires December 22, 2016              [Page 54]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3076,7 +3077,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 55]
+Keranen, et al.         Expires December 22, 2016              [Page 55]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3132,7 +3133,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 56]
+Keranen, et al.         Expires December 22, 2016              [Page 56]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3188,7 +3189,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 57]
+Keranen, et al.         Expires December 22, 2016              [Page 57]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3244,7 +3245,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 58]
+Keranen, et al.         Expires December 22, 2016              [Page 58]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3300,7 +3301,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 59]
+Keranen, et al.         Expires December 22, 2016              [Page 59]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3356,7 +3357,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 60]
+Keranen, et al.         Expires December 22, 2016              [Page 60]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3412,7 +3413,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 61]
+Keranen, et al.         Expires December 22, 2016              [Page 61]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3468,7 +3469,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 62]
+Keranen, et al.         Expires December 22, 2016              [Page 62]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3524,7 +3525,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 63]
+Keranen, et al.         Expires December 22, 2016              [Page 63]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3580,7 +3581,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 64]
+Keranen, et al.         Expires December 22, 2016              [Page 64]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3636,7 +3637,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 65]
+Keranen, et al.         Expires December 22, 2016              [Page 65]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3692,7 +3693,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 66]
+Keranen, et al.         Expires December 22, 2016              [Page 66]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3748,7 +3749,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 67]
+Keranen, et al.         Expires December 22, 2016              [Page 67]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3804,7 +3805,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 68]
+Keranen, et al.         Expires December 22, 2016              [Page 68]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3860,7 +3861,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 69]
+Keranen, et al.         Expires December 22, 2016              [Page 69]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3916,7 +3917,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 70]
+Keranen, et al.         Expires December 22, 2016              [Page 70]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -3972,7 +3973,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 71]
+Keranen, et al.         Expires December 22, 2016              [Page 71]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4028,7 +4029,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 72]
+Keranen, et al.         Expires December 22, 2016              [Page 72]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4084,7 +4085,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 73]
+Keranen, et al.         Expires December 22, 2016              [Page 73]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4140,7 +4141,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 74]
+Keranen, et al.         Expires December 22, 2016              [Page 74]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4196,7 +4197,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 75]
+Keranen, et al.         Expires December 22, 2016              [Page 75]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4252,7 +4253,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 76]
+Keranen, et al.         Expires December 22, 2016              [Page 76]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4308,7 +4309,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 77]
+Keranen, et al.         Expires December 22, 2016              [Page 77]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4364,7 +4365,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 78]
+Keranen, et al.         Expires December 22, 2016              [Page 78]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4420,7 +4421,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 79]
+Keranen, et al.         Expires December 22, 2016              [Page 79]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4476,7 +4477,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 80]
+Keranen, et al.         Expires December 22, 2016              [Page 80]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4532,7 +4533,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 81]
+Keranen, et al.         Expires December 22, 2016              [Page 81]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4588,7 +4589,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 82]
+Keranen, et al.         Expires December 22, 2016              [Page 82]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4644,7 +4645,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 83]
+Keranen, et al.         Expires December 22, 2016              [Page 83]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4666,11 +4667,11 @@ Internet-Draft                     ICE                         June 2016
               <http://www.rfc-editor.org/info/rfc7050>.
 
    [I-D.ietf-mmusic-ice-sip-sdp]
-              Petit-Huguenin, M., Keraenen, A., and S. Nandakumar,
-              "Using Interactive Connectivity Establishment (ICE) with
-              Session Description Protocol (SDP) offer/answer and
-              Session Initiation Protocol (SIP)", draft-ietf-mmusic-ice-
-              sip-sdp-08 (work in progress), March 2016.
+              Petit-Huguenin, M., Keranen, A., and S. Nandakumar, "Using
+              Interactive Connectivity Establishment (ICE) with Session
+              Description Protocol (SDP) offer/answer and Session
+              Initiation Protocol (SIP)", draft-ietf-mmusic-ice-sip-
+              sdp-08 (work in progress), March 2016.
 
    [I-D.ietf-6man-ipv6-address-generation-privacy]
               Cooper, A., Gont, F., and D. Thaler, "Privacy
@@ -4700,7 +4701,7 @@ Appendix A.  Lite and Full Implementations
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 84]
+Keranen, et al.         Expires December 22, 2016              [Page 84]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4756,7 +4757,7 @@ Appendix B.  Design Motivations
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 85]
+Keranen, et al.         Expires December 22, 2016              [Page 85]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4812,7 +4813,7 @@ B.1.  Pacing of STUN Transactions
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 86]
+Keranen, et al.         Expires December 22, 2016              [Page 86]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4868,7 +4869,7 @@ B.2.  Candidates with Multiple Bases
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 87]
+Keranen, et al.         Expires December 22, 2016              [Page 87]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4924,7 +4925,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 88]
+Keranen, et al.         Expires December 22, 2016              [Page 88]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -4980,7 +4981,7 @@ B.4.  Importance of the STUN Username
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 89]
+Keranen, et al.         Expires December 22, 2016              [Page 89]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5036,7 +5037,7 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 90]
+Keranen, et al.         Expires December 22, 2016              [Page 90]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5092,7 +5093,7 @@ B.6.  Why Are Keepalives Needed?
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 91]
+Keranen, et al.         Expires December 22, 2016              [Page 91]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5148,7 +5149,7 @@ Authors' Addresses
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 92]
+Keranen, et al.         Expires December 22, 2016              [Page 92]
 
 Internet-Draft                     ICE                         June 2016
 
@@ -5204,4 +5205,4 @@ Internet-Draft                     ICE                         June 2016
 
 
 
-Keranen, et al.         Expires December 21, 2016              [Page 93]
+Keranen, et al.         Expires December 22, 2016              [Page 93]

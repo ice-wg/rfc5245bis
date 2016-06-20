@@ -1581,11 +1581,11 @@ ICE overall is Running.
 <t>
 Once the roles are determined for a session, they persist througout
 the lifetime of the session. ICE agents MAY re-determine the roles as
-part of an ICE restart, but MUST NOT do so unless required by the
-procedures in this specification. Examples of where an ICE restart
-requires the roles to be re-determined are e.g. if the controlling
-agent switches to ICE lite mode, or if required by the outcome of
-a role-conflict [add-ref]. 
+part of an ICE restart (<xref target="sec-restart"/>), but MUST NOT do
+so unless required by the procedures in this specification. Examples
+of where an ICE restart requires the roles to be re-determined are
+e.g. if the controlling agent switches to ICE lite mode, or if required
+by the outcome of a role-conflict [add-ref].
 </t>
 
 </section>
@@ -3012,17 +3012,20 @@ all media streams using those candidates.
 </section>
 
 
-<section title="ICE Restarts">
-<t> An agent MAY restart ICE processing for an existing media stream.
+<section anchor="sec-restart" title="ICE Restarts">
+<t>
+An agent MAY restart ICE processing for an existing media stream.
 An ICE restart, as the name implies, will cause all previous states of
 ICE processing to be flushed and checks to start anew.  The only
 difference between an ICE restart and a brand new media session is
 that, during the restart, media can continue to be sent to the
-previously validated pair.  </t>
+previously validated pair.
+</t>
 
 <t>An agent MUST restart ICE for a media stream if:</t>
 
-<t> <list style="symbols">
+<t>
+<list style="symbols">
 <t>
 The candidate(s) is being generated for the purposes of changing the
 target of the media stream.  In other words, if an agent wants to
@@ -3031,18 +3034,22 @@ use, would result in a new value for the destination of a media
 component.
 </t>
 
-<t> An agent is changing its implementation level.  This typically
+<t>
+An agent is changing its implementation level.  This typically
 only happens in third party call control use cases, where the entity
 performing the signaling is not the entity receiving the media, and it
 has changed the target of media mid-session to another entity that has
-a different ICE implementation.  </t> </list> </t>
+a different ICE implementation.
+</t>
+</list>
+</t>
 
-<t> To restart ICE, an agent MUST change both the password and the
+<t>
+To restart ICE, an agent MUST change both the password and the
 user name fragment for the media stream when exchanging the
 candidates.  The new candidate set MAY include some, none, or all of
 the previous candidates for that stream and MAY include a totally new
 set of candidates.
-
 </t>
 
 </section>
