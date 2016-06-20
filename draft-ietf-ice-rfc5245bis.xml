@@ -1203,8 +1203,7 @@ unique for each one. In this specification, this only happens for
 multihomed hosts or if an agent is using multiple TURN servers.  If a
 host is multihomed because it is dual-stack, the local preference
 should be set according to the current best practice described in <xref
-target="I-D.ietf-ice-dualstack-fairness"> ICE Multihomed and IPv4/IPv6
-Dual Stack Fairness </xref>.</t>
+target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
 
 <t>The
@@ -1224,7 +1223,7 @@ media is sent to that candidate, it will first transit the media
 intermediary before being received.  Relayed candidates are one type
 of candidate that involves a media intermediary.  Another are host
 candidates obtained from a VPN interface.  When media is transited
-through a media intermediary, it can have an positive or negative
+through a media intermediary, it can have a positive or negative
 effect on the latency between transmission and reception.  It may or
 may not increase the packet losses, because of the additional router
 hops that may be taken.  It may increase the cost of providing
@@ -1237,22 +1236,27 @@ relayed candidates.</t>
 
 <t>Furthermore, if an agent is multihomed and has multiple IP
 addresses, the recommendation in <xref target=
-"I-D.ietf-ice-dualstack-fairness"> ICE Multihomed and IPv4/IPv6 Dual
-Stack Fairness </xref> should be followed.  If multiple TURN servers
-are used, local priorities for the candidates obtained from the TURN
-servers are chosen in a similar fashion as for multihomed local
-candidates: the local preference value is used to indicate preference
-among different servers but the preference MUST be unique for each
-one.</t>
+"I-D.ietf-ice-dualstack-fairness"/> should be followed.  If multiple
+TURN servers are used, local priorities for the candidates obtained
+from the TURN servers are chosen in a similar fashion as for
+multihomed local candidates: the local preference value is used to
+indicate a preference among different servers but the preference MUST
+be unique for each one.</t>
 
-<t>Another criterion for selection of preferences is IP address family.
-ICE works with both IPv4 and IPv6.  It therefore provides a transition
+<t>Another criterion for selection of preferences is IP address
+family.  ICE works with both IPv4 and IPv6.  It provides a transition
 mechanism that allows dual-stack hosts to prefer connectivity over
 IPv6, but to fall back to IPv4 in case the v6 networks are
-disconnected. Implementation should follow the guidelines from <xref target=
-"I-D.ietf-ice-dualstack-fairness"> ICE Multihomed and IPv4/IPv6 Dual
-Stack Fairness </xref> to avoid excessive delays in the connectivity check
-phase if broken paths exists.</t>
+disconnected. Implementation should follow the guidelines from <xref
+target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessively delays
+in the connectivity check phase if broken paths exist.</t>
+
+<t>Another criterion for selecting preferences is topological
+awareness. This is most useful for candidates that make use of
+intermediaries. In those cases, if an agent has preconfigured or
+dynamically discovered knowledge of the topological proximity of the
+intermediaries to itself, it can use that to assign higher local
+preferences to candidates obtained from closer intermediaries.</t>
 
 <t>Another criterion for selecting preferences might be security or
 privacy.  If a user is a telecommuter, and therefore connected to a
@@ -1262,6 +1266,7 @@ keep it on the corporate network when communicating within the
 enterprise, but use the local network when communicating with users
 outside of the enterprise.  In such a case, a VPN address would have a
 higher local preference than any other address.</t>
+
 
 </section>
 
