@@ -1574,21 +1574,51 @@ protocol enabling the candidate exchange. The state of ICE processing
 for each media stream is considered to be Running, and the state of
 ICE overall is Running.
 </t>
-
 </list>
 </t>
 
 <t>
 Once the roles are determined for a session, they persist througout
-the lifetime of the session. ICE agents MAY re-determine the roles as
-part of an ICE restart (<xref target="sec-restart"/>), but MUST NOT do
-so unless required by the procedures in this specification. Examples
-of where an ICE restart requires the roles to be re-determined are
-e.g. if the controlling agent switches to ICE lite mode, or if required
-by the outcome of a role-conflict [add-ref].
+the lifetime of the session. The roles can be re-determined as part
+of an ICE restart (<xref target="sec-restart"/>), but an ICE agent
+MUST NOT re-determine the role as part of an ICE restart unless one
+or more of the following criteria is fulfilled:
+</t>
+
+<t><list style="hanging">
+<t hangText="Full becomes lite:">
+If the controlling agent is full, and switches to lite, the roles MUST be
+re-determined if the peer agent is also full
+</t>
+
+<t hangText="Role conflict:">
+If the ICE restart causes a role conflict, the roles might be
+re-determined due to the role conflict proceudres in <xref target="sec-role-conflict"/>.
+</t>
+
+</list>
+</t>
+
+<t>
+NOTE: There are certain 3PCC scenarios where an ICE restart might cause
+a role conflict.
+</t>
+
+<t>
+NOTE: The ICE agents needs to inform each other whether they are full
+or lite before the roles are determined. The mechanism for that is
+signalling protocol specific, and outside the scope of the document.
+</t>
+
+<t>
+An ICE agent MUST be prepared that the peer might re-determine the roles
+as part of any ICE restart, even if the criteria for doing so are not
+fulfilled. This can happen if the peer is compliant with an older version
+of this specification.
 </t>
 
 </section>
+
 
 <section anchor="sec-forming" title="Forming the Check Lists">
 
@@ -3015,11 +3045,12 @@ all media streams using those candidates.
 <section anchor="sec-restart" title="ICE Restarts">
 <t>
 An agent MAY restart ICE processing for an existing media stream.
-An ICE restart, as the name implies, will cause all previous states of
-ICE processing to be flushed and checks to start anew.  The only
-difference between an ICE restart and a brand new media session is
-that, during the restart, media can continue to be sent to the
-previously validated pair.
+An ICE restart will cause all previous states, excluding the roles
+of the agents, of ICE processing to be flushed and checks to start anew.
+The only difference between an ICE restart and a brand new media session
+is that during the restart media can continue to be sent to the
+previously validated pair, and that a new media session always require
+the roles to be determined.
 </t>
 
 <t>An agent MUST restart ICE for a media stream if:</t>
@@ -3050,6 +3081,12 @@ user name fragment for the media stream when exchanging the
 candidates.  The new candidate set MAY include some, none, or all of
 the previous candidates for that stream and MAY include a totally new
 set of candidates.
+</t>
+
+<t>
+As described in <xref target="sec-role"/>, ICE agents MUST NOT
+re-determine the roles as part as an ICE restart, unless certain
+criteria that require the roles to be re-determined is fulfilled.
 </t>
 
 </section>
