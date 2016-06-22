@@ -978,8 +978,7 @@ following exceptions:
 
     <t> If one or more host candidates corresponding to an IPv6
     address generated using a mechanism that prevents location
-    tracking <xref
-    target="I-D.ietf-6man-ipv6-address-generation-privacy"/> are
+    tracking <xref target="RFC7721"/> are
     gathered, host candidates corresponding to IPv6 addresses that do
     allow location tracking, that are configured on the same
     interface, and are part of the same network prefix MUST NOT be
@@ -4220,28 +4219,28 @@ following the procedures defined in <xref target="RFC6336"/>.
 <figure><artwork>
 <![CDATA[
 
-   ICE Option name:
+ICE Option name:
 
-      ice2
+     ice2
 
-   Contact:
+  Contact:
 
-      Name:    Christer Holmberg
-      E-mail:  christer.holmberg(at)ericsson(dot)com
-      Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
+     Name:    Christer Holmberg
+     E-mail:  christer.holmberg(at)ericsson(dot)com
+     Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
 
-   Change control:
+  Change control:
 
-      IESG
+     IESG
 
-   Description:
+  Description:
 
-      The ICE option indicates that the ICE agent using the ICE option
-      is compliant and implemented according to RFC XXXX.
+     The ICE option indicates that the ICE agent using the ICE option
+     is compliant and implemented according to RFC XXXX.
 
-   Reference:
+  Reference:
 
-      RFC XXXX
+     RFC XXXX
 
 ]]></artwork></figure>
 
@@ -4540,7 +4539,7 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.6544"?>
 <?rfc include="reference.RFC.7050"?>
 <?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
-<?rfc include="reference.I-D.ietf-6man-ipv6-address-generation-privacy"?>
+<?rfc include="reference.RFC.7721"?>
 
 </references>
 
