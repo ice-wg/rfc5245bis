@@ -1588,12 +1588,12 @@ or more of the following criteria is fulfilled:
 <t><list style="hanging">
 <t hangText="Full becomes lite:">
 If the controlling agent is full, and switches to lite, the roles MUST be
-re-determined if the peer agent is also full
+re-determined if the peer agent is also full.
 </t>
 
 <t hangText="Role conflict:">
 If the ICE restart causes a role conflict, the roles might be
-re-determined due to the role conflict proceudres in <xref target="sec-role-conflict"/>.
+re-determined due to the role conflict procedures in <xref target="sec-role-conflict"/>.
 </t>
 
 </list>
@@ -2210,9 +2210,8 @@ If the STUN transaction generates a 487 (Role Conflict) error
 response, the agent checks whether it included an ICE-CONTROLLED or
 ICE-CONTROLLING attribute in the associated Binding request. If the request
 contained an ICE-CONTROLLED attribute, the agent MUST switch to the
-controlling role if it has not already done so. If the request
-contained an ICE-CONTROLLING attribute, the agent MUST switch to the
-controlled role if it has not already done so.
+controlling role. If the request contained an ICE-CONTROLLING attribute,
+the agent MUST switch to the controlled role.
 </t>
 <t>
 Once the agent has switched its role, the agent MUST enqueue the
@@ -3049,7 +3048,7 @@ An ICE restart will cause all previous states, excluding the roles
 of the agents, of ICE processing to be flushed and checks to start anew.
 The only difference between an ICE restart and a brand new media session
 is that during the restart media can continue to be sent to the
-previously validated pair, and that a new media session always require
+previously validated pair, and that a new media session always requires
 the roles to be determined.
 </t>
 
@@ -4085,7 +4084,7 @@ indicates that the client believes it is currently in the controlled
 role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
-value. An ICE agent MUST use the same number for all Bining requests,
+value. An ICE agent MUST use the same number for all Binding requests,
 for all streams, within an ICE session. The ICE agent MAY change
 the number when an ICE restart occurs.
 </t>
@@ -4096,7 +4095,7 @@ indicates that the client believes it is currently in the controlling
 role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
-value. An ICE agent MUST use the same number for all Bining requests,
+value. An ICE agent MUST use the same number for all Binding requests,
 for all streams, within an ICE session. The ICE agent MAY change
 the number when an ICE restart occurs.
 </t>
