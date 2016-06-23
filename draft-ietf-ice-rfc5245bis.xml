@@ -1196,14 +1196,10 @@ address, this value SHOULD be set to 65535. More generally, if there
 are multiple candidates for a particular component for a particular
 media stream that have the same type, the local preference MUST be
 unique for each one. In this specification, this only happens for
-multihomed hosts or if an agent is using multiple TURN servers. If a
+multihomed hosts or if an agent is using multiple TURN servers.  If a
 host is multihomed because it is dual-stack, the local preference
-SHOULD be set equal to the precedence value for IP addresses described
-in RFC 6724 <xref target="RFC6724"/>. If the host operating system
-provides an API for discovering preference among different addresses,
-those preferences SHOULD be used for the local preference to
-prioritize addresses indicated as preferred by the operating system.
-</t>
+should be set according to the current best practice described in <xref
+target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
 
 <t>The
@@ -1216,66 +1212,57 @@ between 1 and 256 inclusive.
 
 <section anchor="sec-guidelines" title="Guidelines for Choosing Type and Local Preferences">
 
-<t> One criterion for selection of the type and local preference
-values is the use of a media intermediary, such as a TURN server, VPN
-server, or NAT. With a media intermediary, if media is sent to that
-candidate, it will first transit the media intermediary before being
-received. Relayed candidates are one type of candidate that involves a
-media intermediary. Another are host candidates obtained from a VPN
-interface. When media is transited through a media intermediary, it
-can increase the latency between transmission and reception. It can
-increase the packet losses, because of the additional router hops that
-may be taken. It may increase the cost of providing service, since
-media will be routed in and right back out of a media intermediary run
-by a provider. If these concerns are important, the type preference
-for relayed candidates SHOULD be lower than host candidates. The
+<t>One criterion for selection of the type and local preference values
+is the use of a media intermediary, such as a TURN server, a tunnel
+service such as VPN server, or NAT.  With a media intermediary, if
+media is sent to that candidate, it will first transit the media
+intermediary before being received.  Relayed candidates are one type
+of candidate that involves a media intermediary.  Another are host
+candidates obtained from a VPN interface.  When media is transited
+through a media intermediary, it can have a positive or negative
+effect on the latency between transmission and reception.  It may or
+may not increase the packet losses, because of the additional router
+hops that may be taken.  It may increase the cost of providing
+service, since media will be routed in and right back out of a media
+intermediary run by a provider.  If these concerns are important, the
+type preference for relayed candidates must be carefully chosen. The
 RECOMMENDED values are 126 for host candidates, 100 for server
 reflexive candidates, 110 for peer reflexive candidates, and 0 for
 relayed candidates.</t>
 
-<t> Furthermore, if an agent is multihomed and has multiple IP
-addresses, the local preference for host candidates from a VPN
-interface SHOULD have a priority of 0. If multiple TURN servers are
-used, local priorities for the candidates obtained from the TURN
-servers are chosen in a similar fashion as for multihomed local
-candidates: the local preference value is used to indicate preference
-among different servers but the preference MUST be unique for each
-one. </t>
+<t>Furthermore, if an agent is multihomed and has multiple IP
+addresses, the recommendation in <xref target=
+"I-D.ietf-ice-dualstack-fairness"/> should be followed.  If multiple
+TURN servers are used, local priorities for the candidates obtained
+from the TURN servers are chosen in a similar fashion as for
+multihomed local candidates: the local preference value is used to
+indicate a preference among different servers but the preference MUST
+be unique for each one.</t>
 
-<t>
-Another criterion for selection of preferences is IP address
-family. ICE works with both IPv4 and IPv6. It therefore provides a
-transition mechanism that allows dual-stack hosts to prefer
-connectivity over IPv6, but to fall back to IPv4 in case the v6
-networks are disconnected (due, for example, to a failure in a 6to4
-relay) <xref target="RFC3056"/>. It can also help with hosts that have
-both a native IPv6 address and a 6to4 address. In such a case, higher
-local preferences could be assigned to the v6 addresses, followed by
-the 6to4 addresses, followed by the v4 addresses. This allows a site
-to obtain and begin using native v6 addresses immediately, yet still
-fall back to 6to4 addresses when communicating with agents in other
-sites that do not yet have native v6 connectivity.
-</t>
+<t>Another criterion for selection of preferences is IP address
+family.  ICE works with both IPv4 and IPv6.  It provides a transition
+mechanism that allows dual-stack hosts to prefer connectivity over
+IPv6, but to fall back to IPv4 in case the v6 networks are
+disconnected. Implementation should follow the guidelines from <xref
+target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessively delays
+in the connectivity check phase if broken paths exist.</t>
 
-<t>
-Another criterion for selecting preferences is security. If a user is
-a telecommuter, and therefore connected to a corporate network and a
-local home network, the user may prefer their voice traffic to be
-routed over the VPN in order to keep it on the corporate network when
-communicating within the enterprise, but use the local network when
-communicating with users outside of the enterprise. In such a case, a
-VPN address would have a higher local preference than any other
-address.
-</t>
-
-<t>
-Another criterion for selecting preferences is topological
+<t>Another criterion for selecting preferences is topological
 awareness. This is most useful for candidates that make use of
 intermediaries. In those cases, if an agent has preconfigured or
 dynamically discovered knowledge of the topological proximity of the
 intermediaries to itself, it can use that to assign higher local
-preferences to candidates obtained from closer intermediaries.
-</t>
+preferences to candidates obtained from closer intermediaries.</t>
+
+<t>Another criterion for selecting preferences might be security or
+privacy.  If a user is a telecommuter, and therefore connected to a
+corporate network and a local home network, the user may prefer their
+voice traffic to be routed over the VPN or similar tunnel in order to
+keep it on the corporate network when communicating within the
+enterprise, but use the local network when communicating with users
+outside of the enterprise.  In such a case, a VPN address would have a
+higher local preference than any other address.</t>
+
 
 </section>
 
@@ -4551,6 +4538,7 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.7050"?>
 <?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.RFC.7721"?>
+<?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
 
 </references>
 
