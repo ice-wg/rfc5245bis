@@ -12,10 +12,7 @@
 >
 
     <front>
-        <title abbrev="ICE">
-	  Interactive Connectivity Establishment (ICE):
-	  A Protocol for Network Address Translator (NAT) Traversal
-	</title>
+    <title abbrev="ICE">Interactive Connectivity Establishment (ICE): A Protocol for Network Address Translator (NAT) Traversal</title>
 
     <author fullname="Ari Keranen" initials="A." surname="Keranen">
       <organization abbrev="Ericsson">Ericsson</organization>
@@ -26,6 +23,18 @@
           <country>Finland</country>
         </postal>
         <email>ari.keranen@ericsson.com</email>
+      </address>
+    </author>
+
+    <author fullname="Christer Holmberg" initials="C." surname="Holmberg">
+      <organization abbrev="Ericsson">Ericsson</organization>
+      <address>
+        <postal>
+          <street>Hirsalantie 11</street>
+          <city>02420 Jorvas</city>
+          <country>Finland</country>
+        </postal>
+        <email>christer.holmberg@ericsson.com</email>
       </address>
     </author>
 
@@ -67,7 +76,7 @@
 <t>Protocols establishing multimedia sessions between peers typically
 involve exchanging IP addresses and ports for the media sources and
 sinks. However this poses challenges when operated through Network Address
-Translators (NATs) [RFC3235]. These protocols also seek to
+Translators (NATs) <xref target="RFC3235"/>. These protocols also seek to
 create a media flow directly between participants, so that there is
 no application layer intermediary between them.  This is done to
 reduce media latency, decrease packet loss, and reduce the
@@ -100,12 +109,13 @@ multiplicity of IP addresses and ports which are then tested for
 connectivity by peer-to-peer connectivity checks. The IP addresses and
 ports are exchanged via mechanisms (for example, including in a
 offer/answer exchange) and the connectivity checks are performed using
-Session Traversal Utilities for NAT (STUN) specification
-[RFC5389]. ICE also makes use of Traversal Using Relays around NAT
-(TURN) [RFC5766], an extension to STUN.  Because ICE exchanges a
-multiplicity of IP addresses and ports for each media stream, it also
-allows for address selection for multihomed and dual-stack hosts, and
-for this reason it deprecates [RFC4091] and [RFC4092].
+Session Traversal Utilities for NAT (STUN) specification <xref
+target="RFC5389"/>. ICE also makes use of Traversal Using Relays
+around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
+Because ICE exchanges a multiplicity of IP addresses and ports for
+each media stream, it also allows for address selection for multihomed
+and dual-stack hosts, and for this reason it deprecates <xref
+target="RFC4091"/> and <xref target="RFC4092"/>.
 </t>
 
 </section>
@@ -525,12 +535,11 @@ better than one with higher priority.
 Consequently, ICE assigns one of the agents in the role of the
 CONTROLLING AGENT, and the other of the CONTROLLED AGENT. The
 controlling agent gets to nominate which candidate pairs will get used
-for media amongst the ones that are valid. It can do this in one of
-two ways -- using REGULAR NOMINATION or AGGRESSIVE NOMINATION.
+for media amongst the ones that are valid.
 </t>
 
 <t>
-With regular nomination, the controlling agent lets the checks continue
+When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
 found. Then, it picks amongst those that are valid, and sends a second
 STUN request on its NOMINATED candidate pair, but this time with a
@@ -538,7 +547,7 @@ flag set to tell the peer that this pair has been nominated for use.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
 
-<figure title="Regular Nomination"
+<figure title="Nomination"
 anchor="fig-regular-select" align="center"><artwork>
 <![CDATA[
 L                        R
@@ -560,31 +569,6 @@ any future checks for that media stream. ICE will now send media using
 this pair. The pair an ICE agent is using for media is called the
 SELECTED PAIR.
 </t>
-
-<t>
-In aggressive nomination, the controlling agent puts the flag in every
-connectivity check STUN request it sends. This way, once the first
-check succeeds, ICE processing is complete for that media stream and
-the controlling agent doesn't have to send a second STUN request. The
-selected pair will be the highest-priority valid pair whose check
-succeeded. Aggressive nomination is faster than regular nomination,
-but gives less flexibility. Aggressive nomination is shown in <xref
-target="fig-aggressive-select"/>.
-</t>
-
-<figure title="Aggressive Nomination"
-anchor="fig-aggressive-select" align="center"><artwork>
-<![CDATA[
-L                        R
--                        -
-STUN request + flag ->      \  L's
-          <- STUN response  /  check
-
-           <- STUN request  \  R's
-STUN response ->            /  check
-
-]]></artwork></figure>
-
 
 <t>
 Once ICE is concluded, it can be restarted at any time for one or all
@@ -817,16 +801,10 @@ other is the controlled agent.
 controlling agent to select the final choice of candidate pairs.
 </t>
 
-<t hangText="Regular Nomination:"> The process of picking a valid
+<t hangText="Nomination, Regular Nomination:"> The process of picking a valid
 candidate pair for media traffic by validating the pair with one
 STUN request, and then picking it by sending a second STUN request
 with a flag indicating its nomination.
-</t>
-
-<t hangText="Aggressive Nomination:"> The process of picking a valid
-candidate pair for media traffic by including a flag in every
-connectivity check STUN request, such that the first one to produce a
-valid candidate pair is used for media.
 </t>
 
 <t hangText="Nominated:"> If a valid candidate pair has its nominated
@@ -1000,8 +978,7 @@ following exceptions:
 
     <t> If one or more host candidates corresponding to an IPv6
     address generated using a mechanism that prevents location
-    tracking <xref
-    target="I-D.ietf-6man-ipv6-address-generation-privacy"/> are
+    tracking <xref target="RFC7721"/> are
     gathered, host candidates corresponding to IPv6 addresses that do
     allow location tracking, that are configured on the same
     interface, and are part of the same network prefix MUST NOT be
@@ -1898,8 +1875,7 @@ progress for this media stream.
 </t>
 
 <t hangText="Completed:"> In this state, ICE checks have produced
-nominated pairs for each component of the media stream. Consequently,
-ICE has succeeded and media can be sent.
+nominated pairs for each component of the media stream.
 </t>
 
 <t hangText="Failed:"> In this state, the ICE checks have not
@@ -2098,7 +2074,7 @@ described in the subsections below. These STUN extensions are
 applicable only to connectivity checks used for ICE.
 </t>
 
-<section title="PRIORITY and USE-CANDIDATE">
+<section title="PRIORITY">
 
 <t>
 An agent MUST include the PRIORITY attribute in its Binding
@@ -2112,14 +2088,15 @@ the pair was computed, except that the type preference is set to the
 value for peer reflexive candidate types.
 </t>
 
+</section>
+
+<section title="USE-CANDIDATE">
+
 <t>
-The controlling agent MAY include the USE-CANDIDATE attribute in the
-Binding request. The controlled agent MUST NOT include it in its
-Binding request. This attribute signals that the controlling agent
-wishes to cease checks for this component, and use the candidate pair
-resulting from the check for this component. <xref
-target="sec-choose-favor"/> provides guidance on determining when to
-include it.
+The controlling agent includes the USE-CANDIDATE attribute in order
+to nominate a candidate pair <xref target="sec-choose-favor"/>.
+The controlled agent MUST NOT include the USE-CANDIDATE attribute in its
+Binding request.
 </t>
 
 </section>
@@ -2389,9 +2366,9 @@ with the highest-priority is used.
 If the agent was a controlling agent, and it had included a
 USE-CANDIDATE attribute in the Binding request, the valid pair
 generated from that check has its nominated flag set to true. This
-flag indicates that this valid pair should be used for media if it is
-the highest-priority one amongst those whose nominated flag is
-set. This may conclude ICE processing for this media stream or all
+flag indicates that this valid pair SHOULD be used for media, unless
+the sending agent detects that the candidiate pair does not work.
+This concludes the ICE processing for this media stream or all
 media streams; see <xref target="sec-conclude"/>.
 </t>
 
@@ -2401,6 +2378,12 @@ of a triggered check that was sent in response to a request that
 itself had the USE-CANDIDATE attribute. This case is described in
 <xref target="sec-up-fav"/>, and may now result in setting the
 nominated flag for the pair learned from the original request.
+</t>
+
+<t>
+An agent MUST NOT select a candidate pair until it has sent a
+Binding request, and received the corresponding Binding response,
+associated with the candidiate pair.
 </t>
 
 </section>
@@ -2765,22 +2748,7 @@ updating of state machinery.
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
 <t>
-The controlling agent nominates pairs to be selected by ICE by using
-one of two techniques: regular nomination or aggressive nomination. If
-its peer has a lite implementation, an agent MUST use a regular
-nomination algorithm. If its peer is using ICE options (present in an
-ice-options attribute from the peer) that the agent does not
-understand, the agent MUST use a regular nomination algorithm. If its
-peer is a full implementation and isn't using any ICE options or is
-using ICE options understood by the agent, the agent MAY use either
-the aggressive or the regular nomination algorithm. However, the
-regular algorithm is RECOMMENDED since it provides greater stability.
-</t>
-
-<section title="Regular Nomination">
-
-<t>
-With regular nomination, the agent lets some number of checks
+When nominating, the controlling agent lets some number of checks
 complete, each of which omit the USE-CANDIDATE attribute. Once one or
 more checks complete successfully for a component of a media stream,
 valid pairs are generated and added to the valid list. The agent lets
@@ -2803,57 +2771,28 @@ sending and receiving media for that component.
 </t>
 
 <t>
-Regular nomination provides the most flexibility, since the agent has
-control over the stopping and selection criteria for checks. The only
-requirement is that the agent MUST eventually pick one and only one
-candidate pair and generate a check for that pair with the
-USE-CANDIDATE attribute present. Regular nomination also improves
-ICE's resilience to variations in implementation (see <xref
-target="sec-futureproof"/>). Regular nomination is also more stable,
-allowing both agents to converge on a single pair for media without
-any transient selections, which can happen with the aggressive
-algorithm. The drawback of regular nomination is that it is guaranteed
-to increase latencies because it requires an additional check to be
-done.
-</t>
-
-</section>
-
-<section title="Aggressive Nomination">
-
-<t>
-With aggressive nomination, the controlling agent includes the
-USE-CANDIDATE attribute in every check it sends. Once the first check
-for a component succeeds, it will be added to the valid list and have
-its nominated flag set. When all components have a nominated pair in
-the valid list, media can begin to flow using the highest-priority
-nominated pair. However, because the agent included the USE-CANDIDATE
-attribute in all of its checks, another check may yet complete,
-causing another valid pair to have its nominated flag set. ICE always
-selects the highest-priority nominated candidate pair from the valid
-list as the one used for media. Consequently, the selected pair may
-actually change briefly as ICE checks complete, resulting in a set of
-transient selections until it stabilizes.
+The controlling agent has control over the stopping and selection criteria
+for checks. The only requirement is that the agent MUST eventually pick
+one and only one candidate pair and generate a check for that pair with
+the USE-CANDIDATE attribute present.
 </t>
 
 <t>
-If certain connectivity check messages are lost, ICE agents using
-aggressive nomination may end up with different views on the selected
-candidate pair. In this case, if a security protocol that is able to
-authenticate the communicating parties (e.g., DTLS) is used, the
-controlled agent may receive valid secured traffic or handshake
-initialization originating from the controlling agent on a candidate
-pair that is different from the one the controlled agent considers as
-the selected pair. If this happens, the controlled agent MUST consider
-the pair with the secured traffic as the correct selected pair. If
-such security protocol is not used, both agents SHOULD continue
-sending connectivity check messages on the selected pair even after a
-pair has already been selected for use. In order to prevent the
-problem described here, at least one check from both agents needs to
-fully succeed on the selected pair.
+The controlled agent SHOULD select the nominated candidate pair if the agent
+is receiving Binding responses associated with that candidiate pair.
+Before the agent has received Binding responses associated with the candidiate
+pair, the agent can send media on any candidiate for which it has received
+Binding responses. If more than one candidate pair is nominated by the
+controlling agent, the controlled agent SHOULD select the candidate pair with
+the highest priority.
 </t>
-
-</section>
+<t>
+NOTE: A controlling agent that does not support this speification (i.e. it
+is implemented according to RFC 5245) might nominate more than one candidiate pair.
+This was referred to as aggressive nomination in RFC 5245. The usage of the
+'ice2' ice option by endpoints supporting this specifcation should prevent
+such controlling agents from using aggressive nomination.
+</t>
 
 </section>
 
@@ -2910,11 +2849,6 @@ described in <xref target="sec-send-media"/>.
 <t>Once the state of each check list is Completed:
 <list style="symbols">
 <t>The agent sets the state of ICE processing overall to Completed.</t>
-<t> If the controlling agent is using an aggressive nomination
-algorithm, this may result in several updated candidate exchanges as
-the pairs selected for media change. An agent MAY delay sending its
-candidates for a brief interval (one second is RECOMMENDED) in order
-to allow the selected pairs to stabilize.</t>
 </list>
 </t>
 
@@ -3101,41 +3035,58 @@ set of candidates.
 
 </section>
 
+
+<section anchor="sec-ice-option" title="ICE Option">
+
+<t>
+This section defines a new ICE option, 'ice2'. The ICE option
+indicates that the ICE agent that includes it (in an ice-options
+attribute) is compliant to this specification. For example, the
+ICE agent will not use the aggressive nomination procedure
+defined in <xref target="RFC5245"/>.
+</t>
+<t>
+An ICE agent compliant to this specification MUST inform the peer
+about the compliance using the 'ice2' ICE option.
+</t>
+<t>
+NOTE: The encoding of the 'ice2' ICE option, and the message(s)
+used to carry it to the peer, are protocol specific. The encoding
+for the Session Description Protocol (SDP) <xref target="RFC4566"/>
+is defined in <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
+</t>
+
+</section>
+
+
 <section anchor="sec-keepalives" title="Keepalives">
 
-<t> All endpoints MUST send keepalives for each media session. These
+<t>
+All endpoints MUST send keepalives for each media session. These
 keepalives serve the purpose of keeping NAT bindings alive for the
-media session.  These keepalives MUST be sent even if ICE is not being
-utilized for the session at all. The keepalive SHOULD be sent using a
+media session. The keepalives SHOULD be sent using a
 format that is supported by its peer. ICE endpoints allow for
 STUN-based keepalives for UDP streams, and as such, STUN keepalives
 MUST be used when an agent is a full ICE implementation and is
-communicating with a peer that supports ICE (lite or full).  If the
-peer does not support ICE, the choice of a packet format for
-keepalives is a matter of local implementation. A format that allows
-packets to easily be sent in the absence of actual media content is
-RECOMMENDED. Examples of formats that readily meet this goal are RTP
-No-Op <xref target="I-D.ietf-avt-rtp-no-op"/>, and in cases where both
-sides support it, RTP comfort noise <xref target="RFC3389"/>. If the
-peer doesn't support any formats that are particularly well suited for
-keepalives, an agent SHOULD send RTP packets with an incorrect version
-number, or some other form of error that would cause them to be
-discarded by the peer. </t>
-
-<t>If there has been no packet sent on the candidate pair ICE is using
-for a media component for Tr seconds (where packets include those
-defined for the component (RTP or RTCP) and previous keepalives), an
-agent MUST generate a keepalive on that pair.  Tr SHOULD be
-configurable and SHOULD have a default of 15 seconds. Tr MUST NOT be
-configured to less than 15 seconds. Alternatively, if an agent has a
-dynamic way to discover the binding lifetimes of the intervening NATs,
-it can use that value to determine Tr.  Administrators deploying ICE
-in more controlled networking environments SHOULD set Tr to the
-longest duration possible in their environment.
+communicating with a peer that supports ICE (lite or full).
 </t>
 
 <t>
-If STUN is being used for keepalives, a STUN Binding Indication is
+If there has been no packet sent on the candidate pair ICE is using
+for a media component for Tr seconds (where packets include those
+defined for the component (RTP or RTCP) and previous keepalives), an
+agent MUST generate a keepalive on that pair. ICE endpoints SHOULD use
+a Tr value of 15 seconds, but MAY use another value, e.g. based on
+configuration or network/NAT characteristics. For example, if
+an agent has a dynamic way to discover the binding lifetimes of the
+intervening NATs, it can use that value to determine Tr. Administrators
+deploying ICE in more controlled networking environments SHOULD set Tr
+to the longest duration possible in their environment. ICE endpoints
+MUST NOT use a Tr value smaller than 15 seconds.
+</t>
+
+<t>
+When STUN is being used for keepalives, a STUN Binding Indication is
 used <xref target="RFC5389"/>. The Indication MUST NOT utilize any
 authentication mechanism. It SHOULD contain the FINGERPRINT attribute
 to aid in demultiplexing, but SHOULD NOT contain any other
@@ -3339,107 +3290,30 @@ all, various steps in the ICE processing differ from UDP.
 
 <section anchor="sec-ta" title="Setting Ta and RTO">
 
-<t>
-During the gathering phase of ICE (<xref target="sec-gathering"/>) and
-while ICE is performing connectivity checks (<xref
-target="sec-connectivity_check"/>), an agent sends STUN and TURN
-transactions. These transactions are paced at a rate of one every Ta
-milliseconds, and utilize a specific RTO.  This section describes how
-the values of Ta and RTO are computed.  This computation depends on
-whether ICE is being used with a real-time media stream (such as RTP)
-or something else. When ICE is used for a stream with a known maximum
-bandwidth, the computation in <xref target="sec-rtp-based"/> MAY be
-followed to rate-control the ICE exchanges. For all other streams, the
-computation in <xref target="sec-non-rtp"/> MUST be followed.
-</t>
-
-<section anchor="sec-rtp-based" title="Real-time Media Streams">
+<section anchor="sec-ta-gen" title="General">
 
 <t>
-The values of RTO and Ta change during the lifetime of ICE
-processing. One set of values applies during the gathering phase, and
-the other, for connectivity checks.
-</t>
-
-<t>The value of Ta SHOULD be configurable, and SHOULD have a default
-of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-
-For each media stream i:
- Ta_i = (stun_packet_size / rtp_packet_size) * rtp_ptime
-
-                        1
-  Ta = MAX (20ms, ------------------- )
-                        k
-                      ----
-                      \        1
-                       >    ------
-                      /       Ta_i
-                      ----
-                       i=1
-
-]]></artwork></figure>
-
-<t>where k is the number of media streams. During the gathering phase,
-Ta is computed based on the number of media streams the agent has
-indicated in the candidate information, and the RTP packet size and
-RTP ptime are those of the most preferred codec for each media
-stream. Once the candidate exchange is completed, the agent recomputes
-Ta to pace the connectivity checks. In that case, the value of Ta is
-based on the number of media streams that will actually be used in the
-session, and the RTP packet size and RTP ptime are those of the most
-preferred codec with which the agent will send.
-</t>
-
-<t>In addition, the retransmission timer for the STUN transactions,
-RTO, defined in <xref target="RFC5389"/>, SHOULD be configurable and
-during the gathering phase, SHOULD have a default of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-  RTO = MAX (100ms, Ta * (number of pairs))
-]]></artwork></figure>
-
-<t>
-where the number of pairs refers to the number of pairs of candidates
-with STUN or TURN servers.
+During the ICE gathering phase (<xref target="sec-gathering"/>) and
+while ICE is performing connectivity checks (<xref target="sec-connectivity_check"/>),
+an agent triggers STUN and TURN transactions. These transactions are paced at
+a rate indicated by Ta, and the retransmission interval for each transaction
+is calculated based on the the retransmission timer for the STUN transactions
+(RTO) <xref target="RFC5389"/>.
 </t>
 
 <t>
-For connectivity checks, RTO SHOULD be configurable and SHOULD have a
-default of:
-</t>
-
-<figure><artwork>
-<![CDATA[
-  RTO = MAX (100ms, Ta*N * (Num-Waiting + Num-In-Progress))
-]]></artwork></figure>
-
-<t>
-where Num-Waiting is the number of checks in the check list in the
-Waiting state, and Num-In-Progress is the number of checks in the
-In-Progress state. Note that the RTO will be different for each
-transaction as the number of checks in the Waiting and In-Progress
-states change.
-</t>
-
-<t>These formulas are aimed at causing STUN transactions to be paced
-at the same rate as media. This ensures that ICE will work properly
-under the same network conditions needed to support the media as well.
-See <xref target="sec-pacing"/> for additional discussion and
-motivations.  Because of this pacing, it will take a certain amount of
-time to obtain all of the server reflexive and relayed
-candidates. Implementations should be aware of the time required to do
-this, and if the application requires a time budget, limit the number
-of candidates that are gathered.
+This section describes how the Ta and RTO values are computed during the ICE
+gathering pahse and while ICE is performing connectivity checks.
 </t>
 
 <t>
-The formulas result in a behavior whereby an agent will send its first
+NOTE: Previously, in RFC 5245, different formulas were defined for
+comupting Ta and RTO, depending on whether ICE was used for a real-time
+media stream (e.g. RTP) or not.
+</t>
+
+<t>
+The formulas below result in a behavior whereby an agent will send its first
 packet for every single connectivity check before performing a
 retransmit. This can be seen in the formulas for the RTO (which
 represents the retransmit interval). Those formulas scale with N, the
@@ -3456,45 +3330,73 @@ should utilize the timer values described here.
 
 </section>
 
-<section anchor="sec-non-rtp" title="Non-real-time Sessions">
+<section anchor="sec-ta-ta" title="Ta">
 
 <t>
-In cases where ICE is used to establish some kind of session that is
-not real time, and has no fixed rate associated with it that is known
-to work on the network in which ICE is deployed, Ta and RTO revert to
-more conservative values.  Ta SHOULD be configurable, SHOULD have a
-default of 500 ms, and MUST NOT be configurable to be less than 500
-ms.
+ICE agents SHOULD use the default Ta value, 50 ms, but MAY use another
+value based on the characteristics of the associated media. ICE agents
+MUST NOT use a Ta value smaller than 5 ms.
 </t>
 
-<t> If other Ta value than the default is used, the agent MUST
-indicate the value it prefers to use in the ICE exchange. Both agents
-MUST use the higher out of the two proposed values. </t>
+<t>
+If an ICE agent wants to use another Ta value than the default value, the
+agent MUST indicate the proposed value to its peer during the ICE
+exchange. Both agents MUST use the higher value of the proposed values.
+If an agent does not propose a value, the default value is used for that
+agent when comparing which value is higher.
+</t>
 
-<t>In addition, the retransmission timer for the STUN transactions,
-RTO, SHOULD be configurable and during the gathering phase, SHOULD
-have a default of:
+<t>
+NOTE: <xref target="sec-concheckbw"/> shows examples of required bandwidth,
+using different Ta values.
+</t>
+
+</section>
+
+<section anchor="sec-ta-rto" title="RTO">
+
+<t>
+
+During the ICE gathering phase, ICE agents SHOULD calculate the
+RTO value using the following formula:
 </t>
 
 <figure><artwork>
+
 <![CDATA[
-  RTO = MAX (500ms, Ta * (number of pairs))
+  RTO = MAX (500ms, Ta * (Num-Of-Pairs))
+
+
+  Num-Of-Pairs: the number of pairs of candidates
+  with STUN or TURN servers.
+
 ]]></artwork></figure>
 
 <t>
-where the number of pairs refers to the number of pairs of candidates
-with STUN or TURN servers.
-</t>
-
-<t>
-For connectivity checks, RTO SHOULD be configurable and SHOULD have a
-default of:
+For connectivity checks, ICE agents SHOULD calculate the RTO value
+using the following formula:
 </t>
 
 <figure><artwork>
+
 <![CDATA[
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
+
+
+  Num-Waiting: the number of checks in the check list in the
+  Waiting state.
+
+  Num-In-Progress: the number of checks in the In-Progress state.
+
+  Note that the RTO will be different for each transaction as the
+  number of checks in the Waiting and In-Progress states change.
+
 ]]></artwork></figure>
+
+<t>
+ICE agents MAY calculate the RTO value using other mechanisms than those
+described above. ICE agents MUST NOT use a RTO value smaller than 500 ms.
+</t>
 
 </section>
 
@@ -4083,7 +3985,7 @@ tie-breaking of role conflicts.
 
 <t>This specification defines a single error response code:</t>
 
-<t><list style="hanging"> 
+<t><list style="hanging">
 
 <t hangText="487 (Role Conflict):"> The Binding request contained
 either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating a
@@ -4281,7 +4183,8 @@ standard solutions such as the configuration framework
 <t>
 The original ICE specification registered four new STUN attributes,
 and one new STUN error response. The STUN attributes and error
-response are reproduced here.
+response are reproduced here. In addition, this specification
+registers a new ICE option.
 </t>
 
 
@@ -4309,8 +4212,47 @@ IANA has registered following STUN error response code:
 
 <figure><artwork>
 <![CDATA[
-   487   Role Conflict: The client asserted an ICE role (controlling or
-         controlled) that is in conflict with the role of the server.
+ 487   Role Conflict: The client asserted an ICE role (controlling or
+       controlled) that is in conflict with the role of the server.
+]]></artwork></figure>
+
+
+</section>
+
+<section title="ICE Options">
+
+<t>
+IANA is requested to register the following ICE option in the "ICE Options"
+sub-registry of the "Interactive Connectivity Establishment (ICE) registry",
+following the procedures defined in <xref target="RFC6336"/>.
+</t>
+
+<figure><artwork>
+<![CDATA[
+
+ICE Option name:
+
+     ice2
+
+  Contact:
+
+     Name:    Christer Holmberg
+     E-mail:  christer.holmberg(at)ericsson(dot)com
+     Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
+
+  Change control:
+
+     IESG
+
+  Description:
+
+     The ICE option indicates that the ICE agent using the ICE option
+     is compliant and implemented according to RFC XXXX.
+
+  Reference:
+
+     RFC XXXX
+
 ]]></artwork></figure>
 
 
@@ -4558,10 +4500,10 @@ addresses were clarified. </t>
 <t> Most of the text in this document comes from the original ICE
 specification, RFC 5245. The authors would like to thank everyone who
 has contributed to that document. For additional contributions to this
-revision of the specification we would like to thank Christer
-Holmberg, Emil Ivov, Paul Kyzivat, Pal-Erik Martinsen, Simon Perrault,
-Eric Rescorla, Thomas Stach, Peter Thatcher, Martin Thomson, Justin
-Uberti, and Suhas Nandakumar.</t>
+revision of the specification we would like to thank Emil Ivov, Paul
+Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
+Stach, Peter Thatcher, Martin Thomson, Justin Uberti, and Suhas
+Nandakumar. </t>
 
 </section>
 
@@ -4572,6 +4514,7 @@ Uberti, and Suhas Nandakumar.</t>
 <?rfc include="reference.RFC.2119"?>
 <?rfc include="reference.RFC.5389"?>
 <?rfc include="reference.RFC.5766"?>
+<?rfc include="reference.RFC.6336"?>
 <?rfc include="reference.RFC.6724"?>
 </references>
 
@@ -4588,7 +4531,6 @@ Uberti, and Suhas Nandakumar.</t>
 <?rfc include="reference.RFC.3550"?>
 <?rfc include="reference.RFC.3711"?>
 <?rfc include="reference.RFC.3056"?>
-<?rfc include="reference.RFC.3389"?>
 <?rfc include="reference.RFC.3879"?>
 <?rfc include="reference.RFC.4038"?>
 <?rfc include="reference.RFC.4091"?>
@@ -4598,7 +4540,6 @@ Uberti, and Suhas Nandakumar.</t>
 <?rfc include="reference.RFC.2475"?>
 <?rfc include="reference.RFC.1918"?>
 <?rfc include="reference.RFC.4787"?>
-<?rfc include="reference.I-D.ietf-avt-rtp-no-op"?>
 <?rfc include="reference.RFC.5761"?>
 <?rfc include="reference.RFC.4103"?>
 <?rfc include="reference.RFC.5245"?>
@@ -4608,11 +4549,8 @@ Uberti, and Suhas Nandakumar.</t>
 <?rfc include="reference.RFC.6147"?>
 <?rfc include="reference.RFC.6544"?>
 <?rfc include="reference.RFC.7050"?>
-
 <?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
-<?rfc include="reference.I-D.ietf-6man-ipv6-address-generation-privacy"?>
-
-
+<?rfc include="reference.RFC.7721"?>
 
 </references>
 
@@ -4667,8 +4605,7 @@ It is important to note that the lite implementation was added to this
 specification to provide a stepping stone to full implementation. Even
 for devices that are always connected to the public Internet with just
 a single IPv4 address, a full implementation is preferable if
-achievable. A full implementation will reduce call setup times, since
-ICE's aggressive mode can be used. Full implementations also obtain
+achievable. Full implementations also obtain
 the security benefits of ICE unrelated to NAT traversal; in
 particular, the voice hammer attack described in <xref
 target="sec-security"/> is prevented only for full implementations,
@@ -5058,6 +4995,56 @@ large-scale endpoints, such as PSTN gateways and SBCs.
 </t>
 
 </section>
+
+</section>
+
+
+<section anchor="sec-concheckbw" title="Connectivity Check Bandwidth">
+
+<t>
+The tables below show, for IPv4 and IPv6, the bandwidth required for
+performing connectivity checks, using different Ta values (given in ms)
+and different ufrag sizes (given in bytes).
+</t>
+<t>
+The results were provided by Jusin Uberti (Google) 11th April 2016.
+</t>
+<figure title="Connectivity Check Bandwidth"
+anchor="fig-concheckbw"><artwork>
+<![CDATA[
+
+IP version: IPv4
+Packet len (bytes): 108 + ufrag
+     |
+  ms |     4     8    12    16
+-----|------------------------
+ 500 | 1.86k 1.98k 2.11k 2.24k
+ 200 | 4.64k 4.96k 5.28k  5.6k
+ 100 | 9.28k 9.92k 10.6k 11.2k
+  50 | 18.6k 19.8k 21.1k 22.4k
+  20 | 46.4k 49.6k 52.8k 56.0k
+  10 | 92.8k 99.2k  105k  112k
+   5 |  185k  198k  211k  224k
+   2 |  464k  496k  528k  560k
+   1 |  928k  992k 1.06M 1.12M
+
+IP version: IPv6
+Packet len (bytes): 128 + ufrag
+     |
+  ms |     4     8    12    16
+-----|------------------------
+ 500 | 2.18k  2.3k 2.43k 2.56k
+ 200 | 5.44k 5.76k 6.08k  6.4k
+ 100 | 10.9k 11.5k 12.2k 12.8k
+  50 | 21.8k 23.0k 24.3k 25.6k
+  20 | 54.4k 57.6k 60.8k 64.0k
+  10 |  108k  115k  121k  128k
+   5 |  217k  230k  243k  256k
+   2 |  544k  576k  608k  640k
+   1 | 1.09M 1.15M 1.22M 1.28M
+
+]]></artwork></figure>
+
 
 </section>
 
