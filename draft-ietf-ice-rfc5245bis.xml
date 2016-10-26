@@ -3406,8 +3406,9 @@ all ICE agents).
 </t>
 
 <t>
-This choice of 5ms is not generally applicable to transport protocols,
-but is applicable to ICE based on the following reasoning.
+This mechanism of a global minimum pacing interval of 5ms is not
+generally applicable to transport protocols, but is applicable to ICE
+based on the following reasoning.
 
 <list style="symbols">
   <t>Start with the following rules which would be generally
