@@ -3436,7 +3436,7 @@ based on the following reasoning.
   </t>
   <t>
     Thus, for ICE, the rule set reduces down to just the MinPacing
-    rule.
+    rule, which is equivalant to having a global Ta value.
   </t>
 </list>
 </t>
