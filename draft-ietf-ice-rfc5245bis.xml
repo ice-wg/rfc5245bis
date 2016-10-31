@@ -3386,8 +3386,7 @@ should utilize the timer values described here.
 
 <t>
 ICE agents SHOULD use the default Ta value, 50 ms, but MAY use another
-value based on the characteristics of the associated media. ICE agents
-MUST NOT use a Ta value smaller than 5 ms.
+value based on the characteristics of the associated media.
 </t>
 
 <t>
@@ -3396,6 +3395,52 @@ agent MUST indicate the proposed value to its peer during the ICE
 exchange. Both agents MUST use the higher value of the proposed values.
 If an agent does not propose a value, the default value is used for that
 agent when comparing which value is higher.
+</t>
+
+<t>
+Regardless of the Ta value chosen for each ICE agent, the combination
+of all transactions from all ICE agents (if a given implementation
+runs several concurrent ICE agents) MUST NOT be sent more often than
+once every 5ms (as though there were one global Ta value for pacing
+all ICE agents).
+</t>
+
+<t>
+This mechanism of a global minimum pacing interval of 5ms is not
+generally applicable to transport protocols, but is applicable to ICE
+based on the following reasoning.
+
+<list style="symbols">
+  <t>Start with the following rules which would be generally
+  applicable to transport protocols:
+  <list style="numbers">
+    <t>Let MaxBytes be the maximum number of bytes allowed to be
+    outstanding in the network at start-up, which SHOULD be 14600
+    bytes per RFC 6928.</t>
+    <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
+    RTT is known and 500ms otherwise.  This is based on the RTO for
+    STUN messages from RFC 5389 and the the TCP initial RTO, which is
+    1 sec  in RFC 6298.</t>
+    <t>Let MinPacing be the minimum pacing interval between
+    transactions, which SHOULD be 5ms.</t>
+  </list>
+  </t>
+  <t>
+    Observe that ICE agents typically do not know the RTT for ICE
+    transactions (connectivity checks in particular), meaning that HTO
+    will almost always be 500ms.
+  </t>
+  <t>
+    Observe that a MinPacing of 5ms and HTO of 500ms gives at most 100
+    packets/HTO, which for a typical ICE check of less than 120
+    bytes means a maximum of 12000 outstanding bytes in the network,
+    which is less than the maximum expressed by rule 1.
+  </t>
+  <t>
+    Thus, for ICE, the rule set reduces down to just the MinPacing
+    rule, which is equivalant to having a global Ta value.
+  </t>
+</list>
 </t>
 
 <t>
