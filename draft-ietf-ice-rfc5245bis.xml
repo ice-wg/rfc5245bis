@@ -3414,15 +3414,16 @@ based on the following reasoning.
   <t>Start with the following rules which would be generally
   applicable to transport protocols:
   <list style="numbers">
-    <t>Let MaxPackets be the maximum number of transactions allowed to be outstanding in the network at any time, which SHOULD be 10.</t>
-    <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if RTT is known and 500ms otherwise.</t>
-    <t>Let MinPacing be the minimum pacing interval between transactions, which SHOULD be 5ms.</t>
+    <t>Let MaxBytes be the maximum number of bytes allowed to be
+    outstanding in the network at start-up, which SHOULD be 14600
+    bytes per RFC 6928.</t>
+    <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
+    RTT is known and 500ms otherwise.  This is based on the RTO for
+    STUN messages from RFC 5389 and the the TCP initial RTO, which is
+    1 sec  in RFC 6298.</t>
+    <t>Let MinPacing be the minimum pacing interval between
+    transactions, which SHOULD be 5ms.</t>
   </list>
-  </t>
-  <t>
-    Observe that ICE transactions are typically around 100 bytes or
-    less, which makes it reasonable to increase MaxPackets to about
-    150.
   </t>
   <t>
     Observe that ICE agents typically do not know the RTT for ICE
@@ -3430,9 +3431,10 @@ based on the following reasoning.
     will almost always be 500ms.
   </t>
   <t>
-    Observe that MaxPackets=150 combined with HTO=500ms gives a rate
-    of approximately 300 transactions/second, which is higher than the
-    MinPacing interval of 5ms would allow.
+    Observe that a MinPacing of 5ms and HTO of 500ms gives at most 100
+    packets/HTO, which for a typical ICE check of less than 120
+    bytes means a maximum of 12000 outstanding bytes in the network,
+    which is less than the maximum expressed by rule 1.
   </t>
   <t>
     Thus, for ICE, the rule set reduces down to just the MinPacing
