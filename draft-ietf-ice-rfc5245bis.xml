@@ -3171,55 +3171,27 @@ Procedures for sending media differ for full and lite implementations.
 <section title="Procedures for Full Implementations">
 
 <t>
-Agents always send media using a candidate pair, called the selected
-candidate pair. An agent will send media to the remote candidate in
-the selected pair (setting the destination address and port of the
-packet equal to that remote candidate), and will send it from the
-local candidate of the selected pair. When the local candidate is
+A full implementation MUST NOT send media until it has a Valid list
+that contains a candidate pair for each component of that media
+stream. Once that happens, the agent MAY begin sending media
+packets.
+</t>
+	
+<t>
+An agent will send media to the remote candidate (setting the 
+destination address and port of the packet equal to that remote candidate), 
+and will send it from the local candidate. When the local candidate is
 server or peer reflexive, media is originated from the base. Media
 sent from a relayed candidate is sent from the base through that TURN
 server, using procedures defined in <xref target="RFC5766"/>.
 </t>
-
+	
 <t>
 If the local candidate is a relayed candidate, it is RECOMMENDED that
 an agent create a channel on the TURN server towards the remote
 candidate.  This is done using the procedures for channel creation as
 defined in Section 11 of <xref target="RFC5766"/>.
 </t>
-
-<t>
-The selected pair for a component of a media stream is:
-<list style="symbols">
-<t>
-empty if the state of the check list for that media stream is Running,
-and there is no previous selected pair for that component due to an
-ICE restart
-</t>
-
-<t>
-equal to the previous selected pair for a component of a media stream
-if the state of the check list for that media stream is Running, and
-there was a previous selected pair for that component due to an ICE
-restart
-</t>
-
-<t>
-equal to the highest-priority nominated pair for that component in the
-valid list if the state of the check list is Completed
-</t>
-</list>
-</t>
-
-<t>
-If the selected pair for at least one component of a media stream is
-empty, an agent MUST NOT send media for any component of that media
-stream. If the selected pair for each component of a media stream has
-a value, an agent MAY send media for all components of that media
-stream.
-</t>
-
-
 
 </section>
 
