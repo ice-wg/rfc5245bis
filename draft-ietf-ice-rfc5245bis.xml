@@ -723,10 +723,11 @@ relayed candidate is resident on the TURN server, and the TURN server
 relays packets back towards the agent.
 </t>
 
-<t hangText="Base:"> The base of a server reflexive candidate is the
-host candidate from which it was derived. A host candidate is also
-said to have a base, equal to that candidate itself. Similarly, the
-base of a relayed candidate is that candidate itself.
+<t hangText="Base:"> The transport address that an agent sends from
+for a particular candidate. For host-, server reflexive- and peer reflexive
+candidates the base is the same as the host candidate. For relayed
+candidates the base is the same as the relayed candidate (i.e., the
+transport address used by the TURN server to send from).
 </t>
 
 <t hangText="Foundation:"> An arbitrary string that is the same for
@@ -896,8 +897,7 @@ candidates, server reflexive candidates, peer reflexive candidates,
 and relayed candidates.  The server reflexive candidates are gathered
 using STUN or TURN, and relayed candidates are obtained through TURN.
 Peer reflexive candidates are obtained in later phases of ICE, as a
-consequence of connectivity checks.  The base of a candidate is the
-candidate that an agent must send from when using that candidate.
+consequence of connectivity checks.
 </t>
 
 <t>
@@ -1609,9 +1609,13 @@ of this specification.
 There is one check list per in-use media stream resulting from the
 candidate exchange.  To form the check list for a media stream, the
 agent forms candidate pairs, computes a candidate pair priority,
-orders the pairs by priority, prunes them, and sets their
-states. These steps are described in this section.
+orders the pairs by priority, prunes them, removes lower-priority
+candidates and sets their states. These steps are described in this section.
+If a check list is updated (e.g, due to detection of peer reflexive
+candidates), the agent will re-perform the steps for the updated
+check list.
 </t>
+
 
 <section title="Forming Candidate Pairs">
 
@@ -1619,9 +1623,7 @@ states. These steps are described in this section.
 First, the agent takes each of its candidates for a media stream
 (called LOCAL CANDIDATES) and pairs them with the candidates it
 received from its peer (called REMOTE CANDIDATES) for that media
-stream. In order to prevent the attacks described in <xref
-target="sec-ice-hammer"/>, agents MAY limit the number of candidates
-they'll accept in an candidate exchange process. A local candidate is
+stream. A local candidate is
 paired with a remote candidate if and only if the two candidates have
 the same component ID and have the same IP address version. It is
 possible that some of the local candidates won't get paired with
@@ -1653,9 +1655,9 @@ paired with other than link-local addresses. </t>
 
 <t>
 The candidate pairs whose local and remote candidates are both the
-default candidates for a particular component is called,
-unsurprisingly, the default candidate pair for that component. This is
-the pair that would be used to transmit media if both agents had not
+default candidates for a particular component is called the
+default candidate pair for that component. This is the pair that
+would be used to transmit media if both agents had not
 been ICE aware.
 </t>
 
@@ -1747,19 +1749,23 @@ identical priority, the ordering amongst them is arbitrary.
 This sorted list of candidate pairs is used to determine a sequence of
 connectivity checks that will be performed. Each check involves
 sending a request from a local candidate to a remote candidate. Since
-an agent cannot send requests directly from a reflexive candidate, but
-only from its base, the agent next goes through the sorted list of
-candidate pairs. For each pair where the local candidate is server
-reflexive, the server reflexive candidate MUST be replaced by its
-base. Once this has been done, the agent MUST prune the list. This is
-done by removing a pair if its local and remote candidates are
-identical to the local and remote candidates of a pair higher up on
+an agent cannot send requests directly from a reflexive candidate
+(server reflexive or peer reflexive), but only from its base, the
+agent next goes through the sorted list of candidate pairs. For each
+pair where the local candidate is reflexive, the candidate MUST be
+replaced by its base. Once this has been done, the agent MUST prune
+the list. This is done by removing a pair if its local and remote candidates
+are identical to the local and remote candidates of a pair higher up on
 the priority list. The result is a sequence of ordered candidate
 pairs, called the check list for that media stream.
 </t>
 
+</section>
+
+<section title="Removing lower-priority Pairs">
+
 <t>
-In addition, in order to limit the attacks described in <xref
+In order to limit the attacks described in <xref
 target="sec-ice-hammer"/>, an agent MUST limit the total number of
 connectivity checks the agent performs across all check lists to a
 specific value, and this value MUST be configurable. A default of 100
@@ -2303,8 +2309,8 @@ as checks are performed, resulting in valid candidate pairs.
 <t>
 It will be very common that the pair will not be on any check list.
 Recall that the check list has pairs whose local candidates are never
-server reflexive; those pairs had their local candidates converted to
-the base of the server reflexive candidates, and then pruned if they
+reflexive; those pairs had their local candidates converted to
+the base of the reflexive candidates, and then pruned if they
 were redundant. When the response to the STUN check arrives, the
 mapped address will be reflexive if there is a NAT between the two. In
 that case, the valid pair will have a local candidate that doesn't
@@ -3171,19 +3177,19 @@ Procedures for sending media differ for full and lite implementations.
 <section title="Procedures for Full Implementations">
 
 <t>
-Agents always send media using a candidate pair, called the selected
-candidate pair. An agent will send media to the remote candidate in
+Agents always send media using a candidate pair, using candidate pairs
+in the Valid list. An agent will send media to the remote candidate in
 the selected pair (setting the destination address and port of the
 packet equal to that remote candidate), and will send it from the
-local candidate of the selected pair. When the local candidate is
-server or peer reflexive, media is originated from the base. Media
-sent from a relayed candidate is sent from the base through that TURN
-server, using procedures defined in <xref target="RFC5766"/>.
+base associated with the selected pair. In case of a relayed
+candidate, media is sent from the agent and forwareded through
+the base (located in the TURN server), using the procedures defined
+in <xref target="RFC5766"/>.
 </t>
 
 <t>
 If the local candidate is a relayed candidate, it is RECOMMENDED that
-an agent create a channel on the TURN server towards the remote
+an agent creates a channel on the TURN server towards the remote
 candidate.  This is done using the procedures for channel creation as
 defined in Section 11 of <xref target="RFC5766"/>.
 </t>
