@@ -1785,28 +1785,27 @@ are five potential values that the state can have:
 </t>
 
 <t><list style="hanging">
-<t hangText="Waiting:"> A check has not been performed for this pair, and
-can be performed as soon as it is the highest-priority Waiting pair on the
-check list.
+<t hangText="Waiting:"> A check has not been sent for this pair, but
+can be sent as soon as the pair is chosen based on the criteria for selecting
+for which candidate pair a check is to be sent.
 </t>
 
 <t hangText="In-Progress:"> A check has been sent for this pair, but
 the transaction is in progress.
 </t>
 
-<t hangText="Succeeded:"> A check for this pair was already done and
+<t hangText="Succeeded:"> A check has been sent for this pair, and
 produced a successful result.
 </t>
 
-<t hangText="Failed:"> A check for this pair was already done and
-failed, either
-never producing any response or producing an unrecoverable failure
-response.
+<t hangText="Failed:"> A check has been sent for this pair, and
+failed (a response to the check was never received, or a failure
+response was received).
 </t>
 
-<t hangText="Frozen:"> A check for this pair hasn't been performed,
-and it can't yet be performed until some other check succeeds,
-allowing this pair to unfreeze and move into the Waiting state.
+<t hangText="Frozen:"> A check for this pair has not been sent,
+and it can not be sent until the pair is unfrozen and moved into the
+Waiting state.
 </t>
 </list></t>
 
