@@ -3220,8 +3220,8 @@ restart
 
 <t>
 Unless an agent is able to produce a selected pair for all components
-associated with a media strem, the agent MUST NOT continue
-sedning media for any component associated with that media stream.
+associated with a media stream, the agent MUST NOT continue
+sending media for any component associated with that media stream.
 </t>
 
 
@@ -3267,7 +3267,7 @@ one candidate pair to another.  </t>
 <section anchor="sec-recv-media" title="Receiving Media">
 
 <t>
-Eventhough, ICE agents are only allowed to send media using valid
+Even though ICE agents are only allowed to send media using valid
 candidiate pairs (and, once a candidiate pair has been selected, only
 on the selected pair) ICE implementations SHOULD by default be prepared
 to receive media on any of the candidiates provided in the most recent
