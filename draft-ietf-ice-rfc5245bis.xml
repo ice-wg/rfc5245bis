@@ -4753,8 +4753,8 @@ paced, and why are these formulas used?
 creating bindings on NAT devices between the client and the STUN
 servers. Experience has shown that many NAT devices have upper limits
 on the rate at which they will create new bindings. Experiments have
-shown that once every 20 ms is well supported, but not much lower than
-that. This is why Ta has a lower bound of 20 ms. Furthermore,
+shown that once every 5 ms is well supported.
+This is why Ta has a lower bound of 5 ms. Furthermore,
 transmission of these packets on the network makes use of bandwidth
 and needs to be rate limited by the agent. Deployments based on
 earlier draft versions of <xref target="RFC5245"/> tended to overload
