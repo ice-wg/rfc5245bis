@@ -1619,6 +1619,27 @@ candidates), the agent will re-perform the steps for the updated
 check list.
 </t>
 
+<t>
+Each check list has a state, which captures the state of ICE checks
+for the media stream associated with the check list. The states are:</t>
+
+<t><list style="hanging">
+
+<t hangText="Running:"> In this state, ICE checks are still in
+progress for this media stream. Check lists are initially set
+to the Running state.
+</t>
+
+<t hangText="Completed:"> In this state, ICE checks have produced
+selected pairs for each component of the media stream.
+</t>
+
+<t hangText="Failed:"> In this state, the ICE checks have not
+completed successfully for this media stream.
+</t>
+
+</list></t>
+
 
 <section title="Forming Candidate Pairs">
 
@@ -1719,6 +1740,84 @@ indicating the main properties of candidates and candidate pairs.
 
 ]]></artwork></figure>
 
+<t>
+Each candidate pair in a check list has a foundation and a state.
+The foundation is the combination of the foundations of the local and
+remote candidates in the pair. The states are:
+</t>
+
+<t><list style="hanging">
+<t hangText="Frozen:"> A check for this pair has not been sent,
+and it can not be sent until the pair is unfrozen and moved into the
+Waiting state. Candidate pairs are initially set to the Frozen state.
+</t>
+
+<t hangText="Waiting:"> A check has not been sent for this pair, but
+can be sent as soon as the pair is chosen based on the criteria for selecting
+for which candidate pair a check is to be sent.
+</t>
+
+<t hangText="In-Progress:"> A check has been sent for this pair, but
+the transaction is in progress.
+</t>
+
+<t hangText="Succeeded:"> A check has been sent for this pair, and
+produced a successful result.
+</t>
+
+<t hangText="Failed:"> A check has been sent for this pair, and
+failed (a response to the check was never received, or a failure
+response was received).
+</t>
+
+</list></t>
+
+<t>
+As ICE runs, the pairs will move between states as shown in <xref
+target="fig-state-fsm"/>.
+</t>
+
+<figure title="Pair State FSM" anchor="fig-state-fsm" align="center"><artwork>
+<![CDATA[
+   +-----------+
+   |           |
+   |           |
+   |  Frozen   |
+   |           |
+   |           |
+   +-----------+
+         |
+         |unfreeze
+         |
+         V
+   +-----------+         +-----------+
+   |           |         |           |
+   |           | perform |           |
+   |  Waiting  |-------->|In-Progress|
+   |           |         |           |
+   |           |         |           |
+   +-----------+         +-----------+
+                               / |
+                             //  |
+                           //    |
+                         //      |
+                        /        |
+                      //         |
+            failure //           |success
+                  //             |
+                 /               |
+               //                |
+             //                  |
+           //                    |
+          V                      V
+   +-----------+         +-----------+
+   |           |         |           |
+   |           |         |           |
+   |   Failed  |         | Succeeded |
+   |           |         |           |
+   |           |         |           |
+   +-----------+         +-----------+
+]]></artwork></figure>
 
 </section>
 
@@ -1783,87 +1882,7 @@ deployed, it is found to be problematic.
 
 </section>
 
-<section title="Computing States">
-
-<t>
-Each candidate pair in the check list has a foundation and a state.
-The foundation is the combination of the foundations of the local and
-remote candidates in the pair. The state is assigned once the check
-list for each media stream has been computed. There
-are five potential values that the state can have:
-</t>
-
-<t><list style="hanging">
-<t hangText="Waiting:"> A check has not been sent for this pair, but
-can be sent as soon as the pair is chosen based on the criteria for selecting
-for which candidate pair a check is to be sent.
-</t>
-
-<t hangText="In-Progress:"> A check has been sent for this pair, but
-the transaction is in progress.
-</t>
-
-<t hangText="Succeeded:"> A check has been sent for this pair, and
-produced a successful result.
-</t>
-
-<t hangText="Failed:"> A check has been sent for this pair, and
-failed (a response to the check was never received, or a failure
-response was received).
-</t>
-
-<t hangText="Frozen:"> A check for this pair has not been sent,
-and it can not be sent until the pair is unfrozen and moved into the
-Waiting state.
-</t>
-</list></t>
-
-<t>
-As ICE runs, the pairs will move between states as shown in <xref
-target="fig-state-fsm"/>.
-</t>
-
-<figure title="Pair State FSM" anchor="fig-state-fsm" align="center"><artwork>
-<![CDATA[
-   +-----------+
-   |           |
-   |           |
-   |  Frozen   |
-   |           |
-   |           |
-   +-----------+
-         |
-         |unfreeze
-         |
-         V
-   +-----------+         +-----------+
-   |           |         |           |
-   |           | perform |           |
-   |  Waiting  |-------->|In-Progress|
-   |           |         |           |
-   |           |         |           |
-   +-----------+         +-----------+
-                               / |
-                             //  |
-                           //    |
-                         //      |
-                        /        |
-                      //         |
-            failure //           |success
-                  //             |
-                 /               |
-               //                |
-             //                  |
-           //                    |
-          V                      V
-   +-----------+         +-----------+
-   |           |         |           |
-   |           |         |           |
-   |   Failed  |         | Succeeded |
-   |           |         |           |
-   |           |         |           |
-   +-----------+         +-----------+
-]]></artwork></figure>
+<section title="Computing Pair States">
 
 <t>
 The initial states for each pair in a check list are computed by
@@ -1872,59 +1891,56 @@ performing the following sequence of steps:
 
 <t><list style="numbers">
 
+<t>The check lists are placed in an ordered list (the order is determined
+by each ICE usage).
+
 <t>The agent sets all of the pairs in each check list to the Frozen
 state.
 </t>
 
-<t>The agent examines the check list for the first media stream. For
-that media stream:
-<list style="symbols">
-<t>For all pairs with the same foundation, it sets the state of the
-pair with the lowest component ID to Waiting. If there is more than
-one such pair, the one with the highest-priority is used.
+<t>The agent sets all of the check lists to the Running
+state.
 </t>
-</list></t>
 
-</list></t>
-
-<t>One of the check lists will have some number of pairs in the
-Waiting state, and the other check lists will have all of their pairs
-in the Frozen state. A check list with at least one pair that is
+<t>The agent examines each check list, starting from the first
+check lists in the ordered list, in the following way:
+<list style="symbols">
+<t>
+For each foundation, the candidate pair with the lowest
+component ID (in case of multiple such pairs, the pair with the highest
+priority) is placed in the Waiting state, unless a candidate pair
+associated with the same foundation has already been put in the Waiting
+state in one of the other examined check lists. This will ensure that,
+within the ordered list, only one pair with a given foundation
+is initially placed in the Waiting state, while other pairs with the same
+foundation remain in the Frozen state.
+</t>
+<t>
+When one or more candidate pairs within a given check list are placed
+in the Waiting state. A check list with at least one pair that is
 Waiting is called an active check list, and a check list with all
 pairs Frozen is called a frozen check list.
 </t>
-
-<t>
-The check list itself is associated with a state, which captures the
-state of ICE checks for that media stream. There are three states:</t>
-
-<t><list style="hanging">
-
-<t hangText="Running:"> In this state, ICE checks are still in
-progress for this media stream.
-</t>
-
-<t hangText="Completed:"> In this state, ICE checks have produced
-selected pairs for each component of the media stream.
-</t>
-
-<t hangText="Failed:"> In this state, the ICE checks have not
-completed successfully for this media stream.
-</t>
+</list></t>
 
 </list></t>
 
 <t>
-When a check list is first constructed as the consequence of an
-candidate exchange, it is placed in the Running state.
+NOTE: The procedures above are different from RFC5245, where only candidate pairs
+in the first check list of the ordered list were initially placed in the Waiting
+state.
 </t>
+
+</section>
+
+<section title="Computing ICE State">
 
 <t>
 ICE processing across all media streams also has a state associated
-with it. This state is equal to Running while ICE processing is under
-way. The state is Completed when ICE processing is complete and Failed
-if it failed without success.  Rules for transitioning between states
-are described below.
+with it. This state is set to Running while ICE processing is under
+way. The state is set to Completed when ICE processing is complete
+and set to Failed if it failed without success.  Rules for transitioning
+between states are described below.
 </t>
 
 </section>
@@ -1948,8 +1964,7 @@ queue, an ordinary check is sent.
 Once the agent has computed the check lists as described in <xref
 target="sec-forming"/>, it sets a timer for each active check
 list. The timer fires every Ta*N seconds, where N is the number of
-active check lists (initially, there is only one active check
-list). Implementations MAY set the timer to fire less frequently than
+active check lists. Implementations MAY set the timer to fire less frequently than
 this. Implementations SHOULD take care to spread out these timers so
 that they do not fire at the same time for each media stream. Ta and
 the retransmit timer RTO are computed as described in <xref
@@ -3186,7 +3201,7 @@ sending media. An agent will send media to the remote candidate (i.e.,
 setting the destination address and port of the packet equal to that
 remote candidate), and will send it from the base associated with the
 candidiate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwareded through
+candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
 </t>
@@ -3237,7 +3252,7 @@ packets. To do that, it sends media to the remote candidate in the
 pair (setting the destination address and port of the packet equal to
 that remote candidate), and will send it from the base associated with the
 candidiate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwareded through
+candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
 </t>
@@ -3271,7 +3286,7 @@ candidiate pairs (and, once a candidiate pair has been selected, only
 on the selected pair) ICE implementations SHOULD by default be prepared
 to receive media on any of the candidiates provided in the most recent
 candidiate exchange with the peer. Specific ICE usages MAY define rules
-that differe from this, e.g., by defining that media must not be sent
+that differs from this, e.g., by defining that media must not be sent
 until selected pairs have been procduced for each component associated
 with that media.
 </t>
