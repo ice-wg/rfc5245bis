@@ -1913,6 +1913,76 @@ pairs Frozen is called a frozen check list.
 </t>
 
 <t>
+The table in <xref target="fig-state-initial"/> illustrates how the
+initial states of the candidiate pairs in the ordered list of check
+lists are set.
+</t>
+
+<figure title="Initial Pair State" anchor="fig-state-initial" align="center"><artwork>
+<![CDATA[
+
+Table legend:
+
+Each row (m1, m2,...) represents a check list associated with a media
+stream. m1 represents the first check list in the ordered list of check
+lists.
+
+Each column (f1, f2,...) represents a foundation. Every candidiate pair
+within a given column share the same foundation.
+
+f-cp represents a candidate pair in the Frozen state.
+
+w-cp represents a candidate pair in the Waiting state.
+
+1. The agent sets all of the pairs in each check list to the Frozen
+state.
+
+      f1    f2    f3    f4    f5
+    -----------------------------
+m1 | f-cp  f-cp  f-cp
+   |
+m2 | f-cp  f-cp  f-cp  f-cp
+   |
+m3 | f-cp                    f-cp
+
+
+2. For each foundation, the candidate pair with the lowest component ID
+is placed in the Waiting state, unless a candidate pair associated with
+the same foundation has already been put in the Waiting state in one of
+the other examined check lists.
+
+      f1    f2    f3    f4    f5
+    -----------------------------
+m1 | w-cp  w-cp  w-cp
+   |
+m2 | f-cp  f-cp  f-cp  w-cp
+   |
+m3 | f-cp                    w-cp
+
+
+In the first check list (m1) the candidate pair for each foundation is
+placed in the Waiting state, as no pairs for the same foundations have
+yet been placed in the Waiting state.
+
+In the second check list (m2) the candidate pair for foundation f4 is
+placed in the Waiting state. The candidate pair for foundations f1, f2
+and f3 are kept in the Frozen state, as candidate pairs for those
+foundations have already been placed in the Waiting state (within check
+list m1).
+
+In the third check list (m3) the candidate pair for foundation f5 is
+placed in the Waiting state. The candidate pair for foundation f1 is
+kept in the Frozen state, as a candidate pair for that foundation have
+already been placed in the Waiting state (within check list m1).
+
+Once each check list have been processed, one candidate pair for each
+foundation has been placed in the Waiting state.
+
+]]></artwork></figure>
+
+
+
+<t>
 The check list itself is associated with a state, which captures the
 state of ICE checks for that media stream. There are three states:</t>
 
