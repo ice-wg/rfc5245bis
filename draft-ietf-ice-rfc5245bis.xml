@@ -2020,75 +2020,80 @@ are described below.
 </section>
 
 <section anchor="sec-periodic" title="Scheduling Checks">
-<t>
-An agent performs ordinary checks and triggered checks. The generation
-of both checks is governed by a timer that fires periodically for each
-media stream. The agent maintains a FIFO queue, called the triggered
-check queue, which contains candidate pairs for which checks are to be
-sent at the next available opportunity. When the timer fires, the
-agent removes the top pair from the triggered check queue, performs a
-connectivity check on that pair, and sets the state of the candidate
-pair to In-Progress. If there are no pairs in the triggered check
-queue, an ordinary check is sent.
-</t>
-
+<section anchor="sec-periodic-queue" title="Triggered Check Queue">
 <t>
 Once the agent has computed the check lists as described in <xref
-target="sec-forming"/>, it sets a timer for each active check
-list. The timer fires every Ta*N seconds, where N is the number of
-active check lists. Implementations MAY set the timer to fire less frequently than
-this. Implementations SHOULD take care to spread out these timers so
-that they do not fire at the same time for each media stream. Ta and
-the retransmit timer RTO are computed as described in <xref
-target="sec-ta"/>. Multiplying by N allows this aggregate check
-throughput to be split between all active check lists. The first timer
-fires immediately, so that the agent performs a connectivity check the
-moment the candidate exchange has been done, followed by the next
-check Ta seconds later (since there is only one active check list).
+target="sec-forming"/>, the agent will begin performing ordinary checks
+and triggered checks. For triggered checks, the agent maintains a FIFO
+queue, triggered check queue, which contains candidate pairs for which
+checks are to be sent at the next available opportunity.
 </t>
+</section>
 
-
+<section anchor="sec-periodic-tc" title="Timer Tc">
+<t>The generation of ordinary and triggered checks is govererned
+by a timer, Tc. Each active check list is associated with an
+instance of Tc, and whenever Tc for a given check list fires
+a check is performed for a candidate pair within that check list.
+</t>
+<t>The value of Tc is Ta*N seconds, where N is the number of
+active check lists. Whenver the number of active check lists change,
+the agent SHOULD re-calculate the Tc value. Multiplying by N allows
+this aggregate check throughput to be split between all active check
+lists. Tc associated with the first check list fires immediately,
+causing the agent to start performing connectivity checks as soon
+as the intitial states of the candidate pairs in each check list have
+been calculated.
+</t>
 <t>
-When the timer fires and there is no triggered check to be sent, the
-agent MUST choose an ordinary check as follows:
+Implementations SHOULD spread out the starting of the Tc timers associated
+with each check list, so that Tc for each check list do not fire at the same
+time.
+</t>
+<t>Based on local policy, an agent MAY set the Tc value to a number bigger than
+described above, in order for Tc to fire less frequently.
+</t>
+</section>
+
+<section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
+<t>
+When Tc for a given check list fires, the agent will perform a check for a
+candidate pair within that check list as follows:
 
 <list style="symbols">
-<t>Find the highest-priority pair in that check list that is in the
-Waiting state.
+<t>If the triggered check queue contains one or more candidate pairs,
+the agent removes the top pair from the queue, performs a connectivity
+check on that pair and puts the candidate pair state to In-Progress; or
 </t>
 
-<t>If there is such a pair:
-<list style="symbols">
-<t>Send a STUN check from the local candidate of
-that pair to the remote candidate of that pair. The procedures for
-forming the STUN request for this purpose are described in <xref
-target="sec-send-check"/>.
-</t>
-<t>Set the state of the candidate pair to In-Progress.
+<t>If the triggered check queue is empty, and if there are one or more
+candidate pairs in the Waiting state, the agent selects the highest-
+priority candidate pair in the Waiting state, performs a connectivity
+check on that pair and puts the candidate pair par state to In-Progress; or
 </t>
 
+<t>If there is no candidate pair in the Waiting state, in any of the check
+lists, and if there are one or more candidate pairs in the Frozen state,
+the agent selects the highest-priority candidate pair in the Frozen state,
+performs a connectivity check on that pair and puts the candidate pair par
+state to In-Progress; or
+</t>
+
+<t>If there is no candidate in the Waiting or Frozen state, the agent MUST terminate
+timer Tc for that check list and re-calculate Tc for the remaining
+active check lists.
+</t>
 </list></t>
 
-<t>If there is no such pair:
-<list style="symbols">
-<t>Find the highest-priority pair in that check list that is in the
-Frozen state.
+<t>Once a candidate pair has been selected, the agent performs the check
+by sending a STUN request from the base associated with the local candiditate
+of the pair to the remote candidiate of the pair, as described in
+<xref target="sec-send-check"/>.
 </t>
 
-<t>If there is such a pair:
-<list style="symbols">
-<t>Unfreeze the pair.</t>
-<t>Perform a check for that pair, causing its state to transition to
-In-Progress.
-</t>
-</list></t>
-
-<t>If there is no such pair:
-<list style="symbols">
-<t>Terminate the timer for that check list.</t>
-</list></t>
-</list></t></list></t>
-
+<t>Based on local policy, an agent MAY choose to terminate perfoming the
+connectivity checks for one or more active checks lists (and terminate the
+Tc associated with those check lists) at any time.
 
 <t>
 To compute the message integrity for the check, the agent uses the
@@ -2100,9 +2105,10 @@ known directly by the agent for its own candidate.
 <t>
 The Initiator performs the ordinary checks on receiving the candidate
 information from the Peer (responder) and having formed the checklists.
-On the  other hand the responding agent either performs the triggered or
+On the other hand the responding agent either performs the triggered or
 ordinary checks as described above.
 </t>
+</section>
 </section>
 <!-- end of full implementation -->
 </section>
