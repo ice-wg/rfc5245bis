@@ -2024,17 +2024,17 @@ are described below.
 <t>
 Once the agent has computed the check lists as described in <xref
 target="sec-forming"/>, the agent will begin performing ordinary checks
-and triggered checks. The agent maintains a FIFO queue, called the
-triggered check queue, which contains candidate pairs for which checks
-are to be sent at the next available opportunity.
+and triggered checks. For triggered checks, the agent maintains a FIFO
+queue, triggered check queue, which contains candidate pairs for which
+checks are to be sent at the next available opportunity.
 </t>
 </section>
 
 <section anchor="sec-periodic-tc" title="Timer Tc">
 <t>The generation of ordinary and triggered checks is govererned
 by a timer, Tc. Each active check list is associated with an
-instance of Tc, and whenever Tc associated with a given check list fires
-a check is performed for that check list.
+instance of Tc, and whenever Tc for a given check list fires
+a check is performed for a candidate pair within that check list.
 </t>
 <t>The value of Tc is Ta*N seconds, where N is the number of
 active check lists. Whenver the number of active check lists change,
@@ -2050,37 +2050,37 @@ Implementations SHOULD spread out the starting of the Tc timers associated
 with each check list, so that Tc for each check list do not fire at the same
 time.
 </t>
-<t>Implementations MAY set the Tc value to a number bigger than described
-above, in order for Tc to fire less frequently.
+<t>Based on local policy, an agent MAY set the Tc value to a number bigger than
+described above, in order for Tc to fire less frequently.
 </t>
 </section>
 
-<section anchor="sec-periodic-perform" title="Performing Connectivity Check">
+<section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
 <t>
-When Tc for a given check list fires, the agent will perform a check for that
-check list as follows:
+When Tc for a given check list fires, the agent will perform a check for a
+candidate pair within that check list as follows:
 
 <list style="symbols">
 <t>If the triggered check queue contains one or more candidate pairs,
 the agent removes the top pair from the queue, performs a connectivity
-check on that pair and puts the candidate pair state to In-Progress.
+check on that pair and puts the candidate pair state to In-Progress; or
 </t>
 
 <t>If the triggered check queue is empty, and if there are one or more
 candidate pairs in the Waiting state, the agent selects the highest-
 priority candidate pair in the Waiting state, performs a connectivity
-check on that pair and puts the candidate pair par state to In-Progress.
+check on that pair and puts the candidate pair par state to In-Progress; or
 </t>
 
 <t>If there is no candidate pair in the Waiting state, in any of the check
 lists, and if there are one or more candidate pairs in the Frozen state,
 the agent selects the highest-priority candidate pair in the Frozen state,
 performs a connectivity check on that pair and puts the candidate pair par
-state to In-Progress.
+state to In-Progress; or
 </t>
 
-<t>If there is no candidate in the Frozen state, the agent MUST terminate
-timer Tc for that check list and re-calculate timer Tc for the remaining
+<t>If there is no candidate in the Waiting or Frozen state, the agent MUST terminate
+timer Tc for that check list and re-calculate Tc for the remaining
 active check lists.
 </t>
 </list></t>
@@ -2090,6 +2090,10 @@ by sending a STUN request from the base associated with the local candiditate
 of the pair to the remote candidiate of the pair, as described in
 <xref target="sec-send-check"/>.
 </t>
+
+<t>Based on local policy, an agent MAY choose to terminate perfoming the
+connectivity checks for one or more active checks lists (and terminate the
+Tc associated with those check lists) at any time.
 
 <t>
 To compute the message integrity for the check, the agent uses the
