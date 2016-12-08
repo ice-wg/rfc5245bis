@@ -2026,39 +2026,37 @@ checks are to be sent at the next available opportunity.
 <t>The generation of ordinary and triggered connectivity checks is govererned
 by timer Ta. As soon as the initial states for the candidiate pairs in each
 check list have been set, a check is performed for a candidate pair
-within the first active check list in the ordered list of check lists, following
+within the first check list in the ordered list of check lists, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
-whenever Ta fires the next active check list in the ordered list is selected,
+whenever Ta fires the next check list in the ordered list is selected,
 and a check s performed for a candidiate within that check list.
 After the last check list in the ordered list of check lists has been
-processed, the first active check list is selected again. Etc.
+processed, the first check list is selected again. Etc.
 </t>
 
 <t>
 Whenever Ta fires, the agent will perform a check for a candidate pair within
 the selected check list as follows:
 <list style="symbols">
-<t>If the triggered check queue contains one or more candidate pairs,
-the agent removes the top pair from the queue, performs a connectivity
-check on that pair and puts the candidate pair state to In-Progress; or
+<t>If the triggered check queue associated with the check list contains
+one or more candidate pairs, the agent removes the top pair from the
+queue, performs a connectivity check on that pair and puts the candidate pair
+state to In-Progress; or
 </t>
 
-<t>If the triggered check queue is empty, and if there are one or more
-candidate pairs in the Waiting state, the agent selects the highest-
-priority candidate pair in the Waiting state, performs a connectivity
+<t>If the triggered check queue associated with the check list is empty, and
+if there are one or more candidate pairs in the Waiting state, the agent selects
+the highest-priority candidate pair in the Waiting state, performs a connectivity
 check on that pair and puts the candidate pair par state to In-Progress; or
 </t>
 
 <t>If there is no candidate pair in the Waiting state, in any of the check
-lists, and if there are one or more candidate pairs in the Frozen state,
-the agent selects the highest-priority candidate pair in the Frozen state,
-performs a connectivity check on that pair and puts the candidate pair par
-state to In-Progress; or
+lists in the ordered list of check lists, and if there are one or more
+candidate pairs in the Frozen state, the agent selects the highest-priority
+candidate pair in the Frozen state, performs a connectivity check on that pair
+and puts the candidate pair par state to In-Progress; or
 </t>
 
-<t>If there is no candidate in the Waiting or Frozen state, the check list
-is no longer active and shall not be selected when Ta fires.
-</t>
 </list></t>
 
 <t>Once a candidate pair has been selected, the agent performs the check
