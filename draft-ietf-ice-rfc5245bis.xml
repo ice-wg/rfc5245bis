@@ -1618,7 +1618,26 @@ If a check list is updated (e.g, due to detection of peer reflexive
 candidates), the agent will re-perform the steps for the updated
 check list.
 </t>
-
+<section title="Check List State">
+<t>Each check list has a state, which captures the state of ICE checks
+for the media stream associated with the check list. The states are:</t>
+<t><list style="hanging">
+<t hangText="Running:"> In this state, ICE checks are still in
+progress for this media stream. Check lists are initially set
+to the Running state.
+</t>
+<t hangText="Completed:"> In this state, ICE checks have produced
+selected pairs for each component of the media stream.
+</t>
+<t hangText="Failed:"> In this state, the ICE checks have not
+completed successfully for this media stream.
+</t>
+</list></t>
+<t>A check list with at least one pair that is
+Waiting is called an active check list, and a check list with all
+pairs Frozen is called a frozen check list.
+</t>
+</section>
 
 <section title="Forming Candidate Pairs">
 
@@ -1783,7 +1802,7 @@ deployed, it is found to be problematic.
 
 </section>
 
-<section title="Computing States">
+<section title="Computing Candidate Pair States">
 
 <t>
 Each candidate pair in the check list has a foundation and a state.
@@ -1907,9 +1926,9 @@ pairs Frozen is called a frozen check list.
 
 </list></t>
 
-<t>A check list with at least one pair that is
-Waiting is called an active check list, and a check list with all
-pairs Frozen is called a frozen check list.
+<t>NOTE: The procedures above are different from RFC5245, where only candidate pairs
+in the first check list of the ordered list were initially placed in the Waiting
+state.
 </t>
 
 <t>
@@ -1980,43 +1999,16 @@ foundation has been placed in the Waiting state.
 
 ]]></artwork></figure>
 
-
-
-<t>
-The check list itself is associated with a state, which captures the
-state of ICE checks for that media stream. There are three states:</t>
-
-<t><list style="hanging">
-
-<t hangText="Running:"> In this state, ICE checks are still in
-progress for this media stream.
-</t>
-
-<t hangText="Completed:"> In this state, ICE checks have produced
-selected pairs for each component of the media stream.
-</t>
-
-<t hangText="Failed:"> In this state, the ICE checks have not
-completed successfully for this media stream.
-</t>
-
-</list></t>
-
-<t>
-When a check list is first constructed as the consequence of an
-candidate exchange, it is placed in the Running state.
-</t>
-
-<t>
-ICE processing across all media streams also has a state associated
-with it. This state is equal to Running while ICE processing is under
-way. The state is Completed when ICE processing is complete and Failed
-if it failed without success.  Rules for transitioning between states
-are described below.
-</t>
-
+</section>
 </section>
 
+<section title="ICE State">
+<t>
+ICE processing across all check lists has a state associated
+with it. This state is set to Running while ICE processing is under
+way. The state is set to Completed when ICE processing is complete
+and set to Failed if it failed without success.
+</t>
 </section>
 
 <section anchor="sec-periodic" title="Scheduling Checks">
@@ -2094,6 +2086,7 @@ of the pair to the remote candidiate of the pair, as described in
 <t>Based on local policy, an agent MAY choose to terminate perfoming the
 connectivity checks for one or more active checks lists (and terminate the
 Tc associated with those check lists) at any time.
+</t>
 
 <t>
 To compute the message integrity for the check, the agent uses the
@@ -3279,7 +3272,7 @@ sending media. An agent will send media to the remote candidate (i.e.,
 setting the destination address and port of the packet equal to that
 remote candidate), and will send it from the base associated with the
 candidiate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwareded through
+candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
 </t>
@@ -3330,7 +3323,7 @@ packets. To do that, it sends media to the remote candidate in the
 pair (setting the destination address and port of the packet equal to
 that remote candidate), and will send it from the base associated with the
 candidiate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwareded through
+candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
 </t>
@@ -3364,7 +3357,7 @@ candidiate pairs (and, once a candidiate pair has been selected, only
 on the selected pair) ICE implementations SHOULD by default be prepared
 to receive media on any of the candidiates provided in the most recent
 candidiate exchange with the peer. Specific ICE usages MAY define rules
-that differe from this, e.g., by defining that media must not be sent
+that differs from this, e.g., by defining that media must not be sent
 until selected pairs have been procduced for each component associated
 with that media.
 </t>
