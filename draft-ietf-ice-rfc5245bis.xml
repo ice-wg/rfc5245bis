@@ -2169,9 +2169,6 @@ was sent.
 </t>
 
 <section title="Failure Cases">
-<t>OPEN ISSUE: When the state is set to Failure, do we set the state for
-each pair with the same foundation, in each check list, to Failure?
-</t>
 <section title="Non-Symmetric Transport Addresses">
 <t>The ICE agent MUST check that the source and destination transport addresses
 in the Binding request and response are symmetric. I.e., the source IP address
@@ -2191,17 +2188,18 @@ the agent MUST switch to the controlled role.
 </t>
 <t>Once the ICE agent has switched its role, the agent MUST add the
 candidate pair whose check generated the 487 error response to the
-triggered check queue associated with the check list, and set the
-candidate pair state to Waiting. When the triggered connectivity check
-is performed, the ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding
-request will indiciate the agent's new role. The ICE agent MUST NOT change
+triggered check queue associated with the check list to which the
+pair belongs, and set the candidate pair state to Waiting. When the
+triggered connectivity check is later performed, the
+ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
+indiciate the agent's new role. The ICE agent MUST NOT change
 the tie-breaker value.
 </t>
-<t>A role swith requires an ICE agent to recompute pair priorities
+<t>NOTE: A role swith requires an ICE agent to recompute pair priorities
 (<xref target="sec-comp-pair-prio"/>), since the priority values
 depend on the role.
 </t>
-<t>A role switch will also impact whether the ICE agent is responsible
+<t>NOTE: A role switch will also impact whether the ICE agent is responsible
 for nominating candidate pairs, and whether the agent is responsisble
 for initiating the exchange of the updated candidate information with
 the peer once ICE is concluded.
@@ -2221,7 +2219,7 @@ the candidiate pair state to Failed.
 </t>
 </section>
 <t>NOTE: When the ICE agent sets the candidate pair state to Failed as a
-result a connectivity check error case, the agent does not change the states
+result a connectivity check error, the agent does not change the states
 of other candidate pairs with the same foundation.
 </t>
 </section>
@@ -2279,8 +2277,9 @@ it may equal a different pair in a check list (sometimes in a different check li
 than the one to which the pair that generated the connectivity check blongs),
 or it may be a pair not currently in any check list.
 </t>
-<t>The ICE agent maintains a separate valid list for each check list.
-Initially each valid list is empty.
+<t>The ICE agent maintains a separate list, called the valid list, for each check
+list in the CHECK LIST SET. The valid list will contain valid pairs. Initially
+each valid list is empty.
 </t>
 <t><list style="numbers">
 The valid pair will be added to a valid list as follows:
@@ -2318,65 +2317,21 @@ match any of the pairs in the check list.
 </section>
 
 
-<section title="Updating Pair States">
-<t>The ICE agent sets the state of the candidate pair that generated
-the check to Succeeded. Note that the pair which generated the check may be
-different than the valid pair constructed in <xref target="sec-valid-cons"/>
-as a consequence of the response.
-</t>
-<t>
-OPEN ISSUE: Shouldn't the state of the pair added to the valid list also
-be set to Succeeded?
+<section title="Updating Candidate Pair States">
+<t>The ICE agent sets the state of both the candidate pair that generated
+the check, and the constructed valid pair, to Succeeded.
+Note that the pair which generated the check may be different than the
+valid pair constructed in <xref target="sec-valid-cons"/>.
 </t>
 <t>The success of the connectivity check might also cause the state of other
-candidate pairs to change. The ICE agent MUST perform the following steps:
+candidate pairs to change. The ICE agent MUST set the states for all other
+Frozen candidiate pairs (in each check list in the CHECK LIST SET) with
+the same foundation to Waiting.
 </t>
-
-<t><list style="numbers">
-<t>The agent sets the states for all other Frozen candidiate pairs with the
-same foundation, in each check list, to Waiting. Within the same check
-list, the other candidate pairs will typically have different componend ID values.
+<t>NOTE: Within a given check list, candidate pairs with the same foundations will
+typically have different componend ID values.
 </t>
-
-<t>If there is a candidate pair in the valid list for every component of this
-check list (where this is the actual number of components being used, in cases
-where the number of components signaled in the candidate exchange differs from
-initiating to responding agent), the success of this check may unfreeze checks
-for other media streams.
-
-Note that this step is followed not just the first time the valid list
-under consideration has a pair for every component, but every
-subsequent time a check succeeds and adds yet another pair to that
-valid list. The agent examines the check list for each other media
-stream in turn:
-<list style="symbols">
-<t>If the check list is active, the agent changes the state of all
-Frozen pairs in that check list whose foundation matches a pair in the
-valid list under consideration to Waiting. </t>
-<t>If the check list is frozen, and there is at least one pair in the
-check list whose foundation matches a pair in the valid list under
-consideration, the state of all pairs in the check list whose
-foundation matches a pair in the valid list under consideration is set
-to Waiting. This will cause the check list to become active, and
-ordinary checks will begin for it, as described in <xref
-target="sec-periodic"/>.</t>
-<t>If the check list is frozen, and there are no pairs in the check
-list whose foundation matches a pair in the valid list under
-consideration, the agent
-<list style="symbols">
-<t>groups together all of the pairs with the same foundation, and</t>
-<t>for each group, sets the state of the pair with the lowest
-component ID to Waiting. If there is more than one such pair, the one
-with the highest-priority is used.
-</t>
-</list>
-</t>
-</list>
-</t>
-</list></t>
-
 </section>
-
 
 <section title="Updating the Nominated Flag">
 
@@ -2407,21 +2362,16 @@ associated with the candidiate pair.
 <!-- end success cases -->
 </section>
 
-<section title="Check List State and Timer Tc Updates">
+<section title="Check List State Updates">
 <t><list style="symbols">
 Regardless of whether a connectivity check was successful or failed, the
-completion of the check may require updating of check list states and timer Tc values.
-For each active check list:
-<t>If all of the candidate pairs in the check list are now either in
-the Failed or Succeeded state, and if there is not a pair in the valid
-list for each component of the media stream associated with the check list,
-the state of the check list is set to Failed; and
-</t>
-<t>
-If none of the pairs in the check list are in the Waiting or Frozen
-state, the check list is no longer considered active, and will not
-count towards the value of N in the computation of the timer Tc value
-<xref target="sec-periodic"/>.
+completion of the check may require updating of check list states.
+For each check list in the CHECK LIST SET, if all of the candidate pairs
+in are in either Failed or Succeeded state, and if there is not a valid pair in
+the valid list for each component of the media stream associated with the
+check list, the state of the check list is set to Failed. If there is a
+valid pair for each component in the valid list, the state of the check
+list is set to Succeeded.
 </t>
 </list></t>
 </section>
