@@ -2030,9 +2030,14 @@ CHECK LIST SET have been set, a check is performed for a candidate pair
 within the first check list in the Running state, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
 whenever Ta fires the next check list in the Running state in the CHECK LIST SET
-is selected, and a check s performed for a candidiate within that check list.
+is selected, and a check is performed for a candidiate within that check list.
 After the last check list in the Running state in the CHECK LIST SET has been
 processed, the first check list is selected again. Etc.
+</t>
+<t>NOTE: When timer Ta fires, and the agent processes a check list, if no check
+is performed for a pair in the check list (based on the rules below), the agent
+can immediately select the next check list in the Running state, without waiting
+for timer Ta to expire again.
 </t>
 
 <t>
