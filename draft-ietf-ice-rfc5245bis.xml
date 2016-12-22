@@ -781,6 +781,9 @@ media stream that have been validated by a successful STUN
 transaction.
 </t>
 
+<t hangText="Check List Set:"> An ordered list of check lists.
+</t>
+
 <t hangText="Full:"> An ICE implementation that performs the complete
 set of functionality defined by this specification.
 </t>
@@ -1892,19 +1895,19 @@ performing the following sequence of steps:
 <t><list style="numbers">
 
 <t>The check lists are placed in an ordered list (the order is determined
-by each ICE usage).
+by each ICE usage), called the CHECK LIST SET.
 </t>
 
-<t>The agent sets all of the pairs in each check list to the Frozen
-state.
+<t>The agent sets all of the candidate pairs in the CHECK LIST SET
+to the Frozen state.
 </t>
 
-<t>The agent sets all of the check lists to the Running
+<t>The agent sets all of the check lists in the CHECK LIST SET to the Running
 state.
 </t>
 
 <t>The agent examines each check list, starting from the first
-check lists in the ordered list, in the following way:
+check lists in the CHECK LIST SET, in the following way:
 <list style="symbols">
 <t>
 For each foundation, the candidate pair with the lowest
@@ -1912,29 +1915,22 @@ component ID (in case of multiple such pairs, the pair with the highest
 priority) is placed in the Waiting state, unless a candidate pair
 associated with the same foundation has already been put in the Waiting
 state in one of the other examined check lists. This will ensure that,
-within the ordered list, only one pair with a given foundation
+within the CHECK LIST SET, only one pair with a given foundation
 is initially placed in the Waiting state, while other pairs with the same
 foundation remain in the Frozen state.
-</t>
-<t>
-When one or more candidate pairs within a given check list are placed
-in the Waiting state. A check list with at least one pair that is
-Waiting is called an active check list, and a check list with all
-pairs Frozen is called a frozen check list.
 </t>
 </list></t>
 
 </list></t>
 
 <t>NOTE: The procedures above are different from RFC5245, where only candidate pairs
-in the first check list of the ordered list were initially placed in the Waiting
+in the first check list of the CHECK LIST SET were initially placed in the Waiting
 state.
 </t>
 
 <t>
 The table in <xref target="fig-state-initial"/> illustrates how the
-initial states of the candidiate pairs in the ordered list of check
-lists are set.
+initial states of the candidiate pairs in the CHECK LIST SET.
 </t>
 
 <figure title="Initial Pair State" anchor="fig-state-initial" align="center"><artwork>
@@ -1943,8 +1939,7 @@ lists are set.
 Table legend:
 
 Each row (m1, m2,...) represents a check list associated with a media
-stream. m1 represents the first check list in the ordered list of check
-lists.
+stream. m1 represents the first check list in the CHECK LIST SET.
 
 Each column (f1, f2,...) represents a foundation. Every candidiate pair
 within a given column share the same foundation.
@@ -1953,7 +1948,7 @@ f-cp represents a candidate pair in the Frozen state.
 
 w-cp represents a candidate pair in the Waiting state.
 
-1. The agent sets all of the pairs in each check list to the Frozen
+1. The agent sets all of the pairs in the CHECK LIST SET to the Frozen
 state.
 
       f1    f2    f3    f4    f5
@@ -1968,7 +1963,7 @@ m3 | f-cp                    f-cp
 2. For each foundation, the candidate pair with the lowest component ID
 is placed in the Waiting state, unless a candidate pair associated with
 the same foundation has already been put in the Waiting state in one of
-the other examined check lists.
+the other examined check lists in the CHECK LIST SET.
 
       f1    f2    f3    f4    f5
     -----------------------------
@@ -1995,7 +1990,7 @@ kept in the Frozen state, as a candidate pair for that foundation have
 already been placed in the Waiting state (within check list m1).
 
 Once each check list have been processed, one candidate pair for each
-foundation has been placed in the Waiting state.
+foundation in the CHECK LIST SET has been placed in the Waiting state.
 
 ]]></artwork></figure>
 
@@ -2004,7 +1999,7 @@ foundation has been placed in the Waiting state.
 
 <section title="ICE State">
 <t>
-ICE processing across all check lists has a state associated
+ICE processing across the CHECK LIST SET has a state associated
 with it. This state is set to Running while ICE processing is under
 way. The state is set to Completed when ICE processing is complete
 and set to Failed if it failed without success.
