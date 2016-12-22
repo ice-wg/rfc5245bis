@@ -2009,90 +2009,82 @@ and set to Failed if it failed without success.
 <section anchor="sec-periodic" title="Scheduling Checks">
 <section anchor="sec-periodic-queue" title="Triggered Check Queue">
 <t>
-Once the agent has computed the check lists as described in <xref
-target="sec-forming"/>, the agent will begin performing ordinary checks
-and triggered checks. For triggered checks, the agent maintains a FIFO
-queue, triggered check queue, which contains candidate pairs for which
-checks are to be sent at the next available opportunity.
-</t>
-</section>
-
-<section anchor="sec-periodic-tc" title="Timer Tc">
-<t>The generation of ordinary and triggered checks is govererned
-by a timer, Tc. Each active check list is associated with an
-instance of Tc, and whenever Tc for a given check list fires
-a check is performed for a candidate pair within that check list.
-</t>
-<t>The value of Tc is Ta*N seconds, where N is the number of
-active check lists. Whenver the number of active check lists change,
-the agent SHOULD re-calculate the Tc value. Multiplying by N allows
-this aggregate check throughput to be split between all active check
-lists. Tc associated with the first check list fires immediately,
-causing the agent to start performing connectivity checks as soon
-as the intitial states of the candidate pairs in each check list have
-been calculated.
-</t>
-<t>
-Implementations SHOULD spread out the starting of the Tc timers associated
-with each check list, so that Tc for each check list do not fire at the same
-time.
-</t>
-<t>Based on local policy, an agent MAY set the Tc value to a number bigger than
-described above, in order for Tc to fire less frequently.
+Once the agent has computed the check lists and created the CHECK LIST SET,
+as described in <xref target="sec-forming"/>, the agent will begin performing
+connectivity checks (ordinary and triggered). For triggered connectivity checks,
+the agent maintains a FIFO queue for each check list, called the triggered check
+queue, which contains candidate pairs for which checks are to be sent at the next
+available opportunity.
 </t>
 </section>
 
 <section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
+<t>The generation of ordinary and triggered connectivity checks is govererned
+by timer Ta. As soon as the initial states for the candidiate pairs in the
+CHECK LIST SET have been set, a check is performed for a candidate pair
+within the first check list in the Running state, following
+the procedures in <xref target="sec-connectivity_check"/>. After that,
+whenever Ta fires the next check list in the Running state in the CHECK LIST SET
+is selected, and a check is performed for a candidiate within that check list.
+After the last check list in the Running state in the CHECK LIST SET has been
+processed, the first check list is selected again. Etc.
+</t>
+<t>NOTE: When timer Ta fires, and the agent processes a check list, if no check
+is performed for a pair in the check list (based on the rules below), the agent
+can immediately select the next check list in the Running state, without waiting
+for timer Ta to expire again.
+</t>
+
 <t>
-When Tc for a given check list fires, the agent will perform a check for a
-candidate pair within that check list as follows:
-
+Whenever Ta fires, the agent will perform a check for a candidate pair within
+the selected check list as follows:
 <list style="symbols">
-<t>If the triggered check queue contains one or more candidate pairs,
-the agent removes the top pair from the queue, performs a connectivity
-check on that pair and puts the candidate pair state to In-Progress; or
-</t>
-
-<t>If the triggered check queue is empty, and if there are one or more
-candidate pairs in the Waiting state, the agent selects the highest-
-priority candidate pair in the Waiting state, performs a connectivity
-check on that pair and puts the candidate pair par state to In-Progress; or
-</t>
-
-<t>If there is no candidate pair in the Waiting state, in any of the check
-lists, and if there are one or more candidate pairs in the Frozen state,
-the agent selects the highest-priority candidate pair in the Frozen state,
-performs a connectivity check on that pair and puts the candidate pair par
+<t>If the triggered check queue associated with the check list contains
+one or more candidate pairs, the agent removes the top pair from the
+queue, performs a connectivity check on that pair and puts the candidate pair
 state to In-Progress; or
 </t>
 
-<t>If there is no candidate in the Waiting or Frozen state, the agent MUST terminate
-timer Tc for that check list and re-calculate Tc for the remaining
-active check lists.
+<t>If the triggered check queue associated with the check list is empty, and
+if there are one or more candidate pairs in the Waiting state, the agent selects
+the highest-priority candidate pair (if there are multiple pairs with the same
+priority, the pair with the lowest component ID is selected) in the Waiting
+state, performs a connectivity check on that pair and puts the candidate pair
+par state to In-Progress; or
 </t>
+
+<t>If there is no candidate pair in the Waiting state, and if there are one or
+more pairs in the Frozen state, for each pair in the Frozen state the the agent
+checks the foundation associated with the pair. For a given foundation, if there
+is no pair (in any check list in the CHECK LIST SET) in the Waiting or In-Progress state,
+the agent performs a connectivity check on the pair and puts the pair state to In-Prograss.
+If, for the same foundation, there are one or more pairs in the Waiting or In-Progress state,
+(in any check list in the CHECK LIST SET) the agent does not perform a connectivity check
+on the pair.
+</t>
+
 </list></t>
 
-<t>Once a candidate pair has been selected, the agent performs the check
-by sending a STUN request from the base associated with the local candiditate
-of the pair to the remote candidiate of the pair, as described in
+<t>Once the agent has selected a candidate pair, for which a connectivity check is to
+be performed, the agent performs the check by sending a STUN request from the base associated
+with the local candiditate of the pair to the remote candidiate of the pair, as described in
 <xref target="sec-send-check"/>.
 </t>
 
 <t>Based on local policy, an agent MAY choose to terminate perfoming the
-connectivity checks for one or more active checks lists (and terminate the
-Tc associated with those check lists) at any time.
+connectivity checks for one or more checks lists in the CHECK LIST SET
+at any time. However, only the controlling agent is allowed to
+conclude ICE (<xref target="sec-conclude"/>).
 </t>
 
-<t>
-To compute the message integrity for the check, the agent uses the
+<t>To compute the message integrity for the check, the agent uses the
 remote username fragment and password learned from the candidate
 information obtained from its peer. The local username fragment is
 known directly by the agent for its own candidate.
 </t>
 
-<t>
-The Initiator performs the ordinary checks on receiving the candidate
-information from the Peer (responder) and having formed the checklists.
+<t>The Initiator performs the ordinary checks on receiving the candidate
+information from the Peer (responder) and having formed the check lists.
 On the other hand the responding agent either performs the triggered or
 ordinary checks as described above.
 </t>
