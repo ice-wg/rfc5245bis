@@ -52,7 +52,7 @@
       </address>
     </author>
 
-        <date year="2016" />
+        <date year="2017" />
 
         <area>ART</area>
         <workgroup>ICE</workgroup>
@@ -2238,66 +2238,68 @@ specific to ICE connectivity checks.
 <t>When a Binding response is received, it is correlated to the corresponding
 Binding request using the transaction ID <xref target="RFC5389"/>, which then
 associates the response with the candidate pair for which the Binding request
-was sent.
+was sent. After that, the response is processed according to the procedures for
+a role conflict, a failure, or a success, according to the procedures below.
 </t>
-
-<section title="Failure Cases">
-<section title="Non-Symmetric Transport Addresses">
-<t>The ICE agent MUST check that the source and destination transport addresses
-in the Binding request and response are symmetric. I.e., the source IP address
-and port of the response MUST be equal the destination IP address and port to which the
-Binding request was sent, and that the destination IP address and port of the response
-MUST be equeal to the source IP address and port from which the Binding request was sent.
-If the addresses are not symmetric, the ICE agent MUST set the candidate pair state
-to Failed.
-</t>
-</section>
 <section title="Role Conflict">
-<t>If the Binding request generates a 487 (Role Conflict) error
-response, and if the ICE agent included an ICE-CONTROLLED attribute
-in the request, the agent MUST swith to the controlling role. If
-the ICE agent included an ICE-CONTROLLING attribute in the request,
-the agent MUST switch to the controlled role.
-</t>
-<t>Once the ICE agent has switched its role, the agent MUST add the
-candidate pair whose check generated the 487 error response to the
-triggered check queue associated with the check list to which the
-pair belongs, and set the candidate pair state to Waiting. When the
-triggered connectivity check is later performed, the
-ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
-indiciate the agent's new role. The ICE agent MUST NOT change
-the tie-breaker value.
-</t>
-<t>NOTE: A role swith requires an ICE agent to recompute pair priorities
-(<xref target="sec-comp-pair-prio"/>), since the priority values
-depend on the role.
-</t>
-<t>NOTE: A role switch will also impact whether the ICE agent is responsible
-for nominating candidate pairs, and whether the agent is responsisble
-for initiating the exchange of the updated candidate information with
-the peer once ICE is concluded.
-</t>
+    <t>If the Binding request generates a 487 (Role Conflict) error
+    response, and if the ICE agent included an ICE-CONTROLLED attribute
+    in the request, the agent MUST switch to the controlling role. If
+    the ICE agent included an ICE-CONTROLLING attribute in the request,
+    the agent MUST switch to the controlled role.
+    </t>
+    <t>Once the ICE agent has switched its role, the agent MUST add the
+    candidate pair whose check generated the 487 error response to the
+    triggered check queue associated with the check list to which the
+    pair belongs, and set the candidate pair state to Waiting. When the
+    triggered connectivity check is later performed, the
+    ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
+    indicate the agent's new role. The ICE agent MUST NOT change
+    the tie-breaker value.
+    </t>
+    <t>NOTE: A role switch requires an ICE agent to recompute pair priorities
+    (<xref target="sec-comp-pair-prio"/>), since the priority values
+    depend on the role.
+    </t>
+    <t>NOTE: A role switch will also impact whether the ICE agent is responsible
+    for nominating candidate pairs, and whether the agent is responsible
+    for initiating the exchange of the updated candidate information with
+    the peer once ICE is concluded.
+    </t>
 </section>
-<section title="ICMP Error">
-<t>An ICE agent MAY support processing of ICMP errors for connectivity
-checks. If the agent supports processing of ICMP erros, and if a Binging
-request generates an ICMP error, the agent SHOULD set the state of the candidate
-pair to Failed.
-</t>
-</section>
-<section title="Other Errors">
-<t>If the Binding request generates a STUN error response that is
-unrecoverable <xref target="RFC5389"/>) or times out, the ICE agent SHOULD set
-the candidiate pair state to Failed.
-</t>
-</section>
-<t>NOTE: When the ICE agent sets the candidate pair state to Failed as a
-result a connectivity check error, the agent does not change the states
-of other candidate pairs with the same foundation.
-</t>
+<section title="Failure">
+    <t>This section describes cases when the candidate pair state is set to Failed.
+    </t>
+    <t>NOTE: When the ICE agent sets the candidate pair state to Failed as a
+    result a connectivity check error, the agent does not change the states
+    of other candidate pairs with the same foundation.
+    </t>
+    <section title="Non-Symmetric Transport Addresses">
+    <t>The ICE agent MUST check that the source and destination transport addresses
+    in the Binding request and response are symmetric. I.e., the source IP address
+    and port of the response MUST be equal the destination IP address and port to which the
+    Binding request was sent, and that the destination IP address and port of the response
+    MUST be equal to the source IP address and port from which the Binding request was sent.
+    If the addresses are not symmetric, the ICE agent MUST set the candidate pair state
+    to Failed.
+    </t>
+    </section>
+    <section title="ICMP Error">
+    <t>An ICE agent MAY support processing of ICMP errors for connectivity
+    checks. If the agent supports processing of ICMP errors, and if a Binging
+    request generates an ICMP error, the agent SHOULD set the state of the candidate
+    pair to Failed.
+    </t>
+    </section>
+    <section title="Unrecoverable STUN Response">
+    <t>If the Binding request generates a STUN error response that is
+    unrecoverable <xref target="RFC5389"/>) or times out, the ICE agent SHOULD set
+    the candidate pair state to Failed.
+    </t>
+    </section>
 </section>
 
-<section title="Success Cases">
+<section title="Success">
 
 <t>A connectivity check is considered a success if each of the following criteria
 is true:
@@ -2354,8 +2356,8 @@ or it may be a pair not currently in any check list.
 list in the CHECK LIST SET. The valid list will contain valid pairs. Initially
 each valid list is empty.
 </t>
-<t><list style="numbers">
-The valid pair will be added to a valid list as follows:
+<t>The valid pair will be added to a valid list as follows:
+<list style="numbers">
 <t>If the valid pair equals the pair that generated the check, the pair is added to
 the valid list associated with the check list to which the pair belongs; or
 </t>
@@ -2412,7 +2414,7 @@ typically have different componend ID values.
 USE-CANDIDATE attribute in the Binding request, the valid pair
 generated from that check has its nominated flag set to true. This
 flag indicates that this valid pair SHOULD be used for media, unless
-the sending agent detects that the candidiate pair does not work.
+the sending agent detects that the candidate pair does not work.
 This concludes the ICE processing for this media stream or all
 media streams; see <xref target="sec-conclude"/>.
 </t>
@@ -2436,24 +2438,21 @@ associated with the candidiate pair.
 </section>
 
 <section title="Check List State Updates">
-<t><list style="symbols">
+<t>
 Regardless of whether a connectivity check was successful or failed, the
 completion of the check may require updating of check list states.
 For each check list in the CHECK LIST SET, if all of the candidate pairs
-in are in either Failed or Succeeded state, and if there is not a valid pair in
+are in either Failed or Succeeded state, and if there is not a valid pair in
 the valid list for each component of the media stream associated with the
 check list, the state of the check list is set to Failed. If there is a
 valid pair for each component in the valid list, the state of the check
 list is set to Succeeded.
 </t>
-</list></t>
 </section>
-
+</section>
 <!-- end processing response -->
 </section>
 
-<!-- end client procedures -->
-</section>
 
 <section anchor="sec-serverproc" title="STUN Server Procedures">
 
@@ -3080,8 +3079,6 @@ criteria that require the roles to be re-determined is fulfilled.
 
 </section>
 
-
-</section>
 
 
 <section anchor="sec-ice-option" title="ICE Option">
