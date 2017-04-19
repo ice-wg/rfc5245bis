@@ -1477,20 +1477,6 @@ for media.
 
 </section>
 
-</section>
-
-<section anchor="sec-candidate_proc" title="ICE Candidate Processing">
-
-<t>
-Once an agent has candidates from it's peer, it will check if the peer
-supports ICE, determine its own role, exchanges candidates (<xref
-target="sec-gathering_exchange"/>) and for full implementations, forms
-the check lists and begins connectivity checks as explained in this
-section.
-</t>
-
-<section anchor="sec-candidate_proc_full" title="Procedures for Full Implementation">
-
 <section anchor="sec-verify" title="Verifying ICE Support">
 
 <t>
@@ -1504,6 +1490,19 @@ agent would never indicate ICE mismatch.
 </t>
 
 </section>
+
+</section>
+
+<section anchor="sec-candidate_proc" title="ICE Candidate Processing">
+
+<t>
+Once an agent has gathered its candidates and exchanged candidates with its peer  
+(<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition, 
+full implementations will form check lists, and begin performing connectivity checks with the peer.
+</t>
+
+<section anchor="sec-candidate_proc_full" title="Procedures for Full Implementation">
+
 
 <section anchor="sec-role" title="Determining Role">
 
