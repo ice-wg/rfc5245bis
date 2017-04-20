@@ -819,8 +819,8 @@ receiving media.
 <t hangText="Selected Pair, Selected Candidate:"> The candidate pair
 selected by ICE for sending and receiving media is called the selected
 pair, and each of its candidates is called the selected candidate.
-Before a candidiate pair has been selected, any valid candidiate pair
-can be used for sending and receiving media (only one candidiate pair
+Before a  pair has been selected, any valid candidate pair
+can be used for sending and receiving media (only one candidate pair
 at any given time).
 </t>
 
@@ -1496,8 +1496,8 @@ agent would never indicate ICE mismatch.
 <section anchor="sec-candidate_proc" title="ICE Candidate Processing">
 
 <t>
-Once an agent has gathered its candidates and exchanged candidates with its peer  
-(<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition, 
+Once an agent has gathered its candidates and exchanged candidates with its peer
+(<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition,
 full implementations will form check lists, and begin performing connectivity checks with the peer.
 </t>
 
@@ -1929,7 +1929,7 @@ state.
 
 <t>
 The table in <xref target="fig-state-initial"/> illustrates how the
-initial states of the candidiate pairs in the CHECK LIST SET.
+initial states of the candidate pairs in the CHECK LIST SET.
 </t>
 
 <figure title="Initial Pair State" anchor="fig-state-initial" align="center"><artwork>
@@ -1940,7 +1940,7 @@ Table legend:
 Each row (m1, m2,...) represents a check list associated with a media
 stream. m1 represents the first check list in the CHECK LIST SET.
 
-Each column (f1, f2,...) represents a foundation. Every candidiate pair
+Each column (f1, f2,...) represents a foundation. Every candidate pair
 within a given column share the same foundation.
 
 f-cp represents a candidate pair in the Frozen state.
@@ -2019,12 +2019,12 @@ available opportunity.
 
 <section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
 <t>The generation of ordinary and triggered connectivity checks is govererned
-by timer Ta. As soon as the initial states for the candidiate pairs in the
+by timer Ta. As soon as the initial states for the candidate pairs in the
 CHECK LIST SET have been set, a check is performed for a candidate pair
 within the first check list in the Running state, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
 whenever Ta fires the next check list in the Running state in the CHECK LIST SET
-is selected, and a check is performed for a candidiate within that check list.
+is selected, and a check is performed for a candidate within that check list.
 After the last check list in the Running state in the CHECK LIST SET has been
 processed, the first check list is selected again. Etc.
 </t>
@@ -2066,7 +2066,7 @@ on the pair.
 
 <t>Once the agent has selected a candidate pair, for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
-with the local candiditate of the pair to the remote candidiate of the pair, as described in
+with the local candiditate of the pair to the remote candidate of the pair, as described in
 <xref target="sec-send-check"/>.
 </t>
 
@@ -2334,7 +2334,7 @@ candidate with remote candidates, as a valid candiate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
 If an ICE agent wishes to pair the peer reflexive candidate with
 other remote candidates besides the one in the valid pair that will
-be generated, the agent MAY provide updated candidiate information to
+be generated, the agent MAY provide updated candidate information to
 the peer that includes the peer reflexive candidate. This will cause
 the peer reflexive candidate to be paired with all other remote candidates.
 </t>
@@ -2399,11 +2399,11 @@ valid pair constructed in <xref target="sec-valid-cons"/>.
 </t>
 <t>The success of the connectivity check might also cause the state of other
 candidate pairs to change. The ICE agent MUST set the states for all other
-Frozen candidiate pairs (in each check list in the CHECK LIST SET) with
+Frozen candidate pairs (in each check list in the CHECK LIST SET) with
 the same foundation to Waiting.
 </t>
 <t>NOTE: Within a given check list, candidate pairs with the same foundations will
-typically have different componend ID values.
+typically have different component ID values.
 </t>
 </section>
 
@@ -2427,7 +2427,7 @@ nominated flag for the pair learned from the original request.
 
 <t>An ICE agent MUST NOT select a candidate pair until it has sent a
 Binding request, and received the corresponding Binding response,
-associated with the candidiate pair.
+associated with the candidate pair.
 </t>
 
 </section>
@@ -2808,16 +2808,16 @@ the USE-CANDIDATE attribute present.
 
 <t>
 The controlled agent SHOULD select the nominated candidate pair if the agent
-is receiving Binding responses associated with that candidiate pair.
-Before the agent has received Binding responses associated with the candidiate
-pair, the agent can send media on any candidiate for which it has received
+is receiving Binding responses associated with that candidate pair.
+Before the agent has received Binding responses associated with the candidate
+pair, the agent can send media on any candidate for which it has received
 Binding responses. If more than one candidate pair is nominated by the
 controlling agent, the controlled agent SHOULD select the candidate pair with
 the highest priority.
 </t>
 <t>
 NOTE: A controlling agent that does not support this speification (i.e. it
-is implemented according to RFC 5245) might nominate more than one candidiate pair.
+is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
 'ice2' ice option by endpoints supporting this specifcation should prevent
 such controlling agents from using aggressive nomination.
@@ -3164,12 +3164,12 @@ Procedures for sending media differ for full and lite implementations.
 
 <t>
 Agents always send media using a candidate pair, using candidate pairs
-in the Valid list. Once a candidiate pair has been selected only that
-candidiate pair (referred to as selected pair) is used for
+in the Valid list. Once a candidate pair has been selected only that
+candidate pair (referred to as selected pair) is used for
 sending media. An agent will send media to the remote candidate (i.e.,
 setting the destination address and port of the packet equal to that
 remote candidate), and will send it from the base associated with the
-candidiate pair used for sending media. In case of a relayed
+candidate pair used for sending media. In case of a relayed
 candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
@@ -3220,7 +3220,7 @@ stream. Once that happens, the agent MAY begin sending media
 packets. To do that, it sends media to the remote candidate in the
 pair (setting the destination address and port of the packet equal to
 that remote candidate), and will send it from the base associated with the
-candidiate pair used for sending media. In case of a relayed
+candidate pair used for sending media. In case of a relayed
 candidate, media is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
@@ -3251,10 +3251,10 @@ one candidate pair to another.  </t>
 
 <t>
 Even though ICE agents are only allowed to send media using valid
-candidiate pairs (and, once a candidiate pair has been selected, only
+candidate pairs (and, once a candidate pair has been selected, only
 on the selected pair) ICE implementations SHOULD by default be prepared
-to receive media on any of the candidiates provided in the most recent
-candidiate exchange with the peer. Specific ICE usages MAY define rules
+to receive media on any of the candidates provided in the most recent
+candidate exchange with the peer. Specific ICE usages MAY define rules
 that differs from this, e.g., by defining that media must not be sent
 until selected pairs have been procduced for each component associated
 with that media.
