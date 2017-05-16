@@ -8,7 +8,7 @@
 <?rfc subcompact='no'?>
 
 <rfc ipr="pre5378Trust200902" category="std" obsoletes="5245"
-     docName="draft-ietf-ice-rfc5245bis-latest"
+     docName="draft-ietf-ice-rfc5245bis-09"
 >
 
     <front>
@@ -430,7 +430,7 @@ NATs.
 </t>
 
 <t>
-The agent works through this check list by sending a STUN request for
+The agent works through this CHECK LIST by sending a STUN request for
 the next candidate pair on the list periodically. These are called
 ORDINARY CHECKS.
 </t>
@@ -776,12 +776,12 @@ it to send a check.
 consequence of the receipt of a connectivity check from the peer.
 </t>
 
-<t hangText="Valid List:"> An ordered set of candidate pairs for a
+<t hangText="VALID LIST:"> An ordered set of candidate pairs for a
 media stream that have been validated by a successful STUN
 transaction.
 </t>
 
-<t hangText="Check List Set:"> An ordered list of check lists.
+<t hangText="Check List Set:"> An ordered list of CHECK LISTs.
 </t>
 
 <t hangText="Full:"> An ICE implementation that performs the complete
@@ -1498,7 +1498,7 @@ agent would never indicate ICE mismatch.
 <t>
 Once an agent has gathered its candidates and exchanged candidates with its peer
 (<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition,
-full implementations will form check lists, and begin performing connectivity checks with the peer.
+full implementations will form CHECK LISTs, and begin performing connectivity checks with the peer.
 </t>
 
 <section anchor="sec-candidate_proc_full" title="Procedures for Full Implementation">
@@ -1538,7 +1538,7 @@ target="sec-conc-state"/>.
 
 <t hangText="One agent full, one lite:"> The full agent MUST take the
 controlling role, and the lite agent MUST take the controlled
-role. The full agent will form check lists, run the ICE state
+role. The full agent will form CHECK LISTs, run the ICE state
 machines, and generate connectivity checks. That agent will execute
 the logic in <xref target="sec-conclude-full"/> to nominate pairs that
 will be selected by ICE, and use the logic in <xref
@@ -1611,18 +1611,18 @@ of this specification.
 <section anchor="sec-forming" title="Forming the Check Lists">
 
 <t>
-There is one check list per in-use media stream resulting from the
-candidate exchange.  To form the check list for a media stream, the
+There is one CHECK LIST per in-use media stream resulting from the
+candidate exchange.  To form the CHECK LIST for a media stream, the
 agent forms candidate pairs, computes a candidate pair priority,
 orders the pairs by priority, prunes them, removes lower-priority
 candidates and sets their states. These steps are described in this section.
-If a check list is updated (e.g, due to detection of peer reflexive
+If a CHECK LIST is updated (e.g, due to detection of peer reflexive
 candidates), the agent will re-perform the steps for the updated
-check list.
+CHECK LIST.
 </t>
 <section title="Check List State">
-<t>Each check list has a state, which captures the state of ICE checks
-for the media stream associated with the check list. The states are:</t>
+<t>Each CHECK LIST has a state, which captures the state of ICE checks
+for the media stream associated with the CHECK LIST. The states are:</t>
 <t><list style="hanging">
 <t hangText="Running:"> In this state, ICE checks are still in
 progress for this media stream. Check lists are initially set
@@ -1635,9 +1635,9 @@ selected pairs for each component of the media stream.
 completed successfully for this media stream.
 </t>
 </list></t>
-<t>A check list with at least one pair that is
-Waiting is called an active check list, and a check list with all
-pairs Frozen is called a frozen check list.
+<t>A CHECK LIST with at least one pair that is
+Waiting is called an active CHECK LIST, and a CHECK LIST with all
+pairs Frozen is called a frozen CHECK LIST.
 </t>
 </section>
 
@@ -1688,7 +1688,7 @@ been ICE aware.
 <t>
 In order to aid understanding, <xref target="fig-check-model"/> shows
 the relationships between several key concepts -- transport addresses,
-candidates, candidate pairs, and check lists, in addition to
+candidates, candidate pairs, and CHECK LISTs, in addition to
 indicating the main properties of candidates and candidate pairs.
 </t>
 
@@ -1781,7 +1781,7 @@ replaced by its base. Once this has been done, the agent MUST prune
 the list. This is done by removing a pair if its local and remote candidates
 are identical to the local and remote candidates of a pair higher up on
 the priority list. The result is a sequence of ordered candidate
-pairs, called the check list for that media stream.
+pairs, called the CHECK LIST for that media stream.
 </t>
 
 </section>
@@ -1791,7 +1791,7 @@ pairs, called the check list for that media stream.
 <t>
 In order to limit the attacks described in <xref
 target="sec-ice-hammer"/>, an agent MUST limit the total number of
-connectivity checks the agent performs across all check lists to a
+connectivity checks the agent performs across all CHECK LISTs to a
 specific value, and this value MUST be configurable. A default of 100
 is RECOMMENDED. This limit is enforced by discarding the
 lower-priority candidate pairs until there are less than 100. It is
@@ -1807,7 +1807,7 @@ deployed, it is found to be problematic.
 <section title="Computing Candidate Pair States">
 
 <t>
-Each candidate pair in the check list has a foundation and a state.
+Each candidate pair in the CHECK LIST has a foundation and a state.
 The foundation is the combination of the foundations of the local and
 remote candidates in the pair. The state is assigned once the check
 list for each media stream has been computed. There
@@ -1887,13 +1887,13 @@ target="fig-state-fsm"/>.
 ]]></artwork></figure>
 
 <t>
-The initial states for each pair in a check list are computed by
+The initial states for each pair in a CHECK LIST are computed by
 performing the following sequence of steps:
 </t>
 
 <t><list style="numbers">
 
-<t>The check lists are placed in an ordered list (the order is determined
+<t>The CHECK LISTs are placed in an ordered list (the order is determined
 by each ICE usage), called the CHECK LIST SET.
 </t>
 
@@ -1901,19 +1901,19 @@ by each ICE usage), called the CHECK LIST SET.
 to the Frozen state.
 </t>
 
-<t>The agent sets all of the check lists in the CHECK LIST SET to the Running
+<t>The agent sets all of the CHECK LISTs in the CHECK LIST SET to the Running
 state.
 </t>
 
-<t>The agent examines each check list, starting from the first
-check lists in the CHECK LIST SET, in the following way:
+<t>The agent examines each CHECK LIST, starting from the first
+CHECK LISTs in the CHECK LIST SET, in the following way:
 <list style="symbols">
 <t>
 For each foundation, the candidate pair with the lowest
 component ID (in case of multiple such pairs, the pair with the highest
 priority) is placed in the Waiting state, unless a candidate pair
 associated with the same foundation has already been put in the Waiting
-state in one of the other examined check lists. This will ensure that,
+state in one of the other examined CHECK LISTs. This will ensure that,
 within the CHECK LIST SET, only one pair with a given foundation
 is initially placed in the Waiting state, while other pairs with the same
 foundation remain in the Frozen state.
@@ -1923,7 +1923,7 @@ foundation remain in the Frozen state.
 </list></t>
 
 <t>NOTE: The procedures above are different from RFC5245, where only candidate pairs
-in the first check list of the CHECK LIST SET were initially placed in the Waiting
+in the first CHECK LIST of the CHECK LIST SET were initially placed in the Waiting
 state.
 </t>
 
@@ -1937,8 +1937,8 @@ initial states of the candidate pairs in the CHECK LIST SET.
 
 Table legend:
 
-Each row (m1, m2,...) represents a check list associated with a media
-stream. m1 represents the first check list in the CHECK LIST SET.
+Each row (m1, m2,...) represents a CHECK LIST associated with a media
+stream. m1 represents the first CHECK LIST in the CHECK LIST SET.
 
 Each column (f1, f2,...) represents a foundation. Every candidate pair
 within a given column share the same foundation.
@@ -1962,7 +1962,7 @@ m3 | f-cp                    f-cp
 2. For each foundation, the candidate pair with the lowest component ID
 is placed in the Waiting state, unless a candidate pair associated with
 the same foundation has already been put in the Waiting state in one of
-the other examined check lists in the CHECK LIST SET.
+the other examined CHECK LISTs in the CHECK LIST SET.
 
       f1    f2    f3    f4    f5
     -----------------------------
@@ -1973,22 +1973,22 @@ m2 | f-cp  f-cp  f-cp  w-cp
 m3 | f-cp                    w-cp
 
 
-In the first check list (m1) the candidate pair for each foundation is
+In the first CHECK LIST (m1) the candidate pair for each foundation is
 placed in the Waiting state, as no pairs for the same foundations have
 yet been placed in the Waiting state.
 
-In the second check list (m2) the candidate pair for foundation f4 is
+In the second CHECK LIST (m2) the candidate pair for foundation f4 is
 placed in the Waiting state. The candidate pair for foundations f1, f2
 and f3 are kept in the Frozen state, as candidate pairs for those
 foundations have already been placed in the Waiting state (within check
 list m1).
 
-In the third check list (m3) the candidate pair for foundation f5 is
+In the third CHECK LIST (m3) the candidate pair for foundation f5 is
 placed in the Waiting state. The candidate pair for foundation f1 is
 kept in the Frozen state, as a candidate pair for that foundation have
-already been placed in the Waiting state (within check list m1).
+already been placed in the Waiting state (within CHECK LIST m1).
 
-Once each check list have been processed, one candidate pair for each
+Once each CHECK LIST have been processed, one candidate pair for each
 foundation in the CHECK LIST SET has been placed in the Waiting state.
 
 ]]></artwork></figure>
@@ -2008,11 +2008,11 @@ and set to Failed if it failed without success.
 <section anchor="sec-periodic" title="Scheduling Checks">
 <section anchor="sec-periodic-queue" title="Triggered Check Queue">
 <t>
-Once the agent has computed the check lists and created the CHECK LIST SET,
+Once the agent has computed the CHECK LISTs and created the CHECK LIST SET,
 as described in <xref target="sec-forming"/>, the agent will begin performing
 connectivity checks (ordinary and triggered). For triggered connectivity checks,
-the agent maintains a FIFO queue for each check list, called the triggered check
-queue, which contains candidate pairs for which checks are to be sent at the next
+the agent maintains a FIFO queue for each CHECK LIST, called the TRIGGERED CHECK
+QUEUE, which contains candidate pairs for which checks are to be sent at the next
 available opportunity.
 </t>
 </section>
@@ -2021,30 +2021,30 @@ available opportunity.
 <t>The generation of ordinary and triggered connectivity checks is govererned
 by timer Ta. As soon as the initial states for the candidate pairs in the
 CHECK LIST SET have been set, a check is performed for a candidate pair
-within the first check list in the Running state, following
+within the first CHECK LIST in the Running state, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
-whenever Ta fires the next check list in the Running state in the CHECK LIST SET
-is selected, and a check is performed for a candidate within that check list.
-After the last check list in the Running state in the CHECK LIST SET has been
-processed, the first check list is selected again. Etc.
+whenever Ta fires the next CHECK LIST in the Running state in the CHECK LIST SET
+is selected, and a check is performed for a candidate within that CHECK LIST.
+After the last CHECK LIST in the Running state in the CHECK LIST SET has been
+processed, the first CHECK LIST is selected again. Etc.
 </t>
-<t>NOTE: When timer Ta fires, and the agent processes a check list, if no check
-is performed for a pair in the check list (based on the rules below), the agent
-can immediately select the next check list in the Running state, without waiting
+<t>NOTE: When timer Ta fires, and the agent processes a CHECK LIST, if no check
+is performed for a pair in the CHECK LIST (based on the rules below), the agent
+can immediately select the next CHECK LIST in the Running state, without waiting
 for timer Ta to expire again.
 </t>
 
 <t>
 Whenever Ta fires, the agent will perform a check for a candidate pair within
-the selected check list as follows:
+the selected CHECK LIST as follows:
 <list style="symbols">
-<t>If the triggered check queue associated with the check list contains
+<t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST contains
 one or more candidate pairs, the agent removes the top pair from the
 queue, performs a connectivity check on that pair and puts the candidate pair
 state to In-Progress; or
 </t>
 
-<t>If the triggered check queue associated with the check list is empty, and
+<t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST is empty, and
 if there are one or more candidate pairs in the Waiting state, the agent selects
 the highest-priority candidate pair (if there are multiple pairs with the same
 priority, the pair with the lowest component ID is selected) in the Waiting
@@ -2055,10 +2055,10 @@ par state to In-Progress; or
 <t>If there is no candidate pair in the Waiting state, and if there are one or
 more pairs in the Frozen state, for each pair in the Frozen state the the agent
 checks the foundation associated with the pair. For a given foundation, if there
-is no pair (in any check list in the CHECK LIST SET) in the Waiting or In-Progress state,
+is no pair (in any CHECK LIST in the CHECK LIST SET) in the Waiting or In-Progress state,
 the agent performs a connectivity check on the pair and puts the pair state to In-Prograss.
 If, for the same foundation, there are one or more pairs in the Waiting or In-Progress state,
-(in any check list in the CHECK LIST SET) the agent does not perform a connectivity check
+(in any CHECK LIST in the CHECK LIST SET) the agent does not perform a connectivity check
 on the pair.
 </t>
 
@@ -2083,7 +2083,7 @@ known directly by the agent for its own candidate.
 </t>
 
 <t>The Initiator performs the ordinary checks on receiving the candidate
-information from the Peer (responder) and having formed the check lists.
+information from the Peer (responder) and having formed the CHECK LISTs.
 On the other hand the responding agent either performs the triggered or
 ordinary checks as described above.
 </t>
@@ -2249,7 +2249,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     </t>
     <t>Once the ICE agent has switched its role, the agent MUST add the
     candidate pair whose check generated the 487 error response to the
-    triggered check queue associated with the check list to which the
+    TRIGGERED CHECK QUEUE associated with the CHECK LIST to which the
     pair belongs, and set the candidate pair state to Waiting. When the
     triggered connectivity check is later performed, the
     ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
@@ -2347,24 +2347,27 @@ destination address to which the request was sent. This is called a
 valid pair.
 </t>
 <t>The valid pair may equal the pair that generated the connectivity check, or
-it may equal a different pair in a check list (sometimes in a different check list
-than the one to which the pair that generated the connectivity check blongs),
-or it may be a pair not currently in any check list.
+it may equal a different pair in a CHECK LIST (sometimes in a different CHECK LIST
+than the one to which the pair that generated the connectivity checks),
+or it may be a pair not currently in any CHECK LIST.
 </t>
-<t>The ICE agent maintains a separate list, called the valid list, for each check
-list in the CHECK LIST SET. The valid list will contain valid pairs. Initially
-each valid list is empty.
+<t>The ICE agent maintains a separate list, called the VALID LIST, for each check
+list in the CHECK LIST SET. The VALID LIST will contain valid pairs. Initially
+each VALID LIST is empty.
 </t>
-<t>The valid pair will be added to a valid list as follows:
+<t>Each valid pair within the VALID LIST has a flag, called the Nominated Flag.
+When a valid pair is added to a VALID LIST, the flag value is set to 'false'.
+</t>
+<t>The valid pair will be added to a VALID LIST as follows:
 <list style="numbers">
 <t>If the valid pair equals the pair that generated the check, the pair is added to
-the valid list associated with the check list to which the pair belongs; or
+the VALID LIST associated with the CHECK LIST to which the pair belongs; or
 </t>
-<t>If the valid pair equals another pair in a check list, that pair is added
-to the valid list associated with the check list of that pair. The pair that
-generated the check is not added to a valid list; or
+<t>If the valid pair equals another pair in a CHECK LIST, that pair is added
+to the VALID LIST associated with the CHECK LIST of that pair. The pair that
+generated the check is not added to a VALID LIST; or
 </t>
-<t>If the valid pair is not in any check list, the agent computes the priority
+<t>If the valid pair is not in any CHECK LIST, the agent computes the priority
 for the pair based on the priority of each candidate, using the
 algorithm in <xref target="sec-forming"/>. The priority of the local
 candidate depends on its type. Unless the type is peer reflexive, the
@@ -2376,17 +2379,17 @@ candidate information of the peer. If the candidate does not appear
 there, then the check must have been a triggered check to a new remote
 candidate. In that case, the priority is taken as the value of the
 PRIORITY attribute in the Binding request that triggered the check
-that just completed. The pair is then added to the valid list.
+that just completed. The pair is then added to the VALID LIST.
 </t>
 </list></t>
-<t>NOTE: It will be very common that the valid pair will not be in any check list.
-Recall that the check list has pairs whose local candidates are never
+<t>NOTE: It will be very common that the valid pair will not be in any CHECK LIST.
+Recall that the CHECK LIST has pairs whose local candidates are never
 reflexive; those pairs had their local candidates converted to
 the base of the reflexive candidates, and then pruned if they
 were redundant. When the response to the Binding request arrives, the
 mapped address will be reflexive if there is a NAT between the two. In
 that case, the valid pair will have a local candidate that doesn't
-match any of the pairs in the check list.
+match any of the pairs in the CHECK LIST.
 </t>
 </section>
 
@@ -2399,10 +2402,10 @@ valid pair constructed in <xref target="sec-valid-cons"/>.
 </t>
 <t>The success of the connectivity check might also cause the state of other
 candidate pairs to change. The ICE agent MUST set the states for all other
-Frozen candidate pairs (in each check list in the CHECK LIST SET) with
+Frozen candidate pairs (in each CHECK LIST in the CHECK LIST SET) with
 the same foundation to Waiting.
 </t>
-<t>NOTE: Within a given check list, candidate pairs with the same foundations will
+<t>NOTE: Within a given CHECK LIST, candidate pairs with the same foundations will
 typically have different component ID values.
 </t>
 </section>
@@ -2411,7 +2414,7 @@ typically have different component ID values.
 
 <t>If the ICE agent was a controlling agent, and the agent had included a
 USE-CANDIDATE attribute in the Binding request, the valid pair
-generated from that check has its nominated flag set to true. This
+generated from that check has its nominated flag value set to true. This
 flag indicates that this valid pair SHOULD be used for media, unless
 the sending agent detects that the candidate pair does not work.
 This concludes the ICE processing for this media stream or all
@@ -2439,12 +2442,12 @@ associated with the candidate pair.
 <section title="Check List State Updates">
 <t>
 Regardless of whether a connectivity check was successful or failed, the
-completion of the check may require updating of check list states.
-For each check list in the CHECK LIST SET, if all of the candidate pairs
+completion of the check may require updating of CHECK LIST states.
+For each CHECK LIST in the CHECK LIST SET, if all of the candidate pairs
 are in either Failed or Succeeded state, and if there is not a valid pair in
-the valid list for each component of the media stream associated with the
-check list, the state of the check list is set to Failed. If there is a
-valid pair for each component in the valid list, the state of the check
+the VALID LIST for each component of the media stream associated with the
+CHECK LIST, the state of the CHECK LIST is set to Failed. If there is a
+valid pair for each component in the VALID LIST, the state of the check
 list is set to Succeeded.
 </t>
 </section>
@@ -2480,7 +2483,7 @@ remaining steps required, namely, <xref
 target="sec-learn-peer-server"/>, <xref target="sec-triggered"/>, and
 <xref target="sec-up-fav"/> for full implementations. In cases where
 multiple STUN requests are received before the answer, this may cause
-several pairs to be queued up in the triggered check queue.
+several pairs to be queued up in the TRIGGERED CHECK QUEUE.
 </t>
 
 <t>
@@ -2644,15 +2647,15 @@ relay) or a relayed candidate (for cases where it is received through
 a relay).  The local candidate can never be a server reflexive
 candidate. Since both candidates are known to the agent, it can obtain
 their priorities and compute the candidate pair priority. This pair is
-then looked up in the check list. There can be one of several
+then looked up in the CHECK LIST. There can be one of several
 outcomes:
 
 <list style="symbols">
-  <t>If the pair is already on the check list:
+  <t>If the pair is already on the CHECK LIST:
     <list style="symbols">
       <t>If the state of that pair
       is Waiting or Frozen, a check for that pair is enqueued into the
-      triggered check queue if not already present.
+      TRIGGERED CHECK QUEUE if not already present.
       </t>
 
       <t>If the state of that pair is In-Progress, the agent cancels
@@ -2662,14 +2665,14 @@ outcomes:
       transaction timeout for a response. In addition, the agent MUST
       create a new connectivity check for that pair (representing a
       new STUN Binding request transaction) by enqueueing the pair in
-      the triggered check queue. The state of the pair is then changed
+      the TRIGGERED CHECK QUEUE. The state of the pair is then changed
       to Waiting.
       </t>
 
       <t> If the state of the pair is Failed, it is changed to Waiting
       and the agent MUST create a new connectivity check for that pair
       (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the triggered check queue.
+      enqueueing the pair in the TRIGGERED CHECK QUEUE.
       </t>
 
       <t>If the state of that pair is Succeeded, nothing further is
@@ -2684,11 +2687,11 @@ These steps are done to facilitate rapid completion of ICE when both
 agents are behind NAT.
 
 <list style="symbols">
-  <t>If the pair is not already on the check list:
+  <t>If the pair is not already on the CHECK LIST:
   <list style="symbols">
-    <t>The pair is inserted into the check list based on its priority.</t>
+    <t>The pair is inserted into the CHECK LIST based on its priority.</t>
     <t>Its state is set to Waiting.</t>
-    <t>The pair is enqueued into the triggered check queue. </t>
+    <t>The pair is enqueued into the TRIGGERED CHECK QUEUE. </t>
   </list>
   </t>
 </list>
@@ -2715,17 +2718,16 @@ fragment. The corresponding password is then selected.
 <t>
 If the Binding request received by the agent had the USE-CANDIDATE
 attribute set, and the agent is in the controlled role, the agent
-looks at the state of the pair computed in <xref
-target="sec-triggered"/>:
+looks at the state of the pair computed in <xref target="sec-triggered"/>:
 <list style="symbols">
 <t>If the state of this pair is Succeeded, it means that the check
 generated by this pair produced a successful response. This would have
 caused the agent to construct a valid pair when that success response
 was received (see <xref target="sec-valid-cons"/>). The agent now sets
-the nominated flag in the valid pair to true. This may end ICE
+the nominated flag value of the valid pair to true. This may end ICE
 processing for this media stream; see <xref target="sec-conclude"/>.
 </t>
-<t>If the state of this pair is In-Progress, if its check produces a
+<t>If the state of this pair is In-Progress, and if its check produces a
 successful result, the resulting valid pair has its nominated flag set
 when the response arrives. This may end ICE processing for this media
 stream when it arrives; see <xref target="sec-conclude"/>.
@@ -2747,9 +2749,9 @@ is equal to the transport address on which the request was received,
 and whose remote candidate is equal to the source transport address of
 the request that was received. This candidate pair is assigned an
 arbitrary priority, and placed into a list of valid candidates called
-the valid list. The agent sets the nominated flag for that pair to
+the VALID LIST. The agent sets the nominated flag for that pair to
 true. ICE processing is considered complete for a media stream if the
-valid list contains a candidate pair for each component.
+VALID LIST contains a candidate pair for each component.
 </t>
 
 </section>
@@ -2776,47 +2778,39 @@ updating of state machinery.
 
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
-<t>
-When nominating, the controlling agent lets some number of checks
-complete, each of which omit the USE-CANDIDATE attribute. Once one or
-more checks complete successfully for a component of a media stream,
-valid pairs are generated and added to the valid list. The agent lets
-the checks continue until some stopping criterion is met, and then
-picks amongst the valid pairs based on an evaluation criterion. The
-criteria for stopping the checks and for evaluating the valid pairs is
-entirely a matter of local optimization.
+<t>Prior to nominating, the agent let connectivity quecks continue until
+some stopping criterion is met. After that, based on an evaluation
+criterion, the agent selects a pair among the valid pairs in the VALID LIST
+for nomination.
 </t>
-
-<t>
-When the controlling agent selects the valid pair, it repeats the
-check that produced this valid pair (by enqueueing the pair that
-generated the check into the triggered check queue), this time with
-the USE-CANDIDATE attribute. This check should succeed (since the
-previous did), causing the nominated flag of that and only that pair
-to be set. Consequently, there will be only a single nominated pair in
-the valid list for each component, and when the state of the check
-list moves to completed, that exact pair is selected by ICE for
-sending and receiving media for that component.
+<t>Once the controlling agent has selected a valid pair for nomination, it
+repeats the connectivity check that produced this valid pair (by enqueueing
+the pair that generated the check into the TRIGGERED CHECK QUEUE), this time with
+the USE-CANDIDATE attribute. The connectivity check should succeed (since the
+previous did), causing the nominated flag value of that and only that pair
+to be set to true.
 </t>
-
-<t>
-The controlling agent has control over the stopping and selection criteria
-for checks. The only requirement is that the agent MUST eventually pick
-one and only one candidate pair and generate a check for that pair with
-the USE-CANDIDATE attribute present.
+<t>Eventually, there will be only a single nominated pair in the VALID LIST for
+each component. Once the state of the CHECK LIST is set to Completed, that exact
+pair is selected by ICE for sending and receiving media for that component.
 </t>
-
-<t>
-The controlled agent SHOULD select the nominated candidate pair if the agent
-is receiving Binding responses associated with that candidate pair.
-Before the agent has received Binding responses associated with the candidate
-pair, the agent can send media on any candidate for which it has received
-Binding responses. If more than one candidate pair is nominated by the
-controlling agent, the controlled agent SHOULD select the candidate pair with
-the highest priority.
+<t>The criterion details for stopping the connectivity checks and for
+selecting a pair for nomiation, are outside the scope of this specification.
+They are a matter of local optimization. The only requirement is that the
+agent MUST eventually pick one and only one candidate pair and generate a
+check for that pair with the USE-CANDIDATE attribute present.
+</t>
+<t>The controlled agent SHOULD select the candidate pair nominated by the
+controlling agent if the controlled agent is receiving Binding responses
+associated with that candidate pair. Before the agent has received Binding
+responses associated with the candidate pair, the agent can send media on
+any candidate for which it has received Binding responses.
+</t>
+<t>If more than one candidate pair is nominated by the controlling agent, the
+controlled agent SHOULD select the candidate pair with the highest priority.
 </t>
 <t>
-NOTE: A controlling agent that does not support this speification (i.e. it
+NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
 'ice2' ice option by endpoints supporting this specifcation should prevent
@@ -2830,26 +2824,26 @@ such controlling agents from using aggressive nomination.
 <t>
 For both controlling and controlled agents, the state of ICE
 processing depends on the presence of nominated candidate pairs in the
-valid list and on the state of the check list. Note that, at any time,
+VALID LIST and on the state of the CHECK LIST. Note that, at any time,
 more than one of the following cases can apply:
 </t>
 
 <t><list style="symbols">
 
-<t>If there are no nominated pairs in the valid list for a media
-stream and the state of the check list is Running, ICE processing
+<t>If there are no nominated pairs in the VALID LIST for a media
+stream and the state of the CHECK LIST is Running, ICE processing
 continues.
 </t>
 
 
-<t>If there is at least one nominated pair in the valid list for a
-media stream and the state of the check list is Running:
+<t>If there is at least one nominated pair in the VALID LIST for a
+media stream and the state of the CHECK LIST is Running:
 <list style="symbols">
-<t>The agent MUST remove all Waiting and Frozen pairs in the check
-list and triggered check queue for the same component as the nominated
+<t>The agent MUST remove all Waiting and Frozen pairs in the CHECK
+LIST and TRIGGERED CHECK QUEUE for the same component as the nominated
 pairs for that media stream.
 </t>
-<t>If an In-Progress pair in the check list is for the same component
+<t>If an In-Progress pair in the CHECK LIST is for the same component
 as a nominated pair, the agent SHOULD cease retransmissions for its
 check if its pair priority is lower than the lowest-priority nominated
 pair for that component.
@@ -2857,42 +2851,42 @@ pair for that component.
 </list>
 </t>
 
-<t>Once there is at least one nominated pair in the valid list for
+<t>Once there is at least one nominated pair in the VALID LIST for
 every component of at least one media stream and the state of the
-check list is Running:
+CHECK LIST is Running:
 <list style="symbols">
-<t>The agent MUST change the state of processing for its check list
+<t>The agent MUST change the state of processing for its CHECK LIST
 for that media stream to Completed. </t>
 <t>The agent MUST continue to respond to any checks it may still
 receive for that media stream, and MUST perform triggered checks if
 required by the processing of <xref target="sec-serverproc"/>.
 </t>
 <t>The agent MUST continue retransmitting any In-Progress checks for
-that check list.</t>
+that CHECK LIST.</t>
 <t>The agent MAY begin transmitting media for this media stream as
 described in <xref target="sec-send-media"/>.
 </t>
 </list>
 </t>
 
-<t>Once the state of each check list is Completed:
+<t>Once the state of each CHECK LIST is Completed:
 <list style="symbols">
 <t>The agent sets the state of ICE processing overall to Completed.</t>
 </list>
 </t>
 
-<t>If the state of the check list is Failed, ICE has not been
+<t>If the state of the CHECK LIST is Failed, ICE has not been
 able to complete for this media stream. The correct behavior depends
-on the state of the check lists for other media streams:
+on the state of the CHECK LISTs for other media streams:
 <list style="symbols">
-<t>If all check lists are Failed, ICE processing overall is considered
+<t>If all CHECK LISTs are Failed, ICE processing overall is considered
 to be in the Failed state, and the agent SHOULD consider the session a
 failure, SHOULD NOT restart ICE, and the controlling agent SHOULD
 terminate the entire session. </t>
-<t>If at least one of the check lists for other media streams is
+<t>If at least one of the CHECK LISTs for other media streams is
 Completed, the controlling agent SHOULD remove the failed media stream
 from the session while sending updated candidate list to its peer.</t>
-<t> If none of the check lists for other media streams are
+<t> If none of the CHECK LISTs for other media streams are
 Completed, but at least one is Running, the agent SHOULD let ICE
 continue.</t>
 </list>
@@ -2952,7 +2946,7 @@ specification), and are from the same IP address family (IPv4 or
 IPv6).
 <list style="symbols">
 <t>If there is a single pair per component, that pair is added to the
-  Valid list. If all of the components for a media stream had one
+  VALID LIST. If all of the components for a media stream had one
   pair, the state of ICE processing for that media stream is set to
   Completed. If all media streams are Completed, the state of ICE
   processing is set to Completed overall. This will always be the case
@@ -3164,7 +3158,7 @@ Procedures for sending media differ for full and lite implementations.
 
 <t>
 Agents always send media using a candidate pair, using candidate pairs
-in the Valid list. Once a candidate pair has been selected only that
+in the VALID LIST. Once a candidate pair has been selected only that
 candidate pair (referred to as selected pair) is used for
 sending media. An agent will send media to the remote candidate (i.e.,
 setting the destination address and port of the packet equal to that
@@ -3186,14 +3180,14 @@ defined in Section 11 of <xref target="RFC5766"/>.
 The selected pair for a component of a media stream is:
 <list style="symbols">
 <t>
-empty if the state of the check list for that media stream is Running,
+empty if the state of the CHECK LIST for that media stream is Running,
 and there is no previous selected pair for that component due to an
 ICE restart
 </t>
 
 <t>
 equal to the previous selected pair for a component of a media stream
-if the state of the check list for that media stream is Running, and
+if the state of the CHECK LIST for that media stream is Running, and
 there was a previous selected pair for that component due to an ICE
 restart
 </t>
@@ -3214,7 +3208,7 @@ sending media for any component associated with that media stream.
 <section title="Procedures for Lite Implementations">
 
 <t>
-A lite implementation MUST NOT send media until it has a Valid list
+A lite implementation MUST NOT send media until it has a VALID LIST
 that contains a candidate pair for each component of that media
 stream. Once that happens, the agent MAY begin sending media
 packets. To do that, it sends media to the remote candidate in the
@@ -3476,7 +3470,7 @@ using the following formula:
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
 
 
-  Num-Waiting: the number of checks in the check list in the
+  Num-Waiting: the number of checks in the CHECK LIST in the
   Waiting state.
 
   Num-In-Progress: the number of checks in the In-Progress state.
@@ -3717,9 +3711,9 @@ this check. Since the check succeeds, agent L creates a new pair,
 whose local candidate is from the mapped address in the Binding
 response (NAT-PUB-1 from message 13) and whose remote candidate is the
 destination of the request (R-PUB-1 from message 10). This is added to
-the valid list. In addition, it is marked as selected since the
+the VALID LIST. In addition, it is marked as selected since the
 Binding request contained the USE-CANDIDATE attribute. Since there is
-a selected candidate in the Valid list for the one component of this
+a selected candidate in the VALID LIST for the one component of this
 media stream, ICE processing for this stream moves into the Completed
 state. Agent L can now send media if it so chooses.
 </t>
@@ -3727,12 +3721,12 @@ state. Agent L can now send media if it so chooses.
 <t>
 Soon after receipt of the STUN Binding request from agent L (message
 11), agent R will generate its triggered check. This check happens to
-match the next one on its check list -- from its host candidate to
+match the next one on its CHECK LIST -- from its host candidate to
 agent L's server reflexive candidate. This check (messages 14-17) will
 succeed. Consequently, agent R constructs a new candidate pair using
 the mapped address from the response as the local candidate (R-PUB-1)
 and the destination of the request (NAT-PUB-1) as the remote
-candidate. This pair is added to the Valid list for that media
+candidate. This pair is added to the VALID LIST for that media
 stream. Since the check was generated in the reverse direction of a
 check that contained the USE-CANDIDATE attribute, the candidate pair
 is marked as selected. Consequently, processing for this stream moves
@@ -4633,7 +4627,6 @@ Nandakumar. </t>
 <?rfc include="reference.RFC.3424"?>
 <?rfc include="reference.RFC.3550"?>
 <?rfc include="reference.RFC.3711"?>
-<?rfc include="reference.RFC.3056"?>
 <?rfc include="reference.RFC.3879"?>
 <?rfc include="reference.RFC.4038"?>
 <?rfc include="reference.RFC.4091"?>
