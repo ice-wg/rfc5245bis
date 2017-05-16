@@ -8,7 +8,7 @@
 <?rfc subcompact='no'?>
 
 <rfc ipr="pre5378Trust200902" category="std" obsoletes="5245"
-     docName="draft-ietf-ice-rfc5245bis-09"
+     docName="draft-ietf-ice-rfc5245bis-latest"
 >
 
     <front>
@@ -2043,25 +2043,29 @@ one or more candidate pairs, the agent removes the top pair from the
 queue, performs a connectivity check on that pair and puts the candidate pair
 state to In-Progress; or
 </t>
-
 <t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST is empty, and
-if there are one or more candidate pairs in the Waiting state, the agent selects
-the highest-priority candidate pair (if there are multiple pairs with the same
-priority, the pair with the lowest component ID is selected) in the Waiting
-state, performs a connectivity check on that pair and puts the candidate pair
-par state to In-Progress; or
+if there are one or more candidate pairs in the In-Progress state, the agent
+does not change the state of any candidiate pair, and does not perform a
+connectivity check on any candidiate pair, associated with the CHECK LIST.
 </t>
-
-<t>If there is no candidate pair in the Waiting state, and if there are one or
-more pairs in the Frozen state, for each pair in the Frozen state the the agent
+<t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST is empty, if there
+are no candidate pairs in the In-Progress state, and if there are one or more
+candidate pairs in the Waiting state, the agent selects the highest-priority
+candidate pair (if there are multiple pairs with the same priority, the pair
+with the lowest component ID is selected) in the Waiting state, performs a
+connectivity check on that pair and puts the candidate pair state to In-Progress; or
+</t>
+<t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST is empty, if
+there are no candidate pairs in the Waiting or In-Progress state, and if there
+are one or more pairs in the Frozen state, for each pair in the Frozen state the agent
 checks the foundation associated with the pair. For a given foundation, if there
-is no pair (in any CHECK LIST in the CHECK LIST SET) in the Waiting or In-Progress state,
-the agent performs a connectivity check on the pair and puts the pair state to In-Prograss.
-If, for the same foundation, there are one or more pairs in the Waiting or In-Progress state,
-(in any CHECK LIST in the CHECK LIST SET) the agent does not perform a connectivity check
-on the pair.
+is no pair (in any CHECK LIST in the CHECK LIST SET) in the Waiting or In-Progress
+state, the agent puts the candidate pair state to Waiting. After that, the
+agents selects the highest-priority candidate pair (if there are multiple pairs
+with the same priority, the pair with the lowest component ID is selected) in
+the Waiting state, performs a connectivity check on that pair and puts the
+candidate pair state to In-Progress.
 </t>
-
 </list></t>
 
 <t>Once the agent has selected a candidate pair, for which a connectivity check is to
