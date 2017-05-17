@@ -81,11 +81,11 @@ create a media flow directly between participants, so that there is
 no application layer intermediary between them.  This is done to
 reduce media latency, decrease packet loss, and reduce the
 operational costs of deploying the application.  However, this is
-difficult to accomplish through NAT.  A full treatment of the reasons
+difficult to accomplish through NATs.  A full treatment of the reasons
 for this is beyond the scope of this specification.  </t>
 
 <t> Numerous solutions have been defined for allowing these protocols
-to operate through NAT. These include Application Layer Gateways
+to operate through NATs. These include Application Layer Gateways
 (ALGs), the <xref target="RFC3303"> Middlebox Control Protocol</xref>,
 the original <xref target="RFC3489">Simple Traversal of UDP Through
 NAT (STUN)</xref> specification, and <xref target="RFC3102">Realm
@@ -232,7 +232,7 @@ Internet (I2). A candidate from I1 will be directly reachable when
 communicating with a peer on the same private net 10 network, while a
 candidate from I2 will be directly reachable when communicating with a
 peer on the public Internet. Rather than trying to guess which IP
-address will work, the initiating sends both the candidates to its
+address will work, the initiating agent sends both the candidates to its
 peer.
 </t>
 
@@ -288,15 +288,9 @@ X1':x1', mapping this server reflexive candidate to the host candidate
 X:x. Outgoing packets sent from the host candidate will be translated
 by the NAT to the server reflexive candidate.  Incoming packets sent
 to the server reflexive candidate will be translated by the NAT to the
-host candidate and forwarded to the agent. We call the host candidate
-associated with a given server reflexive candidate the BASE.
+host candidate and forwarded to the agent. The host candidate
+associated with a given server reflexive candidate is the BASE.
 </t>
-
-<t><list style="empty">
-<t>Note: "Base" refers to the address an agent sends from for a particular
-candidate. Thus, as a degenerate case host candidates also have a base,
-but it's the same as the host candidate.
-</t></list></t>
 
 <t>
 When there are multiple NATs between the agent and the TURN server,
@@ -372,16 +366,15 @@ STUN response ->            /  check
 It is important to note that the STUN requests are sent to and from
 the exact same IP addresses and ports that will be used for media
 (e.g., RTP and RTCP). Consequently, agents demultiplex STUN and
-RTP/RTCP using contents of the packets, rather than the port on which
-they are received. Fortunately, this demultiplexing is easy to do,
-especially for RTP and RTCP.
+media using contents of the packets, rather than the port on which
+they are received.
 </t>
 
 <t>
 Because a STUN Binding request is used for the connectivity check, the
 STUN Binding response will contain the agent's translated transport
 address on the public side of any NATs between the agent and its
-peer. If this transport address is different from other candidates the
+peer. If this transport address is different from that of other candidates the
 agent already learned, it represents a new candidate, called a PEER
 REFLEXIVE CANDIDATE, which then gets tested by ICE just the same as
 any other candidate.
@@ -405,7 +398,7 @@ send (and receive) messages end-to-end in both directions.
 <section title="Sorting Candidates">
 
 <t>
-Because the algorithm above searches all candidate pairs, if a working
+Because the algorithm above searches all candidate pairs, if a valid
 pair exists it will eventually find it no matter what order the
 candidates are tried in. In order to produce faster (and better)
 results, the candidates are sorted in a specified order. The resulting
@@ -452,14 +445,11 @@ discretion about how to tune their algorithms.
 wish to establish a media session with one COMPONENT (a piece of a
 media stream requiring a single transport address; a media stream may
 require multiple components, each of which has to work for the media
-stream as a whole to be work). Sometimes (e.g., with RTP and RTCP in
-separate components), the agents actually need to establish
-connectivity for more than one flow. </t>
+stream as a whole to be work).</t>
 
 <t>
 The network properties are likely to be very similar for each
-component (especially because RTP and RTCP are sent and received
-from the same IP address). It is usually possible to leverage
+component. It is usually possible to leverage
 information from one media component in order to determine the best
 candidates for another. ICE does this with a mechanism called "frozen
 candidates".
@@ -472,10 +462,10 @@ FOUNDATION. Two candidates have the same foundation when they are
 candidate and STUN/TURN server using the same protocol. Otherwise,
 their foundation is different. A candidate pair has a foundation too,
 which is just the concatenation of the foundations of its two
-candidates. Initially, only the candidate pairs with unique
-foundations are tested.  The other candidate pairs are marked
-"frozen". When the connectivity checks for a candidate pair succeed,
-the other candidate pairs with the same foundation are unfrozen. This
+candidates. Initially, only candidate pairs with unique
+foundations are tested and other candidate pairs are marked
+"frozen". When connectivity checks succeed,
+other candidate pairs with the same foundation are unfrozen. This
 avoids repeated checking of components that are superficially more
 attractive but in fact are likely to fail.
 </t>
@@ -539,11 +529,9 @@ for media amongst the ones that are valid.
 </t>
 
 <t>
-When nominating, the controlling agent lets the checks continue
-until at least one valid candidate pair for each media stream is
-found. Then, it picks amongst those that are valid, and sends a second
-STUN request on its NOMINATED candidate pair, but this time with a
-flag set to tell the peer that this pair has been nominated for use.
+When nominating, the controlling agent selects a candidate pair and
+sends a STUN request on the selected pair with a flag set to indicate
+to the controlled peer that it has nominated the selected pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
 
@@ -564,16 +552,13 @@ STUN request + flag ->      \  L's
 ]]></artwork></figure>
 
 <t>
-Once the STUN transaction with the flag completes, both sides cancel
-any future checks for that media stream. ICE will now send media using
-this pair. The pair an ICE agent is using for media is called the
-SELECTED PAIR.
+Once the STUN transaction with the flag completes, the controlled
+agent will select the nominated candidate pair and send media using it.
 </t>
 
 <t>
-Once ICE is concluded, it can be restarted at any time for one or all
-of the media streams by either agent. This is done by sending an updated
-candidate information indicating a restart.
+ICE can be restarted according to the mechanism defined by the using
+protocol.
 </t>
 
 </section>
@@ -581,14 +566,13 @@ candidate information indicating a restart.
 <section title="Lite Implementations">
 
 <t>
-In order for ICE to be used in a call, both agents need to support it.
+In order for ICE to work, both agents need to support it.
 However, certain agents will always be connected to the public
 Internet and have a public IP address at which it can receive packets
 from any correspondent. To make it easier for these devices to support
 ICE, ICE defines a special type of implementation called LITE (in
-contrast to the normal FULL implementation). A lite implementation
-doesn't gather candidates; it includes only host candidates for any
-media stream.  Lite agents do not generate connectivity checks or run
+contrast to the normal FULL implementation). 
+Lite agents do not generate connectivity checks or run
 the state machines, though they need to be able to respond to
 connectivity checks. When a lite implementation connects with a full
 implementation, the full agent takes the role of the controlling
@@ -613,7 +597,7 @@ implementation is preferable if achievable.
 <section title="Usages of ICE">
 
 <t>This document specifies generic use of ICE with protocols that
-provide means to exchange candidate information between the ICE Peers.
+provide means to exchange candidate information between the ICE agents.
 The specific details of (i.e how to encode candidate information and
 the actual candidate exchange process) for different protocols using
 ICE are described in separate usage documents. One possible way the
@@ -645,20 +629,17 @@ This specification makes use of the following additional terminology:
 <t><list style="hanging">
 
 <t hangText="ICE Agent:">
-An agent is the protocol implementation involved in the
-ICE candidate exchange.  There are two agents involved in a typical
-candidate exchange. </t>
+An ICE agent is the protocol implementation involved in the
+ICE candidate exchange.</t>
 
 <t hangText= "Initiating Peer, Initiating Agent, Initiator:">
-An initiating agent is the protocol implementation involved in the ICE
-candidate exchange that initiates the ICE candidate exchange
+The initiating agent is an ICE agent that initiates the ICE candidate exchange
 process. </t>
 
 <t hangText="Responding Peer, Responding Agent, Responder:">
-A receiving agent is the protocol implementation involved in the ICE
-candidate exchange that receives
+The receiving agent is ICE agent that receives
 and responds to the candidate exchange process initiated by the
-Initiator. </t>
+initiating agent. </t>
 
 <t hangText="ICE Candidate Exchange, Candidate Exchange:">
 The process where the ICE agents exchange information (e.g.,
@@ -669,9 +650,7 @@ information. </t>
 
 <t hangText="Peer:">
 From the perspective of one of the agents in a session, its peer is
-the other agent. Specifically, from the perspective of the initiating
-agent, the peer is the responding agent.  From the perspective of the
-responding agent, the peer is the initiating agent. </t>
+the other agent.</t>
 
 <t hangText="Transport Address:"> The combination of an IP address and
 transport protocol (such as UDP or TCP) port.</t>
@@ -687,47 +666,36 @@ the path created and tested with ICE. </t>
 <t hangText="Candidate, Candidate Information:"> A transport address
 that is a potential point of contact for receipt of media. Candidates
 also have properties -- their type (server reflexive, relayed, or
-host), priority,foundation, and base.
+host), priority, foundation, and base.
 </t>
 
 <t hangText="Component:"> A component is a piece of a media stream
 requiring a single transport address; a media stream may require
 multiple components, each of which has to work for the media stream as
-a whole to work. For media streams based on RTP, unless RTP and RTCP
-are multiplexed in the same port, there are two components per media
-stream -- one for RTP, and one for RTCP. </t>
+a whole to work.</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
-specific port from an IP address on the host. This includes IP
-addresses on physical interfaces and logical ones, such as ones
-obtained through Virtual Private Networks (VPNs) and Realm Specific IP
-(RSIP) <xref target="RFC3102"/> (which lives at the operating system
-level).
+port.
 </t>
 
 <t hangText="Server Reflexive Candidate:"> A candidate whose IP
 address and port are a binding allocated by a NAT for an agent when it
-sent a packet through the NAT to a server. Server reflexive candidates
-can be learned by STUN servers using the Binding request, or TURN
-servers, which provides both a relayed and server reflexive candidate.
+sent a packet through the NAT to a server, such as a STUN server.
 </t>
 
 <t hangText="Peer Reflexive Candidate:"> A candidate whose IP
 address and port are a binding allocated by a NAT for an agent when it
-sent a STUN Binding request through the NAT to its peer.
+sent a packet through the NAT to its peer.
 </t>
 
-<t hangText="Relayed Candidate:"> A candidate obtained by sending a
-TURN Allocate request from a host candidate to a TURN server. The
-relayed candidate is resident on the TURN server, and the TURN server
-relays packets back towards the agent.
+<t hangText="Relayed Candidate:"> A candidate obtained from a relay
+server, such as a TURN server, which relays packets.
 </t>
 
 <t hangText="Base:"> The transport address that an agent sends from
-for a particular candidate. For host-, server reflexive- and peer reflexive
+for a particular candidate. For host, server reflexive and peer reflexive
 candidates the base is the same as the host candidate. For relayed
-candidates the base is the same as the relayed candidate (i.e., the
-transport address used by the TURN server to send from).
+candidates the base is the same as the relayed candidate.
 </t>
 
 <t hangText="Foundation:"> An arbitrary string that is the same for
@@ -735,11 +703,10 @@ two candidates that have the same type, base IP address, protocol
 (UDP, TCP, etc.), and STUN or TURN server.  If any of these are
 different, then the foundation will be different. Two candidate pairs
 with the same foundation pairs are likely to have similar network
-characteristics.  Foundations are used in the frozen algorithm.
+characteristics.  Foundations are used to freeze and unfreeze candidates.
 </t>
 
-<t hangText="Local Candidate:">A candidate that an agent has obtained
-and shared with the peer.
+<t hangText="Local Candidate:">A candidate that an agent has obtained and may send it its peer.
 </t>
 
 <t hangText="Remote Candidate:">A candidate that an agent received
@@ -748,19 +715,19 @@ from its peer.
 
 <t hangText="Default Destination/Candidate:"> The default destination
 for a component of a media stream is the transport address that would
-be used by an agent that is not ICE aware.  A default candidate for a
+be used by an agent that is not ICE-aware.  A default candidate for a
 component is one whose transport address matches the default
 destination for that component.
 </t>
 
-<t hangText="Candidate Pair:"> A pairing containing a local candidate
+<t hangText="Candidate Pair:"> The pair of a local candidate
 and a remote candidate.
 </t>
 
 <t hangText="Check, Connectivity Check, STUN Check:"> A STUN Binding
-request transaction for the purposes of verifying connectivity. A
-check is sent from the local candidate to the remote candidate of a
-candidate pair.
+request for the purposes of verifying connectivity. A
+check is sent from the base of the local candidate 
+to the remote candidate of a candidate pair.
 </t>
 
 <t hangText="Check List:"> An ordered set of candidate pairs that an
@@ -776,7 +743,7 @@ it to send a check.
 consequence of the receipt of a connectivity check from the peer.
 </t>
 
-<t hangText="VALID LIST:"> An ordered set of candidate pairs for a
+<t hangText="Valid list:"> An ordered set of candidate pairs for a
 media stream that have been validated by a successful STUN
 transaction.
 </t>
@@ -784,31 +751,28 @@ transaction.
 <t hangText="Check List Set:"> An ordered list of CHECK LISTs.
 </t>
 
-<t hangText="Full:"> An ICE implementation that performs the complete
+
+<t hangText="Full Implementation:"> 
+An ICE implementation that performs the complete
 set of functionality defined by this specification.
 </t>
 
-<t hangText="Lite:"> An ICE implementation that omits certain
-functions, implementing only as much as is necessary for a peer
-implementation that is full to gain the benefits of ICE. Lite
-implementations do not maintain any of the state machines and do not
-generate connectivity checks.
+<t hangText="Lite Implementation:"> An ICE implementation that
+performs a limited set of functionality defined by this specification.
+In particular, lite implementations do not send connectivity checks.
 </t>
 
-<t hangText="Controlling Agent:"> The ICE agent that is responsible
-for selecting the final choice of candidate pairs and signaling them
-through STUN. In any session, one agent is always controlling. The
-other is the controlled agent.
+<t hangText="Controlling Agent:"> The ICE agent that nominates a
+candidate pair.
 </t>
 
-<t hangText="Controlled Agent:"> An ICE agent that waits for the
-controlling agent to select the final choice of candidate pairs.
+<t hangText="Controlled Agent:"> The ICE agent that does not nominate a
+candidate pair.
 </t>
 
-<t hangText="Nomination, Regular Nomination:"> The process of picking a valid
-candidate pair for media traffic by validating the pair with one
-STUN request, and then picking it by sending a second STUN request
-with a flag indicating its nomination.
+<t hangText="Nomination, Regular Nomination:"> The process of the
+controlling agent indicating to the controlled agent which candidate
+pair the controlled agent should use to send media.
 </t>
 
 <t hangText="Nominated:"> If a valid candidate pair has its nominated
@@ -816,16 +780,14 @@ flag set, it means that it may be selected by ICE for sending and
 receiving media.
 </t>
 
-<t hangText="Selected Pair, Selected Candidate:"> The candidate pair
-selected by ICE for sending and receiving media is called the selected
-pair, and each of its candidates is called the selected candidate.
-Before a  pair has been selected, any valid candidate pair
-can be used for sending and receiving media (only one candidate pair
-at any given time).
+<t hangText="Selected Pair, Selected Candidate Pair:"> The candidate pair
+selected by an ICE agent for sending media is called the selected
+pair.  Before a pair has been selected, any valid candidate pair
+can be used for sending and receiving media.
 </t>
 
 <t hangText="Using Protocol, ICE Usage:"> The protocol that uses ICE
-for NAT traversal. A usage specification defines the protocol specific
+for NAT traversal. A usage specification defines the protocol-specific
 details on how the procedures defined here are applied to that
 protocol. </t>
 
@@ -839,15 +801,14 @@ protocol. </t>
 <t>
 As part of ICE processing, both the initiating and responding agents
 exchange encoded candidate information as defined by the Usage
-Protocol (ICE Usage). Specifics of encoding mechanism and the
+Protocol (ICE Usage). Specifics of the encoding mechanism and the
 semantics of candidate information exchange is out of scope of this
 specification.
 </t>
 
 <t>
-However at a higher level, the below diagram captures ICE processing
-sequence in the agents (initiator and responder) for exchange of
-their respective candidate(s) information.
+However at a higher level, the diagram below shows the how ICE agents
+exchange of their respective candidate(s) information.
 </t>
 
 <figure title="Candidate Gathering and Exchange Sequence"
@@ -879,9 +840,9 @@ candidates   |                               |
 ]]></artwork></figure>
 <t>
 As shown, the agents involved in the candidate exchange perform (1)
-candidate gathering, (2) candidate prioritization, (3) eliminating
-redundant candidates, (4) (possibly) choose default candidates, and
-then (5) formulate and send the candidates to the Peer ICE agent. All
+candidate gathering, (2) candidate prioritization, (3) redundant 
+candidate elimination, (4) (possibly) default candidate selection, and
+(5) sending of the candidates to the peer. All
 but the last of these five steps differ for full and lite
 implementations.
 </t>
@@ -894,40 +855,20 @@ implementations.
 <section anchor="sec-gathering" title="Gathering Candidates">
 
 <t>
-An agent gathers candidates when it believes that communication is
-imminent.  An initiating agent can do this based on a user interface
-cue, or based on an explicit request to initiate a session.  Every
-candidate is a transport address.  It also has a type and a base.
-Four types are defined and gathered by this specification -- host
-candidates, server reflexive candidates, peer reflexive candidates,
-and relayed candidates.  The server reflexive candidates are gathered
-using STUN or TURN, and relayed candidates are obtained through TURN.
-Peer reflexive candidates are obtained in later phases of ICE, as a
-consequence of connectivity checks.
-</t>
-
-<t>
-The process for gathering candidates at the responding agent is
-identical to the process for the initiating agent. It is RECOMMENDED
-that the responding agent begins this process immediately on receipt
-of the candidate information, prior to alerting the user. Such
-gathering MAY begin when an agent starts.
+Four types of candidates are gathered by the ICE agent according to
+this specification: host, server reflexive, peer reflexive, and relayed.
 </t>
 
 <section title="Host Candidates">
 
-<t> The first step is to gather host candidates. Host candidates are
-obtained by binding to ports (typically ephemeral) on a IP address
+<t> Host candidates are obtained by binding to ports on a IP address
 attached to an interface (physical or virtual, including VPN
 interfaces) on the host.
 </t>
 
-<t>For each UDP media stream the agent wishes to use, the agent SHOULD
-obtain a candidate for each component of the media stream on each IP
-address that the host has, with the exceptions listed below. The agent
-obtains each candidate by binding to a UDP port on the specific IP
-address. A host candidate (and indeed every candidate) is always
-associated with a specific component for which it is a candidate. </t>
+<t>For each component of each media stream the agent wishes to use,
+the agent SHOULD gather a candidate on each IP address that the host
+has, with the exceptions listed below.</t>
 
 <t> Each component has an ID assigned to it, called the component ID.
 For RTP-based media streams, unless both RTP and RTCP are multiplexed
@@ -942,27 +883,9 @@ multiplexing), or unless the agent only supports RTP/RTCP
 multiplexing, the agent MUST obtain a separate candidate for RTCP. If
 an agent has obtained a candidate for RTCP, and ends up using RTP/RTCP
 multiplexing, the agent does not need to perform connectivity checks
-on the RTCP candidate.</t>
-
-<t>If an agent is using separate candidates for RTP and RTCP, it will
-end up with 2*K host candidates if an agent has K IP addresses.</t>
-
-<t>Note that the responding agent, when obtaining its candidates, will
-typically know if the other agent supports RTP/RTCP multiplexing, in
-which case it will not need to obtain a separate candidate for
-RTCP. However, absence of a component ID 2 as such does not imply use
-of RTCP/RTP multiplexing, as it could also mean that RTCP is not
-used. </t>
-
-<t> For other than RTP-based streams, use of multiple components is
-discouraged since using them increases the complexity of ICE
-processing. If multiple components are needed, the component IDs
-SHOULD start with 1 and increase by 1 for each component.
-</t>
-
-<t>
-The base for each host candidate is set to the candidate itself.
-</t>
+on the RTCP candidate.  Absence of a component ID 2 as such does not
+imply use of RTCP/RTP multiplexing, as it could also mean that RTCP is
+not used. </t>
 
 <t> The host candidates are gathered from all IP addresses with the
 following exceptions:
@@ -3139,7 +3062,7 @@ ICE processing otherwise.
 
 <t>
 An agent MUST begin the keepalive processing once ICE has selected
-candidates for usage with media, or media begins to flow, whichever
+candidate pairs for usage with media, or media begins to flow, whichever
 happens first. Keepalives end once the session terminates or the media
 stream is removed.
 </t>
@@ -3713,7 +3636,7 @@ response (NAT-PUB-1 from message 13) and whose remote candidate is the
 destination of the request (R-PUB-1 from message 10). This is added to
 the VALID LIST. In addition, it is marked as selected since the
 Binding request contained the USE-CANDIDATE attribute. Since there is
-a selected candidate in the VALID LIST for the one component of this
+a selected candidate pair in the VALID LIST for the one component of this
 media stream, ICE processing for this stream moves into the Completed
 state. Agent L can now send media if it so chooses.
 </t>
