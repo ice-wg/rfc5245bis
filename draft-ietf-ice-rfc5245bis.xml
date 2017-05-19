@@ -2067,6 +2067,94 @@ the Waiting state, performs a connectivity check on that pair and puts the
 candidate pair state to In-Progress.
 </t>
 </list></t>
+<t>
+The flow chart in <xref target="fig-cc-schedule"/> illustrates the procedures
+above.
+</t>
+
+<figure title="Scheduling Connectivity Checks" anchor="fig-cc-schedule" align="center"><artwork>
+<![CDATA[
+
+      BEGIN (Ta fires)
+             |
+             v
++==========================+
+|Select a CHECK LIST (from |
+|the CHECK LIST SET) to    |<--------------------------------------+
+|process.                  |                                       |
++==========================+                                       |
+             |                                                     |
+             v                                                     |
++--------------------------+        +==========================+   |
+|Candidate Pair(s) in      |        |Remove top-most Candidate |   |
+|TRIGGERED CHECK QUEUE     |   YES  |Pair from the TRIGGERED   |   |
+|associated with selected  |------->|CHECK QUEUE, set the pair |   |
+|CHECK LIST?               |        |state to In-Progress and  |   |
+|                          |        |perform connectivity check|   |
+|                          |        |on the pair. Restart Ta.  |   |
++--------------------------+        +==========================+   |
+             |                                                     |
+             | NO                                                  |
+             v                                                     |
++--------------------------+                                       |
+|Candidate Pair(s) in      |   YES                                 |
+|In-Progress state?        |-------------------------------------->+
+|                          |                                       |
++--------------------------+                                       |
+             |                                                     |
+             | NO                                                  |
+             v                                                     |
++--------------------------+        +==========================+   |
+|Candidate Pair(s) in      |        |Perform connectivity      |   |
+|Waiting state?            |   YES  |check on highest-priority |   |
+|                          |------->|candidate pair in Waiting |   |
+|                          |        |state and set the pair    |   |
+|                          |        |state to In-Progress.     |   |
+|                          |        |Restart Ta.               |   |
++--------------------------+        +==========================+   |
+             |                                                     |
+             | NO                                                  |
+             v                                                     |
++--------------------------+                                       |
+|Candidate Pair(s) in      |   NO                                  |
+|Frozen state?             |-------------------------------------->+
+|                          |                                       |
++--------------------------+                                       |
+             |                                                     |
+             | YES                                                 |
+             v                                                     |
++==========================+                                       |
+|For each Candidate Pair   |                                       |
+|in Frozen state, check    |                                       |
+|the Foundation. For a     |                                       |
+|given Foundation, if      |                                       |
+|there is no Candidate     |                                       |
+|Pair (in *ANY* CHECK LIST |                                       |
+|in the CHECK LIST SET) in |                                       |
+|Waiting/In-Progress       |                                       |
+|state, set the Candidate  |                                       |
+|Pair state to Waiting.    |                                       |
++==========================+                                       |
+             |                                                     |
+             v                                                     |
++--------------------------+                                       |
+|Candidate Pair(s) in      |   NO                                  |
+|Waiting state?            |-------------------------------------->+
+|                          |
++--------------------------+
+             |
+             | YES
+             v
++==========================+
+|Perform connectivity      |
+|check on highest-priority |
+|candidiate pair in Waiting|
+|state and set the pair    |
+|state to In-Progress.     |
+|Restart Ta.               |
++==========================+
+
+]]></artwork></figure>
 
 <t>Once the agent has selected a candidate pair, for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
