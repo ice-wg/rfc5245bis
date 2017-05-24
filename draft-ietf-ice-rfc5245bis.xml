@@ -524,8 +524,7 @@ better than one with higher priority.
 <t>
 Consequently, ICE assigns one of the agents in the role of the
 CONTROLLING AGENT, and the other of the CONTROLLED AGENT. The
-controlling agent gets to nominate which candidate pairs will get used
-for media amongst the ones that are valid.
+controlling agent nominates a candidate pair to be used for media.
 </t>
 
 <t>
@@ -698,12 +697,8 @@ candidates the base is the same as the host candidate. For relayed
 candidates the base is the same as the relayed candidate.
 </t>
 
-<t hangText="Foundation:"> An arbitrary string that is the same for
-two candidates that have the same type, base IP address, protocol
-(UDP, TCP, etc.), and STUN or TURN server.  If any of these are
-different, then the foundation will be different. Two candidate pairs
-with the same foundation pairs are likely to have similar network
-characteristics.  Foundations are used to freeze and unfreeze candidates.
+<t hangText="Foundation:"> An arbitrary string used to group similar
+candidates and control candidates freezing.
 </t>
 
 <t hangText="Local Candidate:">A candidate that an agent has obtained and may send it its peer.
@@ -901,7 +896,7 @@ following exceptions:
     candidates. </t>
 
     <t> IPv4-mapped IPv6 addresses SHOULD NOT be included in the
-    offered candidates unless the application using ICE does not
+    address candidates unless the application using ICE does not
     support IPv4 (i.e., is an IPv6-only application <xref
     target="RFC4038"/>). </t>
 
@@ -922,85 +917,41 @@ following exceptions:
 <section title="Server Reflexive and Relayed Candidates">
 
 <t>
-Agents SHOULD obtain relayed candidates and SHOULD obtain server
-reflexive candidates. These requirements are at SHOULD strength to
-allow for provider variation. Use of STUN and TURN servers may be
-unnecessary in closed networks where agents are never connected to the
-public Internet or to endpoints outside of the closed network. In such
-cases, a full implementation would be used for agents that are
-dual-stack or multihomed, to select a host candidate. Use of TURN
-servers is expensive, and when ICE is being used, they will only be
-utilized when both endpoints are behind NATs that perform address and
-port dependent mapping. Consequently, some deployments might consider
-this use case to be marginal, and elect not to use TURN servers. If an
-agent does not gather server reflexive or relayed candidates, it is
-RECOMMENDED that the functionality be implemented and just disabled
-through configuration, so that it can be re-enabled through
-configuration if conditions change in the future.
-</t>
-
-<t>
-If an agent is gathering both relayed and server reflexive candidates,
-it uses a TURN server. If it is gathering just server reflexive
-candidates, it uses a STUN server.
-</t>
-
-<t>
-The agent next pairs each host candidate with the STUN or TURN server
-with which it is configured or has discovered by some means. If a STUN
-or TURN server is configured, it is RECOMMENDED that a domain name be
-configured, and the DNS procedures in <xref target="RFC5389"/> (using
-SRV records with the "stun" service) be used to discover the STUN
-server, and the DNS procedures in <xref target="RFC5766"/> (using SRV
-records with the "turn" service) be used to discover the TURN server.
+An agent SHOULD gather server reflexive and relayed candidates.
 </t>
 
 <t>This specification only considers usage of a single STUN or TURN
 server. When there are multiple choices for that single STUN or TURN
-server (when, for example, they are learned through DNS records and
-multiple results are returned), an agent SHOULD use a single STUN or
-TURN server (based on its IP address) for all candidates for a
-particular session. This improves the performance of ICE. The result
-is a set of pairs of host candidates with STUN or TURN servers. The
-agent then chooses one pair, and sends a Binding or Allocate request
-to the server from that host candidate. Binding requests to a STUN
-server are not authenticated, and any ALTERNATE-SERVER attribute in a
-response is ignored. Agents MUST support the backwards compatibility
-mode for the Binding request defined in <xref
-target="RFC5389"/>. Allocate requests SHOULD be authenticated using a
-long-term credential obtained by the client through some other means.
+server, an agent SHOULD use a single STUN or
+TURN server for all candidates for a
+particular session to improve the performance of ICE.
 </t>
 
 <t>
-Every Ta milliseconds thereafter, the agent can generate another new
-STUN or TURN transaction. This transaction can either be a retry of a
-previous transaction that failed with a recoverable error (such as
-authentication failure), or a transaction for a new host candidate and
-STUN or TURN server pair. The agent SHOULD NOT generate transactions
+An agent MUST support the backwards compatibility mode for the Binding
+request defined in <xref target="RFC5389"/> and MUST ignore any
+ALTERNATE-SERVER attribute in a STUN Binding response.
+</t>
+
+<t>
+The agent SHOULD NOT generate transactions
 more frequently than one every Ta milliseconds. See <xref
 target="sec-ta"/> for guidance on how to set Ta and the STUN
 retransmit timer, RTO.
 </t>
 
-<t>The agent will receive a Binding or Allocate response. A successful
-Allocate response will provide the agent with a server reflexive
-candidate (obtained from the mapped address) and a relayed candidate
-in the XOR-RELAYED-ADDRESS attribute. If the Allocate request is
-rejected because the server lacks resources to fulfill it, the agent
-SHOULD instead send a Binding request to obtain a server reflexive
-candidate. A Binding response will provide the agent with only a
-server reflexive candidate (also obtained from the mapped
-address). The base of the server reflexive candidate is the host
-candidate from which the Allocate or Binding request was sent. The
-base of a relayed candidate is that candidate itself. If a relayed
-candidate is identical to a host candidate (which can happen in rare
-cases), the relayed candidate MUST be discarded.
+<t>A successful Allocate response will provide the agent with a server
+reflexive candidate and a relayed candidate. If the Allocate request
+is rejected because the server lacks resources to fulfill it, the
+agent SHOULD instead send a Binding request to obtain a server
+reflexive candidate. A Binding response will provide the agent with
+only a a server reflexive candidate. 
 </t>
 
 <t>
 If an IPv6-only agent is in a network that utilizes NAT64 <xref
 target="RFC6146"/> and DNS64 <xref target="RFC6147"/> technologies, it
-may gather also IPv4 server reflexive and/or relayed candidates from
+may also gather IPv4 server reflexive and/or relayed candidates from
 IPv4-only STUN or TURN servers.  IPv6-only agents SHOULD also utilize
 IPv6 prefix discovery <xref target="RFC7050"/> to discover the IPv6
 prefix used by NAT64 (if any) and generate server reflexive candidates
@@ -1013,41 +964,33 @@ candidates are prioritized like IPv4 server reflexive candidates.
 <section anchor="sec-computing-foundations" title="Computing Foundations">
 
 <t>
-Finally, the agent assigns each candidate a foundation. The foundation
-is an identifier, scoped within a session. Two candidates MUST have
-the same foundation ID when all of the following are true:
+The agent assigns each candidate a foundation.  Two candidates MUST
+have the same foundation when all of the following are true:
 </t>
 
 <t><list style="symbols">
 
-<t> they are of the same type (host, relayed,
-server reflexive, or peer reflexive)</t>
+<t>They have the same type (host, relayed,
+server reflexive, or peer reflexive).</t>
 
-<t>their bases have the
-same IP address (the ports can be different)</t>
+<t>Their bases have the
+same IP address (the ports can be different).</t>
 
-<t>for reflexive and relayed candidates, the STUN or TURN servers used
-to obtain them have the same IP address
+<t>For reflexive and relayed candidates, the STUN or TURN servers used
+to obtain them have the same IP address.
 </t>
 
-<t>they were obtained using the same transport protocol (TCP, UDP,
-  etc.)
+<t>They were obtained using the same transport protocol (TCP, UDP).
 </t>
 
 </list></t>
-
-<t> Similarly, two candidates MUST have different foundations if their
-types are different, their bases have different IP addresses, the STUN
-or TURN servers used to obtain them have different IP addresses, or
-their transport protocols are different.
-</t>
 
 </section>
 
 <section title="Keeping Candidates Alive">
 
 <t>
-Once server reflexive and relayed candidates are allocated, they MUST
+Once server reflexive and relayed candidates are gathered, they MUST
 be kept alive until ICE processing has completed, as described in
 <xref target="sec-freeing"/>. For server reflexive candidates learned
 through a Binding request, the bindings MUST be kept alive by
@@ -1065,8 +1008,9 @@ reflexive candidate.
 <section anchor="sec-prioritizing" title="Prioritizing Candidates">
 <t>
 The prioritization process results in the assignment of a priority to
-each candidate. Each candidate for a media stream MUST have a unique
-priority that MUST be a positive integer between 1 and (2**31 - 1).
+each candidate. Each candidate MUST have a unique
+priority (unique in the scope of a component of a media stream in a session)
+that MUST be a positive integer between 1 and (2**31 - 1).
 This priority will be used by ICE to determine the order of the
 connectivity checks and the relative preference for candidates.
 </t>
@@ -1075,122 +1019,62 @@ connectivity checks and the relative preference for candidates.
 An agent SHOULD compute this priority using the formula in <xref
 target="sec-rec-form"/> and choose its parameters using the guidelines
 in <xref target="sec-guidelines"/>.  If an agent elects to use a
-different formula, ICE will take longer to converge since both agents
+different formula, ICE may take longer to converge since both agents
 will not be coordinated in their checks.
 </t>
 
-<t>
-The process for prioritizing candidates is common across the
-initiating and the responding agent.
-</t>
 
 <section anchor="sec-rec-form" title="Recommended Formula">
 
-<t>When using the formula, an agent computes the priority by
-determining a preference for each type of candidate (server reflexive,
-peer reflexive, relayed, and host), and, when the agent is multihomed,
-choosing a preference for its IP addresses. These two preferences are
-then combined to compute the priority for a candidate. That priority
-is computed using the following formula:
+<t>The recommended forumla combines a preference for the candidate
+type (server reflexive, peer reflexive, relayed, and host), a
+preference for IP address fro which the candidate was obtained, and
+component ID using the following formula:
 </t>
 
 <figure><artwork>
 <![CDATA[
 priority = (2^24)*(type preference) +
-           (2^8)*(local preference) +
+           (2^8)*(IP address preference) +
            (2^0)*(256 - component ID)
 
 ]]></artwork></figure>
 
 <t>
-The type preference MUST be an integer from 0 to 126 inclusive, and
-represents the preference for the type of the candidate (where the
-types are local, server reflexive, peer reflexive, and relayed). A 126
-is the highest preference, and a 0 is the lowest. Setting the value to
-a 0 means that candidates of this type will only be used as a last
-resort. The type preference MUST be identical for all candidates of
-the same type and MUST be different for candidates of different
-types. The type preference for peer reflexive candidates MUST be
-higher than that of server reflexive candidates. Note that candidates
-gathered based on the procedures of <xref target="sec-gathering"/>
-will never be peer reflexive candidates; candidates of these type are
-learned from the connectivity checks performed by ICE.
+The type preference MUST be an integer from 0 (lowest prefereence) to
+126 (highest preference) inclusive and MUST be identical for all
+candidates of the same type and MUST be different for candidates of
+different types. The type preference for peer reflexive candidates
+MUST be higher than that of server reflexive candidates.
 </t>
 
-<t>The local preference MUST be an integer from 0 to 65535
-inclusive. It represents a preference for the particular IP address
-from which the candidate was obtained. 65535 represents the highest
-preference, and a zero, the lowest. When there is only a single IP
-address, this value SHOULD be set to 65535. More generally, if there
+<t>The local preference MUST be an integer from 0 (lowest preference) to 65535 (highest preference) inclusive. When there is only a single IP
+address, this value SHOULD be set to 65535.  If there
 are multiple candidates for a particular component for a particular
 media stream that have the same type, the local preference MUST be
-unique for each one. In this specification, this only happens for
-multihomed hosts or if an agent is using multiple TURN servers.  If a
-host is multihomed because it is dual-stack, the local preference
+unique for each one. If an agent is dual-stack, the local preference
 should be set according to the current best practice described in <xref
 target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
 
-<t>The
-component ID is the component ID for the candidate, and MUST be
-between 1 and 256 inclusive.
-</t>
+<t>The component ID MUST be an integer between 1 and 256 inclusive.</t>
 
 
 </section>
 
 <section anchor="sec-guidelines" title="Guidelines for Choosing Type and Local Preferences">
 
-<t>One criterion for selection of the type and local preference values
-is the use of a media intermediary, such as a TURN server, a tunnel
-service such as VPN server, or NAT.  With a media intermediary, if
-media is sent to that candidate, it will first transit the media
-intermediary before being received.  Relayed candidates are one type
-of candidate that involves a media intermediary.  Another are host
-candidates obtained from a VPN interface.  When media is transited
-through a media intermediary, it can have a positive or negative
-effect on the latency between transmission and reception.  It may or
-may not increase the packet losses, because of the additional router
-hops that may be taken.  It may increase the cost of providing
-service, since media will be routed in and right back out of a media
-intermediary run by a provider.  If these concerns are important, the
-type preference for relayed candidates must be carefully chosen. The
-RECOMMENDED values are 126 for host candidates, 100 for server
-reflexive candidates, 110 for peer reflexive candidates, and 0 for
-relayed candidates.</t>
+<t>The RECOMMENDED values for type preferences are 126 for host
+candidates, 110 for peer reflexivec andidates, 100 for server
+reflexive candidates, and 0 for relayed candidates.</t>
 
-<t>Furthermore, if an agent is multihomed and has multiple IP
-addresses, the recommendation in <xref target=
-"I-D.ietf-ice-dualstack-fairness"/> should be followed.  If multiple
-TURN servers are used, local priorities for the candidates obtained
-from the TURN servers are chosen in a similar fashion as for
-multihomed local candidates: the local preference value is used to
-indicate a preference among different servers but the preference MUST
-be unique for each one.</t>
+<t>If an agent is multihomed and has multiple IP
+addresses, the recommendations in <xref target=
+"I-D.ietf-ice-dualstack-fairness"/> SHOULD be followed.</t>
 
-<t>Another criterion for selection of preferences is IP address
-family.  ICE works with both IPv4 and IPv6.  It provides a transition
-mechanism that allows dual-stack hosts to prefer connectivity over
-IPv6, but to fall back to IPv4 in case the v6 networks are
-disconnected. Implementation should follow the guidelines from <xref
-target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessively delays
-in the connectivity check phase if broken paths exist.</t>
-
-<t>Another criterion for selecting preferences is topological
-awareness. This is most useful for candidates that make use of
-intermediaries. In those cases, if an agent has preconfigured or
-dynamically discovered knowledge of the topological proximity of the
-intermediaries to itself, it can use that to assign higher local
-preferences to candidates obtained from closer intermediaries.</t>
-
-<t>Another criterion for selecting preferences might be security or
-privacy.  If a user is a telecommuter, and therefore connected to a
-corporate network and a local home network, the user may prefer their
-voice traffic to be routed over the VPN or similar tunnel in order to
-keep it on the corporate network when communicating within the
-enterprise, but use the local network when communicating with users
-outside of the enterprise.  In such a case, a VPN address would have a
-higher local preference than any other address.</t>
+<t>When choosing type preferences, agents may take into account
+factors such as latency, packet loss, cost, network topology,
+security, privacy, and others.</t>
 
 
 </section>
@@ -1201,17 +1085,10 @@ higher local preference than any other address.</t>
 <section anchor="sec-el-red" title="Eliminating Redundant Candidates">
 
 <t>
-Next, the agent eliminates redundant candidates. A candidate is
-redundant if its transport address equals another candidate, and its
-base equals the base of that other candidate. Note that two candidates
-can have the same transport address yet have different bases, and
-these would not be considered redundant. Frequently, a server
-reflexive candidate and a host candidate will be redundant when the
-agent is not behind a NAT. The agent SHOULD eliminate the redundant
-candidate with the lower priority.
-</t>
-<t>
-This process is common across the initiating and responding agents.
+Next, agents (initiating and responding) eliminate redundant
+candidates. A candidate is redundant if and only if its transport
+address and base equal those of another candidate.  The agent SHOULD
+eliminate the redundant candidate with the lower priority.
 </t>
 </section>
 <!-- end full implementation -->
@@ -1220,196 +1097,67 @@ This process is common across the initiating and responding agents.
 <section anchor="sec-offer-lite" title="Lite Implementation Procedures">
 
 <t>
-Lite implementations only utilize host candidates. A lite
-implementation MUST, for each component of each media stream, allocate
-zero or one IPv4 candidates. It MAY allocate zero or more IPv6
-candidates, but no more than one per each IPv6 address utilized by the
-host. Since there can be no more than one IPv4 candidate per component
-of each media stream, if an agent has multiple IPv4 addresses, it MUST
-choose one for allocating the candidate. If a host is dual-stack, it
-is RECOMMENDED that it allocate one IPv4 candidate and one global IPv6
-address. With the lite implementation, ICE cannot be used to
-dynamically choose amongst candidates. Therefore, including more than
-one candidate from a particular scope is NOT RECOMMENDED, since only a
-connectivity check can truly determine whether to use one address or
-the other.
+Lite agents (initating and responding) only use host candidates.  It
+is RECOMMENDED that lite agents use no more than one IPv4 host
+candidate and one IPv6 host candidate.
 </t>
 
-<t>Each component has an ID assigned to it, called the component ID.
-For RTP-based media streams, unless RTCP is multiplexed in the same
-port with RTP, the RTP itself has a component ID of 1, and RTCP a
-component ID of 2. If an agent is using RTCP without multiplexing, it
-MUST obtain candidates for it.  However, absence of a component ID 2
-as such does not imply use of RTCP/RTP multiplexing, as it could also
-mean that RTCP is not used.</t>
+<t>Component IDs, foundations, and priorities follow the sames rules
+as for full agents.</t>
 
 <t>
-Each candidate is assigned a foundation. The foundation MUST be
-different for two candidates allocated from different IP addresses,
-and MUST be the same otherwise. A simple integer that increments for
-each IP address will suffice. In addition, each candidate MUST be
-assigned a unique priority amongst all candidates for the same media
-stream. This priority SHOULD be equal to:
-</t>
-
-<figure><artwork>
-<![CDATA[
-priority = (2^24)*(126) +
-           (2^8)*(IP precedence) +
-           (2^0)*(256 - component ID)
-
-]]></artwork></figure>
-
-<t>
-If a host is v4-only, it SHOULD set the IP precedence to 65535. If a
-host is v6 or dual-stack, the IP precedence SHOULD be the precedence
-value for IP addresses described in RFC 6724 <xref target="RFC6724"/>.
-</t>
-
-<t>
-Next, an agent chooses a default candidate for each component of each
-media stream. If a host is IPv4-only, there would only be one
-candidate for each component of each media stream, and therefore that
-candidate is the default. If a host is IPv6 or dual-stack, the
-selection of default is a matter of local policy. This default SHOULD
-be chosen such that it is the candidate most likely to be used with
-a peer. For IPv6-only hosts, this would typically be a globally scoped
-IPv6 address. For dual-stack hosts, the IPv4 address is RECOMMENDED.
-</t>
-
-<t>
-The procedures in this section is common across the initiating and
-responding agents.
+Lite agents SHOULD choose the candidate most likely to be used as the
+default candidate.  For dual-stack hosts, the IPv4 candidate is
+RECOMMENDED.
 </t>
 
 </section>
 
 <section anchor="sec-encoding" title="Encoding the Candidate Information">
 
-<t>
-Regardless of the agent being an Initiator or Responder Agent,
-the following parameters and their data types needs to be conveyed
-as part of the candidate exchange process. The specifics of syntax
-for encoding the candidate information is out of scope of this
-specification.
+<t>Agents (initiating and responding) needs the following information
+about candidates to be exchanged.  How this information is encoded or
+exchanged is out of scope of this specification.  The using protocol
+should provide a means for exchaning new, additional information in
+the future, including per-candidate information.
 </t>
 
 <t><list style="hanging">
 
-<t hangText="Candidate attribute"> There will be one or more of these
-  for each "media stream". Each candidate is composed of:
+<t hangText="Username Fragment and Password:"> Values used to perform
+ connectivity checks. </t>
+
+<t hangText="Lite or Full: ">Whether the agent is a lite agent or full
+agent. </t>
+
+<t hangText="Connectivity check pacing value:">The pacing value for
+connectivity checks that the agent wishes to use.  If the agent wishes
+to use a value other than default, it MUST include this in the exchange. </t>
+
+<t hangText="Extensions:">Extensions that the agent supports.</t>
+
+<t hangText="Candidates: "> For each candidiate, the following information:
 <list style="hanging">
-   <t hangText="Connection Address:"> The IP address and transport
-   protocol port of the candidate. </t>
-   <t hangText="Transport:"> An indicator of the transport protocol
-   for this candidate. This need not be present if the using protocol
-   will only ever run over a single transport protocol. If it runs
-   over more than one, or if others are anticipated to be used in the
-   future, this should be present. </t>
-   <t hangText="Foundation:"> A sequence of up to 32 characters.</t>
-   <t hangText="Component-ID:"> This would be present only if the using
-   protocol were utilizing the concept of components. If it is, it
-   would be a positive integer that indicates the component ID for
-   which this is a candidate. </t>
-   <t hangText="Priority:"> An encoding of the 32-bit priority
-   value. </t>
-   <t hangText="Candidate Type:"> The candidate type, as defined in
-   ICE. </t>
-   <t hangText="Related Address and Port:"> The related IP address and
-   port for this candidate, as defined by ICE. These MAY be omitted or
-   set to invalid values if the agent does not want to reveal them,
-   e.g., for privacy reasons.
+   <t hangText="Address:"> The IP address and transport protocol
+   port. </t>
+   <t hangText="Transport protocol:"> As defined. </t>
+   <t hangText="Foundation:"> As defined.</t>
+   <t hangText="Component ID:"> As defined.</t>
+   <t hangText="Priority:"> As defined. </t>
+   <t hangText="Type:"> As defined. </t>
+   <t hangText="Related Address:"> As defined. MAY be omitted or
+   set to invalid values if the agent does not want to reveal them.
    </t>
-   <t hangText="Extensibility Parameters:"> The using protocol should
-   define some means for adding new per-candidate ICE parameters in
-   the future. </t>
 </list></t>
-
-<t hangText="Lite Flag:"> If ICE lite is used by the using protocol,
-  it needs to convey a boolean parameter which indicates whether the
-  implementation is lite or not. </t>
-
-<t hangText="Connectivity check pacing value:"> If an agent wants to
-use other than the default pacing values for the connectivity checks,
-it MUST indicate this in the ICE exchange. </t>
-
-<t hangText="Username Fragment and Password:"> The using protocol has
-to convey a username fragment and password. The username fragment MUST
-contain at least 24 bits of randomness, and the password MUST contain
-at least 128 bits of randomness. </t>
-
-
-<t hangText="ICE extensions:"> In addition to the per-candidate
-  extensions above, the using protocol should allow for new
-  media-stream or session-level attributes (ice-options).
-</t>
 
 </list></t>
 
 <t>
-If the using protocol is using the ICE mismatch feature, a way is
-needed to convey this parameter in answers. It is a boolean flag.
-</t>
-
-<t>
-The exchange of parameters is symmetric; both agents need to send the
-same set of attributes as defined above.
-</t>
-
-<t>
-The using protocol may (or may not) need to deal with backwards
-compatibility with older implementations that do not support ICE. If
-the fallback mechanism is being used, then presumably the using
-protocol provides a way of conveying the default candidate (its IP
-address and port) in addition to the ICE parameters.
-</t>
-
-
-<t>
-STUN connectivity checks between agents are authenticated using the
-short-term credential mechanism defined for STUN [RFC5389].  This
-mechanism relies on a username and password that are exchanged through
-protocol machinery between the client and server. The username part of
-this credential is formed by concatenating a username fragment from
-each agent, separated by a colon.  Each agent also provides a
-password, used to compute the message integrity for requests it
-receives.  The username fragment and password are exchanged between
-the peers.  In addition to providing security, the username provides
-disambiguation and correlation of checks to media streams.  See
-Appendix B.4 for motivation.
-</t>
-
-<t>
-If the initiating agent is a lite implementation, it MUST indicate
-this when sending its candidates .
-</t>
-
-<t>
-ICE provides for extensibility by allowing an agent to include a
-series of tokens that identify ICE extensions as part
-of the candidate exchange process.
-</t>
-
-<t>
-Once an agent has sent its candidate information, that agent MUST be
+Once an agent has sent its candidate information, it MUST be
 prepared to receive both STUN and media packets on each candidate. As
 discussed in <xref target="sec-send-media"/>, media packets can be
 sent to a candidate prior to its appearance as the default destination
 for media.
-</t>
-
-</section>
-
-<section anchor="sec-verify" title="Verifying ICE Support">
-
-<t>
-Certain middleboxes, such as ALGs, may alter the ICE candidate
-information that breaks ICE. If the using protocol is vulnerable to
-this kind of changes, called ICE mismatch, the responding agent needs
-to detect this and signal this back to the initiating agent. The
-details on whether this is needed and how it is done is defined by the
-usage specifications. One exception to the above is that an initiating
-agent would never indicate ICE mismatch.
 </t>
 
 </section>
@@ -1419,9 +1167,10 @@ agent would never indicate ICE mismatch.
 <section anchor="sec-candidate_proc" title="ICE Candidate Processing">
 
 <t>
-Once an agent has gathered its candidates and exchanged candidates with its peer
-(<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition,
-full implementations will form CHECK LISTs, and begin performing connectivity checks with the peer.
+Once a full agent (initiating or responding) has gathered its
+candidates and received candidates from its peer, it will form CHECK
+LISTs and perform connectivity checks.  All agents (full and lite)
+respond to connectivity checks.
 </t>
 
 <section anchor="sec-candidate_proc_full" title="Procedures for Full Implementation">
@@ -1430,102 +1179,24 @@ full implementations will form CHECK LISTs, and begin performing connectivity ch
 <section anchor="sec-role" title="Determining Role">
 
 <t>
-For each session, each agent (Initiating and Responding) takes on a
-role. There are two roles -- controlling and controlled. The
-controlling agent is responsible for the choice of the final candidate
-pairs used for communications. For a full agent, this means nominating
-the candidate pairs that can be used by ICE for each media stream, and
-for updating the peer with the ICE's selection, when needed. The
-controlled agent is told which candidate pairs to use for each media
-stream, and does not require updating the peer to signal this
-information. The sections below describe in detail the actual
-procedures followed by controlling and controlled nodes.
+If both agents are full or both agents are lite, the initiating agent
+MUST choose the controlling role and the responding agent MUST choose
+the controlled role.  If one agent is full and the other lite, the
+full agent MUST choose the controlling role and the lite agent MUST
+choose the controlled role.
 </t>
 
 <t>
-The rules for determining the role and the impact on behavior are as
-follows:
-</t>
-
-<t><list style="hanging">
-<t hangText="Both agents are full:"> The Initiating Agent which
-started the ICE processing MUST take the controlling role, and the
-other MUST take the controlled role. Both agents will form check
-lists, run the ICE state machines, and generate connectivity
-checks. The controlling agent will execute the logic in <xref
-target="sec-conclude-full"/> to nominate pairs that will be selected
-by ICE, and then both agents end ICE as described in <xref
-target="sec-conc-state"/>.
-
-</t>
-
-<t hangText="One agent full, one lite:"> The full agent MUST take the
-controlling role, and the lite agent MUST take the controlled
-role. The full agent will form CHECK LISTs, run the ICE state
-machines, and generate connectivity checks. That agent will execute
-the logic in <xref target="sec-conclude-full"/> to nominate pairs that
-will be selected by ICE, and use the logic in <xref
-target="sec-conc-state"/> to end ICE. The lite implementation will
-just listen for connectivity checks, receive them and respond to them,
-and then conclude ICE as described in <xref
-target="sec-lite-conclude"/>. For the lite implementation, the state
-of ICE processing for each media stream is considered to be Running,
-and the state of ICE overall is Running.
-</t>
-
-<t hangText="Both lite:"> The Initiating Agent which started the ICE
-processing MUST take the controlling role, and the other MUST take the
-controlled role. In this case, no connectivity checks are ever
-sent. Rather, once the candidates are exchanged, each agent performs
-the processing described in <xref target="sec-conclude"/> without
-connectivity checks. It is possible that both agents will believe they
-are controlled or controlling. In the latter case, the conflict is
-resolved through glare detection capabilities in the signaling
-protocol enabling the candidate exchange. The state of ICE processing
-for each media stream is considered to be Running, and the state of
-ICE overall is Running.
-</t>
-</list>
+An agent MUST NOT change roles unless either a role conflict is
+detected (procedures for which are defined in <xref
+target="sec-role-conflict"/>) or a full agents changes to a
+lite agent as part of an ICE restart.
 </t>
 
 <t>
-Once the roles are determined for a session, they persist througout
-the lifetime of the session. The roles can be re-determined as part
-of an ICE restart (<xref target="sec-restart"/>), but an ICE agent
-MUST NOT re-determine the role as part of an ICE restart unless one
-or more of the following criteria is fulfilled:
-</t>
-
-<t><list style="hanging">
-<t hangText="Full becomes lite:">
-If the controlling agent is full, and switches to lite, the roles MUST be
-re-determined if the peer agent is also full.
-</t>
-
-<t hangText="Role conflict:">
-If the ICE restart causes a role conflict, the roles might be
-re-determined due to the role conflict procedures in <xref target="sec-role-conflict"/>.
-</t>
-
-</list>
-</t>
-
-<t>
-NOTE: There are certain 3PCC scenarios where an ICE restart might cause
-a role conflict.
-</t>
-
-<t>
-NOTE: The ICE agents needs to inform each other whether they are full
-or lite before the roles are determined. The mechanism for that is
-signalling protocol specific, and outside the scope of the document.
-</t>
-
-<t>
-An ICE agent MUST be prepared that the peer might re-determine the roles
-as part of any ICE restart, even if the criteria for doing so are not
-fulfilled. This can happen if the peer is compliant with an older version
-of this specification.
+An agent MUST be prepared for its peer to change roles as part of an
+ICE restart. This can happen if the peer is compliant with an older
+version of this specification.
 </t>
 
 </section>
@@ -2115,11 +1786,12 @@ permission active until ICE concludes.
 short-term credential mechanism.
 </t>
 <t>The username for the credential is formed by concatenating the
-username fragment provided by the peer with the username fragment
-of the agent sending the request, separated by a colon (":").
+username fragment provided by the peer with the username fragment of
+the agent sending the request, separated by a colon (":").  The
+username fragment MUST contain at least 24 bits of randomness
 </t>
-<t>The password is equal to the password provided by
-the peer.
+<t>The password is equal to the password provided by the peer.  The
+password MUST contain at least 128 bits of randomness.
 </t>
 <t>For example, consider the case where ICE agent L is the
 Initiating agent and ICE agent R is the Responding agent. Agent L
