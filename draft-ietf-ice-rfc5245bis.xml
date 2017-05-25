@@ -1812,19 +1812,17 @@ mapped address of the response, and whose remote candidate equals the
 destination address to which the request was sent. This is called a
 valid pair.
 </t>
-<t>The valid pair may equal the pair that generated the connectivity check, or
-it may equal a different pair in a check list (sometimes in a different check list
-than the one to which the pair that generated the connectivity checks),
-or it may be a pair not currently in any check list.
+<t>The valid pair may equal the pair that generated the connectivity
+check, or equal a different pair (perhaps in a different check list),
+or not equal any pair in any check list.
 </t>
-<t>The ICE agent maintains a separate list, called the VALID LIST, for each check
-list in the check list set. The valid list will contain valid pairs. Initially
-each valid list is empty.
+<t>For each check list, the agent maintains a list of valid pairs.
+This list is called the VALID LIST and is initially empty.  The valid
+list tracks whether or not a valid pair in it has been nominated or
+not.  This state is called the the Nominated Flag and is intially false.
 </t>
-<t>Each valid pair within the valid list has a flag, called the Nominated Flag.
-When a valid pair is added to a valid list, the flag value is set to 'false'.
-</t>
-<t>The valid pair will be added to a valid list as follows:
+
+<t>The agent adds a valid pair to a valid list as follows:
 <list style="numbers">
 <t>If the valid pair equals the pair that generated the check, the pair is added to
 the valid list associated with the check list to which the pair belongs; or
