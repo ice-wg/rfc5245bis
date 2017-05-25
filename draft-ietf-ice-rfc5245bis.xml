@@ -2036,7 +2036,7 @@ the selected CHECK LIST by performing the following steps:
 <t>If the TRIGGERED CHECK QUEUE associated with the CHECK LIST contains
 one or more candidate pairs, the agent removes the top pair from the
 queue, performs a connectivity check on that pair, puts the candidate pair
-state to In-Progress, and aborts these steps.
+state to In-Progress, and aborts the subsequent steps.
 </t>
 
 <t>If there is no candidate pair in the Waiting state, and if there are one or
@@ -2050,7 +2050,7 @@ the agent puts the candidate pair state to Waiting.
 the highest-priority candidate pair (if there are multiple pairs with the same
 priority, the pair with the lowest component ID is selected) in the Waiting
 state, performs a connectivity check on that pair, puts the candidate pair
-par state to In-Progress, and abort these steps.
+par state to In-Progress, and abort the subsequent steps.
 </t>
 
 <t>If this step is reached, no check could be performed for the selected CHECK
