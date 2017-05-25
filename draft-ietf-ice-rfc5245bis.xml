@@ -2043,7 +2043,7 @@ state to In-Progress, and aborts the subsequent steps.
 more pairs in the Frozen state, for each pair in the Frozen state the agent
 checks the foundation associated with the pair. For a given foundation, if there
 is no pair (in any CHECK LIST in the CHECK LIST SET) in the Waiting or In-Progress state,
-the agent puts the candidate pair state to Waiting.
+the agent puts the candidate pair state to Waiting and continues with the next step.
 </t>
 
 <t>If there are one or more candidate pairs in the Waiting state, the agent selects
