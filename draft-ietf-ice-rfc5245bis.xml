@@ -298,8 +298,8 @@ the TURN request will create a binding on each NAT, but only the
 outermost server reflexive candidate (the one nearest the TURN server)
 will be discovered by the agent. If the agent is not behind a NAT,
 then the base candidate will be the same as the server reflexive
-candidate and the server reflexive candidate is redundant and the
-lower priority candidate will be eliminated.
+candidate and the server reflexive candidate is redundant will be
+eliminated.
 </t>
 
 <t>
@@ -398,7 +398,7 @@ send (and receive) messages end-to-end in both directions.
 <section title="Sorting Candidates">
 
 <t>
-Because the algorithm above searches all candidate pairs, if a valid
+Because the algorithm above searches all candidate pairs, if a working
 pair exists it will eventually find it no matter what order the
 candidates are tried in. In order to produce faster (and better)
 results, the candidates are sorted in a specified order. The resulting
@@ -571,7 +571,8 @@ Internet and have a public IP address at which it can receive packets
 from any correspondent. To make it easier for these devices to support
 ICE, ICE defines a special type of implementation called LITE (in
 contrast to the normal FULL implementation). 
-Lite agents do not generate connectivity checks or run
+Lite agents only uses host candidates 
+and does not generate connectivity checks or run
 the state machines, though they need to be able to respond to
 connectivity checks. When a lite implementation connects with a full
 implementation, the full agent takes the role of the controlling
@@ -596,7 +597,7 @@ implementation is preferable if achievable.
 <section title="Usages of ICE">
 
 <t>This document specifies generic use of ICE with protocols that
-provide means to exchange candidate information between the ICE agents.
+provide means to exchange candidate information between the ICE peers.
 The specific details of (i.e how to encode candidate information and
 the actual candidate exchange process) for different protocols using
 ICE are described in separate usage documents. One possible way the
@@ -739,7 +740,7 @@ it to send a check.
 consequence of the receipt of a connectivity check from the peer.
 </t>
 
-<t hangText="Valid list:"> An ordered set of candidate pairs for a
+<t hangText="Valid List:"> An ordered set of candidate pairs for a
 media stream that have been validated by a successful STUN
 transaction.
 </t>
@@ -777,10 +778,8 @@ flag set, it means that it may be selected by ICE for sending and
 receiving media.
 </t>
 
-<t hangText="Selected Pair, Selected Candidate Pair:"> The candidate pair
-selected by an ICE agent for sending media is called the selected
-pair.  Before a pair has been selected, any valid candidate pair
-can be used for sending and receiving media.
+<t hangText="Selected Pair, Selected Candidate Pair:"> The candidate
+pair selected by an ICE agent for sending media.
 </t>
 
 <t hangText="Using Protocol, ICE Usage:"> The protocol that uses ICE
@@ -1221,8 +1220,8 @@ check list.
 <t><list style="hanging">
 <t hangText="Running:">Not yet in the Completed or Failed state.
 </t>
-<t hangText="Completed:">For each component of the media stream, there
-is at least one candidate pair in the Succeeded state.
+<t hangText="Completed:"> The agent has a selected pair for each
+component of the media stream.
 </t>
 <t hangText="Failed:">For any component of the media stream, all
 candidate pairs are in the Failed state.
@@ -1623,7 +1622,7 @@ new attributes.
 <t>The priority attribute MUST be included in a Binding request and be
 set to value computed by the algorithm in <xref
 target="sec-prioritizing"/> for the local candidate, but with a
-candidate type preference for peer-reflexive candidates.
+candidate type preference for peer reflexive candidates.
 </t>
 </section>
 
@@ -1781,13 +1780,13 @@ request and response are symmetric.</t>
 
 <t>The ICE agent MUST check the mapped address from the STUN
 response. If the transport address does not match any of the local
-candidates, the mapped address represents a new peer-reflexive
+candidates, the mapped address represents a new peer reflexive
 candidate which is added to the corresponding check list.
 The type, base, priority, and foundation are computed as follows.
 </t>
 
 <t><list style="symbols">
-<t>The type is peer-reflexive.</t>
+<t>The type is peer reflexive.</t>
 <t>The base is local candidate of the candidate pair
 from which the Binding request was sent.</t>
 <t>The priority is value of the PRIORITY attribute in
@@ -1795,14 +1794,14 @@ the Binding request.</t>
 <t>The foundation is described in <xref target="sec-computing-foundations"/>.</t>
 </list></t>
 
-<t>The ICE agent does not need to pair the peer-reflexive
+<t>The ICE agent does not need to pair the peer reflexive
 candidate with remote candidates, as a valid candiate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
-If an ICE agent wishes to pair the peer-reflexive candidate with
+If an ICE agent wishes to pair the peer reflexive candidate with
 remote candidates other than the one in the valid pair that will
 be generated, the agent MAY provide updated candidate information to
-the peer that includes the peer-reflexive candidate. This will cause
-the peer-reflexive candidate to be paired with all other remote candidates.
+the peer that includes the peer reflexive candidate. This will cause
+the peer reflexive candidate to be paired with all other remote candidates.
 </t>
 </section>
 
@@ -2624,14 +2623,15 @@ Procedures for sending media differ for full and lite implementations.
 <t>
 Agents always send media using a candidate pair, using candidate pairs
 in the valid list. Once a candidate pair has been selected only that
-candidate pair (referred to as selected pair) is used for
-sending media. An agent will send media to the remote candidate (i.e.,
-setting the destination address and port of the packet equal to that
-remote candidate), and will send it from the base associated with the
-candidate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwarded through
-the base (located in the TURN server), using the procedures defined
-in <xref target="RFC5766"/>.
+candidate pair (referred to as selected pair) is used for sending
+media.  Before a pair has been selected, any valid candidate pair can
+be used for sending and receiving media.  An agent will send media to
+the remote candidate (i.e., setting the destination address and port
+of the packet equal to that remote candidate), and will send it from
+the base associated with the candidate pair used for sending media. In
+case of a relayed candidate, media is sent from the agent and
+forwarded through the base (located in the TURN server), using the
+procedures defined in <xref target="RFC5766"/>.
 </t>
 
 <t>
