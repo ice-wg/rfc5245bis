@@ -2216,46 +2216,23 @@ Completed.
 </t>
 
 <t>
-If the peer is a lite agent, 
-Once the candidate exchange has completed, both agents examine their
-candidates and those of its peer. For each media stream, each agent
-pairs up its own candidates with the candidates of its peer for that
-media stream. Two candidates are paired up when they are for the same
-component, utilize the same transport protocol (UDP in this
-specification), and are from the same IP address family (IPv4 or
-IPv6).
-<list style="symbols">
-<t>If there is a single pair per component, that pair is added to the
-  valid list. If all of the components for a media stream had one
-  pair, the state of ICE processing for that media stream is set to
-  Completed. If all media streams are Completed, the state of ICE
-  processing is set to Completed overall. This will always be the case
-  for implementations that are IPv4-only.
+If the peer is a lite agent, the agent pairs local candidates with
+remote candidates that are for the same media stream and have the same
+component, transport protocol, and IP address family.  For each
+component of each media stream, if there is only one canidate pair,
+that pair is added to the valid list.  If there is more than one pair,
+it is RECOMMENDED that an agent follow the procedures of RFC 6724
+<xref target="RFC6724"/> to select a pair and add it to the valid
+list.
 </t>
-<t>
-If there is more than one pair per component:
-<list style="symbols">
-<t>The agent MUST select a pair based on local policy. Since this case
-only arises for IPv6, it is RECOMMENDED that an agent follow the
-procedures of RFC 6724 <xref target="RFC6724"/> to select a single
-pair. </t>
-<t>The agent adds the selected pair for each component to the valid
-list. As described in <xref target="sec-send-media"/>, this will
-permit media to begin flowing. However, it is possible (and in fact
-likely) that both agents have chosen different pairs. </t>
-<t>To reconcile this, the controlling agent MUST send updated
-candidate list which will include the remote-candidates attribute.
-</t>
-<t>The agent MUST NOT update the state of ICE processing until
-after the candidate exchange completes. Then the controlling
-agent MUST change the state of ICE processing to Completed for all
-media streams, and the state of ICE processing overall to
-Completed.
-</t></list></t>
-</list></t>
 
-<!-- peer is lite -->
-</section>
+<t>If all of the components for all media streams had one pair, the
+state of ICE processing is Completed.  Otherwise, the controlling
+agent MUST send an updated candidate list to reconcile different
+agents selecting different candidate pairs.  ICE processing is
+complete after and only after the updated canddiate exchange is
+complete.
+</t>
 
 <!-- procedures for lite -->
 </section>
@@ -2265,23 +2242,12 @@ Completed.
 <section title="Full Implementation Procedures">
 
 <t>
-The procedures in <xref target="sec-conclude"/> require that an
-agent continue to listen for STUN requests and continue to generate
-triggered checks for a media stream, even once processing for that
-stream completes. The rules in this section describe when it is safe
-for an agent to cease sending or receiving checks on a candidate that
-was not selected by ICE, and then free the candidate.
-</t>
-
-<t>
-Once ICE processing has reached the Completed state for all peers for
-media streams using those candidates, the agent SHOULD wait an
-additional three seconds, and then it MAY cease responding to checks or
-generating triggered checks on that candidate.  It MAY free the
-candidate at that time. Freeing of server reflexive candidates is never
-explicit; it happens by lack of a keepalive.  The three-second delay
-handles cases when aggressive nomination is used, and the selected pairs
-can quickly change after ICE has completed.
+A full agent SHOULD NOT stop sending checks and responses from a
+candidate until three seconds after all media streams using that
+candidate are Completed, after which the agent MAY free the candidate
+and stop sending checks and resposnes from it.  The three-second delay
+handles cases when aggressive nomination is used, and the selected
+pairs can quickly change after ICE has completed.
 </t>
 
 </section>
@@ -2289,9 +2255,10 @@ can quickly change after ICE has completed.
 <section title="Lite Implementation Procedures">
 
 <t>
-A lite implementation MAY free candidates not selected by ICE as soon
-as ICE processing has reached the Completed state for all peers for
-all media streams using those candidates.
+A lite agent SHOULD NOT stop sending checks and responses from a
+candidate until after all media streams using that candidate are
+Completed, after which the agent MAY free the candidate and stop
+sending checks and resposnes from it.
 </t>
 
 </section>
