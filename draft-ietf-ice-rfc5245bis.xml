@@ -1211,14 +1211,24 @@ check list.
 <section title="Check List State">
 <t>Each check list has one of the following states:</t>
 <t><list style="hanging">
-<t hangText="Running:">Not yet in the Completed or Failed state.
+
+<t hangText="Running:">The check list is neither Completed yet nor
+Failed yet.  This means that at least one component of the check list
+does not have a selected candidate pair and that no component of the
+check list has candidate pairs that are all in the Failed state.
 </t>
-<t hangText="Completed:"> The agent has a selected pair for each
-component of the media stream.
+
+<t hangText="Completed:">The check list has a selected candidate pair
+for each component of the media stream.
 </t>
-<t hangText="Failed:">For any component of the media stream, all
-candidate pairs are in the Failed state.
+
+<t hangText="Failed:">The check list does not have a valid candidate
+pair for each component of the media stream and all of the candidate
+pairs in the check list are in either the Failed or Succeeded state.
+In other words, at least one component of the check list has candidate
+pairs that are all in the Failed state.
 </t>
+
 </list></t>
 <t>Additionally, a check list with at least one pair in the waiting
 state is called "active", while a check list with all pairs in the
@@ -1511,11 +1521,11 @@ foundation in the check list set has been placed in the Waiting state.
 </section>
 </section>
 
-<section title="ICE State">
+<section anchor="sec-state" title="ICE State">
 <t>
 The ICE agent has a state determined by the state of the check
 lists. The state is Completed if all check lists are Completed, Failed
-if any check list is Failed, and Running otherwise.
+if all check lists are Failed, and Running otherwise.
 </t>
 </section>
 
@@ -1653,7 +1663,8 @@ until ICE concludes.
 
 <section title="Forming Credentials">
 <t>A connectivity check Binding request MUST utilize the STUN
-short-term credential mechanism.
+short-term credential mechanism (i.e., the MESSAGE-INTEGRITY
+attribute).
 </t>
 <t>The username for the credential is formed by concatenating the
 username fragment provided by the peer with the username fragment of
@@ -1737,7 +1748,6 @@ request was sent.
     </t>
 </section>
 
-
 <section title="Role Conflict">
     <t>If the response is a 487 (Role Conflict) error, the agent MUST
     switch its role according the attributes in the request and add
@@ -1746,15 +1756,16 @@ request was sent.
     attribute the agent MUST switch to the controlling role.  If the
     request included an ICE-CONTROLLING attribute, the agent MUST
     switch to the controlled role.  The ICE agent MUST NOT change the
-    tie-breaker value. After switching roles, the agent MUST recompute
-    pair priorities (<xref target="sec-comp-pair-prio"/>) since they
-    depend on the role.
+    tie-breaker value.
     </t>
 
-    <t>NOTE: A role switch will also impact whether the ICE agent is responsible
-    for nominating candidate pairs, and whether the agent is responsible
-    for initiating the exchange of the updated candidate information with
-    the peer once ICE is concluded.
+    <t>
+      A change in roles will require an agent to recompute pair
+      priorities (<xref target="sec-comp-pair-prio"/>), since those
+      priorities are a function of role. The change in role will also
+      impact whether the agent is responsible for selecting nominated
+      pairs and initiating exchange with updated candidate information
+      upon conclusion of ICE.
     </t>
 </section>
 
@@ -1771,7 +1782,7 @@ foundation are computed as follows.
 <t>The type is peer reflexive.</t>
 <t>The base is local candidate of the candidate pair
 from which the Binding request was sent.</t>
-<t>The priority is value of the PRIORITY attribute in
+<t>The priority is the value of the PRIORITY attribute in
 the Binding request.</t>
 <t>The foundation is described in <xref target="sec-computing-foundations"/>.</t>
 </list></t>
@@ -1779,7 +1790,7 @@ the Binding request.</t>
 <t>The agent does not need to pair the peer reflexive
 candidate with remote candidates, as a valid candiate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
-If an aagent wishes to pair the peer reflexive candidate with
+If an agent wishes to pair the peer reflexive candidate with
 remote candidates other than the one in the valid pair that will
 be generated, the agent MAY provide updated candidate information to
 the peer that includes the peer reflexive candidate. This will cause
@@ -1866,17 +1877,12 @@ associated with the candidate pair.
 
 <section title="Check List State Updates">
 <t>
-Regardless of whether a connectivity check was successful or failed, the
-completion of the check may require updating of check list states.
-For each check list in the check list set, if all of the candidate pairs
-are in either Failed or Succeeded state, and if there is not a valid pair in
-the valid list for each component of the media stream associated with the
-check list, the state of the check list is set to Failed. If there is a
-valid pair for each component in the valid list, the state of the check
-list is set to Succeeded.
+The completion of a check (either successful or failed) may require
+updating check list states according to the definitions in <xref
+target="sec-forming"/>.
 </t>
 </section>
-</section>
+
 <!-- end processing response -->
 </section>
 
@@ -1884,44 +1890,34 @@ list is set to Succeeded.
 <section anchor="sec-serverproc" title="STUN Server Procedures">
 
 <t>
-An agent MUST be prepared to receive a Binding request on the base of
-each candidate it included in its most recent candidate exchange. This
-requirement holds even if the peer is a lite implementation.
+An agent (lite or full) MUST be prepared to receive Binding requests
+on the base of each candidate it included in its most recent candidate
+exchange.
 </t>
 
 <t>
-The agent MUST use the short-term credential mechanism (i.e., the
-MESSAGE-INTEGRITY attribute) to authenticate the request and perform a
-message integrity check. Likewise, the short-term credential mechanism
-MUST be used for the response. The agent MUST consider the username to
-be valid if it consists of two values separated by a colon, where the
-first value is equal to the username fragment generated by the agent
-in an candidate exchange for a session in-progress. It is possible
-(and in fact very likely) that the initiating agent will receive a
-Binding request prior to receiving the candidates from its peer. If
-this happens, the agent MUST immediately generate a response
-(including computation of the mapped address as described in <xref
-target="sec-compute-mapped"/>). The agent has sufficient information
-at this point to generate the response; the password from the peer is
-not required. Once the answer is received, it MUST proceed with the
-remaining steps required, namely, <xref
-target="sec-learn-peer-server"/>, <xref target="sec-triggered"/>, and
-<xref target="sec-up-fav"/> for full implementations. In cases where
-multiple STUN requests are received before the answer, this may cause
-several pairs to be queued up in the TRIGGERED CHECK QUEUE.
+A Binding response MUST utilize the STUN short-term credential
+mechanism (i.e., the MESSAGE-INTEGRITY attribute).  The username is
+considered valid if and only if it consists of two values separated by
+a colon, where the first value is equal to the username fragment
+generated by the agent in a candidate exchange for a session
+in-progress.  An agent MUST NOT utilize the ALTERNATE-SERVER
+mechanism, and MUST NOT support the backwards-compatibility mechanisms
+of RFC 3489. It MUST utilize the FINGERPRINT mechanism.
 </t>
 
 <t>
-An agent MUST NOT utilize the ALTERNATE-SERVER mechanism, and MUST NOT
-support the backwards-compatibility mechanisms to RFC 3489. It MUST
-utilize the FINGERPRINT mechanism.
+If the initiating agent receives Binding requests before receiving
+candidates, it MUST generate responses, including computation of the
+mapped address as described in <xref
+target="sec-compute-mapped"/>). 
 </t>
 
 <t>
 If the agent is using Diffserv Codepoint markings <xref
-target="RFC2475"/> in its media packets, it SHOULD apply those same
-markings to its responses to Binding requests. The same would apply to
-any layer 2 markings the endpoint might be applying to media packets.
+target="RFC2475"/> in its media packets, it SHOULD apply the same
+markings to Binding responses. The same would apply to any layer 2
+markings the endpoint might be applying to media packets.
 </t>
 
 <section anchor="sec-add-server-full" title="Additional Procedures for Full Implementations">
@@ -1932,14 +1928,10 @@ to full implementations.
 
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
-Normally, the rules for selection of a role in <xref target="sec-role"/>
-will result in each agent selecting a different role -- one controlling
-and one controlled. However, in unusual call flows, typically utilizing
-third party call control, it is possible for both agents to select the
-same role. This section describes procedures for checking for this case
-and repairing it. These procedures apply only to usages of ICE that
-require conflict resolution. The usage document MUST specify whether this
-mechanism is needed.
+In certain usages of ICE, both agents may end up choosing the same
+role, resulting in a role conflict.  The section describes a mechanism
+for detetecing and repairing role conflicts.  The usage document
+MUST specify whether this mechanism is needed.
 </t>
 
 <t>
@@ -1990,27 +1982,19 @@ Conflict) but retains its role.
 </list>
 </t>
 
-<t>
-If the agent is in the controlled role and the ICE-CONTROLLING
-attribute was present in the request, or the agent was in the
-controlling role and the ICE-CONTROLLED attribute was present in the
-request, there is no conflict.
-</t>
-
 </list></t>
 
 <t>
 A change in roles will require an agent to recompute pair priorities
 (<xref target="sec-comp-pair-prio"/>), since those priorities are a
-function of controlling and controlled roles. The change in role will
-also impact whether the agent is responsible for selecting nominated
-pairs and initiating exchange with updated candidate information
-upon conclusion of ICE.
+function of role. The change in role will also impact whether the
+agent is responsible for selecting nominated pairs and initiating
+exchange with updated candidate information upon conclusion of ICE.
 </t>
 
 <t>
 The remaining sections in <xref target="sec-add-server-full"/> are
-followed if the server generated a successful response to the Binding
+followed if the agent generated a successful response to the Binding
 request, even if the agent changed roles.
 </t>
 
@@ -2020,7 +2004,7 @@ request, even if the agent changed roles.
 <section anchor="sec-compute-mapped" title="Computing Mapped Address">
 
 <t>
-For requests being received on a relayed candidate, the source
+For requests received on a relayed candidate, the source
 transport address used for STUN processing (namely, generation of the
 XOR-MAPPED-ADDRESS attribute) is the transport address as seen by the
 TURN server. That source transport address will be present in the
@@ -2038,17 +2022,18 @@ source transport address is the one that was bound to the channel.
 If the source transport address of the request does not match any
 existing remote candidates, it represents a new peer reflexive remote
 candidate. This candidate is constructed as follows:
+
 <list style="symbols">
-<t>The priority of the candidate is set to the PRIORITY attribute from
-the request.</t>
-<t>The type of the candidate is set to peer reflexive. </t>
-<t>The foundation of the candidate is set to an arbitrary value,
-different from the foundation for all other remote candidates. If any
+<t>The type is peer reflexive.</t>
+<t>The priority is the value of the PRIORITY attribute in
+the Binding request.</t>
+<t>The component ID is the component ID of
+the local candidate to which the request was sent.
+<t>The foundation is an arbitrary value,
+different from the foundations of all other remote candidates. If any
 subsequent candidate exchanges contain this peer reflexive
 candidate, it will signal the actual foundation for the
 candidate.</t>
-<t>The component ID of this candidate is set to the component ID for
-the local candidate to which the request was sent.
 </t>
 </list>
 </t>
@@ -2062,78 +2047,44 @@ the agent does not pair this candidate with any local candidates.
 <section anchor="sec-triggered" title="Triggered Checks">
 
 <t>
-Next, the agent constructs a pair whose local candidate is equal to
-the transport address on which the STUN request was received, and a
-remote candidate equal to the source transport address where the
-request came from (which may be the peer reflexive remote candidate
-that was just learned). The local candidate will either be a host
-candidate (for cases where the request was not received through a
-relay) or a relayed candidate (for cases where it is received through
-a relay).  The local candidate can never be a server reflexive
-candidate. Since both candidates are known to the agent, it can obtain
-their priorities and compute the candidate pair priority. This pair is
-then looked up in the check list. There can be one of several
-outcomes:
+If the check list does not already contain a candidate pair with a
+local candidate equal to the transport address on which the Binding
+request was received and a remote candidate equal to the source
+transport address where the request came from, the agent MUST
+insert such a candidate pair into the check list (based on its
+priority, and with a state of Waiting).  It then uses the candidate pair,
+whether it existed previously or was just inserted, according the
+following rules:
 
 <list style="symbols">
-  <t>If the pair is already on the check list:
-    <list style="symbols">
-      <t>If the state of that pair
-      is Waiting or Frozen, a check for that pair is enqueued into the
-      TRIGGERED CHECK QUEUE if not already present.
-      </t>
-
-      <t>If the state of that pair is In-Progress, the agent cancels
-      the in-progress transaction. Cancellation means that the agent
-      will not retransmit the request, will not treat the lack of
-      response to be a failure, but will wait the duration of the
-      transaction timeout for a response. In addition, the agent MUST
-      create a new connectivity check for that pair (representing a
-      new STUN Binding request transaction) by enqueueing the pair in
-      the TRIGGERED CHECK QUEUE. The state of the pair is then changed
-      to Waiting.
-      </t>
-
-      <t> If the state of the pair is Failed, it is changed to Waiting
-      and the agent MUST create a new connectivity check for that pair
-      (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the TRIGGERED CHECK QUEUE.
-      </t>
-
-      <t>If the state of that pair is Succeeded, nothing further is
-      done. </t>
-    </list>
+  <t>If the pair state is Waiting or Frozen, the agent adds the pair to the
+  triggered check queue if it is not already in it.
   </t>
+
+  <t>If the pair state is Failed, the agent adds the pair to the the
+  triggered check queue and sets the state of the pair to Waiting.
+  </t>
+
+  <t>If the pair state is In-Progress, the agent cancels the in-progress
+  transaction (meaning the agent will not retransmit the request, will
+  not treat the lack of response to be a failure, and will wait the
+  duration of the transaction timeout for a response) and adds the
+  pair to the the triggered check queue and sets the state of the pair
+  to Waiting.
+  </t>
+
+  <t>If the state is Succeeded, nothing further is done. </t>
 </list>
 </t>
 
 <t>
-These steps are done to facilitate rapid completion of ICE when both
-agents are behind NAT.
-
-<list style="symbols">
-  <t>If the pair is not already on the check list:
-  <list style="symbols">
-    <t>The pair is inserted into the check list based on its priority.</t>
-    <t>Its state is set to Waiting.</t>
-    <t>The pair is enqueued into the TRIGGERED CHECK QUEUE. </t>
-  </list>
-  </t>
-</list>
-
-</t>
-
-<t>
-When a triggered check is to be sent, it is constructed and processed
-as described in <xref
-target="sec-send-check"/>target="sec-connectivity_check"/>. These
-procedures require the agent to know the transport address, username
-fragment, and password for the peer. The username fragment for the
-remote candidate is equal to the part after the colon of the USERNAME
-in the Binding request that was just received. Using that username
-fragment, the agent can check the candidates received from its peer
-(there may be more than one in cases of forking), and find this
-username fragment. The corresponding password is then selected.
+When a triggered check is sent, it is constructed and processed as
+described in <xref
+target="sec-send-check"/>target="sec-connectivity_check"/>.  The
+username fragment for the remote candidate is the part after the colon
+of the USERNAME attribute in the Binding request that was just
+received.  The password is known from the candidates received from the
+peer corresponding to the username fragment.
 </t>
 
 <!-- end triggered checks -->
@@ -2142,23 +2093,13 @@ username fragment. The corresponding password is then selected.
 <section anchor="sec-up-fav" title="Updating the Nominated Flag">
 
 <t>
-If the Binding request received by the agent had the USE-CANDIDATE
-attribute set, and the agent is in the controlled role, the agent
-looks at the state of the pair computed in <xref target="sec-triggered"/>:
-<list style="symbols">
-<t>If the state of this pair is Succeeded, it means that the check
-generated by this pair produced a successful response. This would have
-caused the agent to construct a valid pair when that success response
-was received (see <xref target="sec-valid-cons"/>). The agent now sets
-the nominated flag value of the valid pair to true. This may end ICE
-processing for this media stream; see <xref target="sec-conclude"/>.
-</t>
-<t>If the state of this pair is In-Progress, and if its check produces a
-successful result, the resulting valid pair has its nominated flag set
-when the response arrives. This may end ICE processing for this media
-stream when it arrives; see <xref target="sec-conclude"/>.
-</t>
-</list>
+After a controlled agent receives a Binding request with the
+USE-CANDIDATE attribute on a candidate pair and a valid pair has been
+constructed for that candidate pair, the controlled agent MUST set the
+Nominated Flag of the valid pair to true.  Either event may happen
+first, but the agent does not set the flag until both have
+occurred.  This may end ICE processing for this media stream; see
+<xref target="sec-conclude"/>.
 </t>
 
 </section>
@@ -2169,15 +2110,12 @@ stream when it arrives; see <xref target="sec-conclude"/>.
 <section title="Additional Procedures for Lite Implementations">
 
 <t>
-If the check that was just received contained a USE-CANDIDATE
-attribute, the agent constructs a candidate pair whose local candidate
-is equal to the transport address on which the request was received,
-and whose remote candidate is equal to the source transport address of
-the request that was received. This candidate pair is assigned an
-arbitrary priority, and placed into a list of valid candidates called
-the valid list. The agent sets the nominated flag for that pair to
-true. ICE processing is considered complete for a media stream if the
-valid list contains a candidate pair for each component.
+If a lite agent receives a Binding request with the USE-CANDIDATE
+attribute, the agent constructs a valid candidate pair with local
+candidate equal to the transport address on which the request was
+received, and remote candidate equal to the source transport address
+of the request that was received and adds it to the valid list (if it
+is not already in the valid list) and sets the Nominated Flag to true.
 </t>
 
 </section>
@@ -2204,121 +2142,60 @@ updating of state machinery.
 
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
-<t>Prior to nominating, the agent let connectivity quecks continue until
-some stopping criterion is met. After that, based on an evaluation
-criterion, the agent selects a pair among the valid pairs in the valid list
-for nomination.
+<t>This section applies within the context of a single component of a
+single media stream.</t>
+
+<t>The controlling agent stops connectivity checks when some stopping
+criterion is met (outside the scope of this document). It then selects
+a valid candidate pair based on some selection criterion (outside the
+scope of this document).  It then sends a connectivity check with the
+USE-CANDIDATE attribute on the selected candidate pair by enqueuing
+the selected candidate pair in the triggered check queue.  The
+controlling agent MUST NOT nominate more than one candidate pair.
 </t>
-<t>Once the controlling agent has selected a valid pair for nomination, it
-repeats the connectivity check that produced this valid pair (by enqueueing
-the pair that generated the check into the TRIGGERED CHECK QUEUE), this time with
-the USE-CANDIDATE attribute. The connectivity check should succeed (since the
-previous did), causing the nominated flag value of that and only that pair
-to be set to true.
+
+<t>The controlled agent SHOULD select the nominated candidate
+pair. But before a candidate pair has been selected, the controlled
+agent may send media on any valid candidate pair.
 </t>
-<t>Eventually, there will be only a single nominated pair in the valid list for
-each component. Once the state of the check list is set to Completed, that exact
-pair is selected by ICE for sending and receiving media for that component.
+
+<t>After selecting a candidate pair, the agent MUST remove all Waiting
+and Frozen pairs from the check list and triggered check queue.
+The agent SHOULD cease retransmissions of checks from In-Progress
+candidate pairs thar are of lower priority than the selected candidate pair.
 </t>
-<t>The criterion details for stopping the connectivity checks and for
-selecting a pair for nomiation, are outside the scope of this specification.
-They are a matter of local optimization. The only requirement is that the
-agent MUST eventually pick one and only one candidate pair and generate a
-check for that pair with the USE-CANDIDATE attribute present.
+
+<t>If a check list is Completed (for all components of the check
+list), the agent MUST continue to respond to any checks it may
+still receive for that media stream, perform triggered checks if
+required by the processing of <xref target="sec-serverproc"/>, and
+continue retransmitting any In-Progress checks for that check list.
 </t>
-<t>The controlled agent SHOULD select the candidate pair nominated by the
-controlling agent if the controlled agent is receiving Binding responses
-associated with that candidate pair. Before the agent has received Binding
-responses associated with the candidate pair, the agent can send media on
-any candidate for which it has received Binding responses.
-</t>
-<t>If more than one candidate pair is nominated by the controlling agent, the
-controlled agent SHOULD select the candidate pair with the highest priority.
-</t>
+
 <t>
-NOTE: A controlling agent that does not support this specification (i.e. it
-is implemented according to RFC 5245) might nominate more than one candidate pair.
-This was referred to as aggressive nomination in RFC 5245. The usage of the
-'ice2' ice option by endpoints supporting this specifcation should prevent
-such controlling agents from using aggressive nomination.
+A controlling agent that does not support this specification (i.e. it
+is implemented according to RFC 5245) might nominate more than one
+candidate pair.  This was referred to as aggressive nomination in RFC
+5245. The usage of the 'ice2' ice option by endpoints supporting this
+specifcation should prevent such controlling agents from using
+aggressive nomination.  But if more than one candidate pair is
+nominated by the controlling agent, the controlled agent SHOULD select
+the candidate pair with the highest priority.
 </t>
 
 </section>
 
 <section anchor="sec-conc-state" title="Updating States">
 
-<t>
-For both controlling and controlled agents, the state of ICE
-processing depends on the presence of nominated candidate pairs in the
-valid list and on the state of the check list. Note that, at any time,
-more than one of the following cases can apply:
-</t>
+<t>If some of the the check lists are Completed and some are Failed
+and all are either Completed or Failed, remove the failed media
+streams and send an updated candidate list to the peer.  All checks
+lists are now Completed.</t>
 
-<t><list style="symbols">
+<t>If all check lists are Completed, the agent is Completed. </t>
 
-<t>If there are no nominated pairs in the valid list for a media
-stream and the state of the check list is Running, ICE processing
-continues.
-</t>
-
-
-<t>If there is at least one nominated pair in the valid list for a
-media stream and the state of the check list is Running:
-<list style="symbols">
-<t>The agent MUST remove all Waiting and Frozen pairs in the CHECK
-LIST and TRIGGERED CHECK QUEUE for the same component as the nominated
-pairs for that media stream.
-</t>
-<t>If an In-Progress pair in the check list is for the same component
-as a nominated pair, the agent SHOULD cease retransmissions for its
-check if its pair priority is lower than the lowest-priority nominated
-pair for that component.
-</t>
-</list>
-</t>
-
-<t>Once there is at least one nominated pair in the valid list for
-every component of at least one media stream and the state of the
-check list is Running:
-<list style="symbols">
-<t>The agent MUST change the state of processing for its check list
-for that media stream to Completed. </t>
-<t>The agent MUST continue to respond to any checks it may still
-receive for that media stream, and MUST perform triggered checks if
-required by the processing of <xref target="sec-serverproc"/>.
-</t>
-<t>The agent MUST continue retransmitting any In-Progress checks for
-that check list.</t>
-<t>The agent MAY begin transmitting media for this media stream as
-described in <xref target="sec-send-media"/>.
-</t>
-</list>
-</t>
-
-<t>Once the state of each check list is Completed:
-<list style="symbols">
-<t>The agent sets the state of ICE processing overall to Completed.</t>
-</list>
-</t>
-
-<t>If the state of the check list is Failed, ICE has not been
-able to complete for this media stream. The correct behavior depends
-on the state of the check lists for other media streams:
-<list style="symbols">
-<t>If all check lists are Failed, ICE processing overall is considered
-to be in the Failed state, and the agent SHOULD consider the session a
-failure, SHOULD NOT restart ICE, and the controlling agent SHOULD
-terminate the entire session. </t>
-<t>If at least one of the check lists for other media streams is
-Completed, the controlling agent SHOULD remove the failed media stream
-from the session while sending updated candidate list to its peer.</t>
-<t> If none of the check lists for other media streams are
-Completed, but at least one is Running, the agent SHOULD let ICE
-continue.</t>
-</list>
-</t>
-
-</list></t>
+<t>If all check lists are Failed, the agent is Failed and SHOULD NOT
+restart ICE. </t>
 
 </section>
 
@@ -2327,42 +2204,19 @@ continue.</t>
 <section anchor="sec-lite-conclude" title="Procedures for Lite Implementations">
 
 <t>
-Concluding ICE for a lite implementation is relatively
-straightforward. There are two cases to consider:
-<list style="empty">
-<t>The implementation is lite, and its peer is full. </t>
-<t>The implementation is lite, and its peer is lite. </t>
-</list></t>
-
-<t>
-The effect of ICE concluding is that the agent can free any allocated
-host candidates that were not utilized by ICE, as described in <xref
-target="sec-freeing"/>.
-</t>
-
-<section title="Peer Is Full">
-
-<t>
-In this case, the agent will receive connectivity checks from its
-peer. When an agent has received a connectivity check that includes
-the USE-CANDIDATE attribute for each component of a media stream, the
-state of ICE processing for that media stream moves from Running to
-Completed. When the state of ICE processing for all media streams is
-Completed, the state of ICE processing overall is Completed.
+When ICE concludes, a lite agent can free host candidates that were
+not used by ICE, as described in <xref target="sec-freeing"/>.
 </t>
 
 <t>
-The lite implementation will never itself determine that ICE
-processing has failed for a media stream; rather, the full peer will
-make that determination and then remove or restart the failed media
-stream as part of subsequent candidate exchange process.
+If the peer is a full agent, the lite agent selects a candidate pair
+when the full agent nominates it.  When the lite agent has selected a
+candidate pair for all components of all media streams, it is
+Completed.
 </t>
 
-</section>
-
-<section anchor="sec-lite-conc2" title="Peer Is Lite">
-
 <t>
+If the peer is a lite agent, 
 Once the candidate exchange has completed, both agents examine their
 candidates and those of its peer. For each media stream, each agent
 pairs up its own candidates with the candidates of its peer for that
