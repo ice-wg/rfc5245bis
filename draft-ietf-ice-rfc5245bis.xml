@@ -750,14 +750,15 @@ The order is determined by each ICE usage.
 </t>
 
 
-<t hangText="Full Implementation:"> 
-An ICE implementation that performs the complete
-set of functionality defined by this specification.
+<t hangText="Full Implementation:"> An ICE implementation that
+performs the complete set of functionality defined by this
+specification.
 </t>
 
 <t hangText="Lite Implementation:"> An ICE implementation that
 performs a limited set of functionality defined by this specification.
-In particular, lite implementations do not send connectivity checks.
+In particular, it only uses host candidates and does not send
+connectivity checks.
 </t>
 
 <t hangText="Controlling Agent:"> The ICE agent that nominates a
@@ -1138,19 +1139,11 @@ to use a value other than default, it MUST include this in the exchange. </t>
 
 <t hangText="Extensions:">Extensions that the agent supports.</t>
 
-<t hangText="Candidates: "> For each candidiate, the following information:
-<list style="hanging">
-   <t hangText="Address:"> The IP address and transport protocol
-   port. </t>
-   <t hangText="Transport protocol:"> As defined. </t>
-   <t hangText="Foundation:"> As defined.</t>
-   <t hangText="Component ID:"> As defined.</t>
-   <t hangText="Priority:"> As defined. </t>
-   <t hangText="Type:"> As defined. </t>
-   <t hangText="Related Address:"> As defined. MAY be omitted or
-   set to invalid values if the agent does not want to reveal them.
-   </t>
-</list></t>
+<t hangText="Candidates: "> For each candidiate, the type, IP address,
+transport protocol, transport protocol port, foundation, component ID,
+priority, and related address.  The related address MAY be omitted or
+set to invalid values if the agent does not want to reveal them.
+</t>
 
 </list></t>
 
@@ -1437,8 +1430,8 @@ For each foundation, the agent sets the state of exactly one candidate
 pair to the Waiting state (unfreezing it).  The candidate pair to
 unfreeze is choosen by finding the first candidate pair (ordered by
 lowest component ID and then highest priority if component IDs are
-equal) in the first check list in the check list set that has that
-foundation.
+equal) in the first check list (ordered by the check list set) that
+has that foundation.
 </t>
 
 </list></t>
@@ -1520,7 +1513,7 @@ foundation in the check list set has been placed in the Waiting state.
 
 <section title="ICE State">
 <t>
-The ICE agents has a state determined by the state of the check
+The ICE agent has a state determined by the state of the check
 lists. The state is Completed if all check lists are Completed, Failed
 if any check list is Failed, and Running otherwise.
 </t>
@@ -1534,29 +1527,28 @@ agent chooses a candidate pair and sends the first check by by sending
 a STUN request from the base of the local candiditate to the remote
 candidate following the procedures in <xref
 target="sec-connectivity_check"/>.  Then every time Ta fires, it
-chooses a candidate pair and sends a check.  After sending these
-checks, the agent sets the candidate pair's state to In-Progress.
+chooses a candidate pair and sends a check.  After sending each check,
+the agent sets the candidate pair's state to In-Progress.
 </t>
 
 <t>The agent chooses a candidate pair by first choosing a check list
 and second choosing a candidate pair within that check list.  If the
 process of choosing a candidate pair within a check list results in no
 candidate pair, the agent follows the same procedure again to choose a
-different heck list until a candidate pair is chosen.
+different check list until a candidate pair is chosen.
 </t>
 
 <t>
 The first time the agent chooses a check list, it chooses the first
-check list in the check list set that is in the Running state.
-Subsequent times, the agent chooses the next check list in the check
-list set that is in the Running state.  If there is no such check list
-in the Running state, the agent chooses the first such check list in
-the check list set again, thus cycling through all the check lists in
-the Running state repeatedly.
+check list (ordered by the check list set) that is in the Running
+state.  Subsequent times, the agent chooses the next check list that
+is in the Running state.  If there is no such check list in the
+Running state, the agent chooses the first check list in the Running
+state again, thus cycling through all the check lists in the Running
+state repeatedly.
 </t>
 
-<t>
-The agent chooses a candidate pair within a check list by first
+<t>The agent chooses a candidate pair within a check list by first
 examining a FIFO queue of candidate pairs called the TRIGGERED CHECK
 QUEUE. If the triggered check queue is not empty, the agent removes
 the first pair from the queue and chooses that pair.  If the triggered
@@ -1578,8 +1570,7 @@ for the check list, and the agent may choose another check list.
 </t>
 
 <t>An agent MAY terminate connectivity checks for specific checks
-lists at any time. However, only the controlling agent may conclude
-ICE (<xref target="sec-conclude"/>).
+lists at any time.
 </t>
 
 </section>
@@ -1590,8 +1581,8 @@ ICE (<xref target="sec-conclude"/>).
 
  <t>
  Because lite agents do not send connectivity checks, they not perform
- the steps necessary for candidate pair and check lists states and
- choosing check lists and candidate pairs.
+ the steps necessary to to choose a candidate pair for sending a
+ connectivity check.
  </t>
 
 </section>
@@ -1620,14 +1611,14 @@ new attributes.
 
 <section title="PRIORITY">
 <t>The priority attribute MUST be included in a Binding request and be
-set to value computed by the algorithm in <xref
-target="sec-prioritizing"/> for the local candidate, but with a
-candidate type preference for peer reflexive candidates.
+set to the value computed by the algorithm in <xref
+target="sec-prioritizing"/> for the local candidate, but with the
+candidate type preference of peer reflexive candidates.
 </t>
 </section>
 
 <section title="USE-CANDIDATE">
-<t>The controlling ICE agent includes the USE-CANDIDATE attribute in
+<t>The controlling ICE agent MUST include the USE-CANDIDATE attribute in
 order to nominate a candidate pair <xref target="sec-choose-favor"/>.
 The controlled ICE agent MUST NOT include the USE-CANDIDATE attribute
 in a Binding request.
