@@ -1528,7 +1528,7 @@ a STUN request from the base of the local candiditate to the remote
 candidate following the procedures in <xref
 target="sec-connectivity_check"/>.  Then every time Ta fires, it
 chooses a candidate pair and sends a check.  After sending each check,
-the agent sets the candidate pair's state to In-Progress.
+the agent sets the candidate pair state to In-Progress.
 </t>
 
 <t>The agent chooses a candidate pair by first choosing a check list
@@ -1639,9 +1639,8 @@ when an ICE role conflict occurs <xref target="sec-role-conflict"/>.
 
 <section anchor="sec-client" title="STUN Client Procedures">
 <section anchor="sec-permissions" title="Creating Permissions for Relayed Candidates">
-<t>If the connectivity check is being sent using a relayed local
-candidate, the client MUST create a permission first if it has not
-already created one previously.  To create the permission, the agent
+<t>The agent MUST create a permission before sending a check from a relayed local
+candidate.  To create the permission, the agent
 follows the procedures defined in <xref target="RFC5766"/>.  The
 permission MUST be created towards the IP address of the remote
 candidate.  It is RECOMMENDED that the agent defer creation of a TURN
@@ -1693,87 +1692,79 @@ those same markings to its connectivity checks.
 <t>This section defines additional procedures for processing Binding responses
 specific to ICE connectivity checks.
 </t>
-<t>When a Binding response is received, it is correlated to the corresponding
-Binding request using the transaction ID <xref target="RFC5389"/>, which then
-associates the response with the candidate pair for which the Binding request
-was sent. After that, the response is processed according to the procedures for
-a role conflict, a failure, or a success, according to the procedures below.
+<t>When an agent receives a Binding response, it uses the transaction
+ID <xref target="RFC5389"/> to find the corresponding Binding request
+and candidate pair and then processes the Binding response according
+to the following procedures:
 </t>
+
+<section title="Success">
+
+<t>A connectivity check is successful if and only if the response is a
+success and the request and response are symmetric.  They are
+symmetric if and only if the source IP address and port of the
+response are equal to the destination IP address and port to which the
+request was sent, and the destination IP address and port of the
+response are equal to the source IP address and port from which the
+request was sent.
+</t>
+
+</section>
+
+<section title="Failure">
+    <section title="Unrecoverable STUN Response">
+      <t>The agent SHOULD set the candidate pair state to Failed if
+      the response is an unrecoverable error <xref target="RFC5389"/>)
+      or if the transaction times out.
+      </t>
+    </section>
+
+    <section title="ICMP Error">
+      <t>The agent SHOULD set the candidate pair state to Failed if
+      the Binding request generates an ICMP error.
+      </t>
+    </section>
+
+    <section title="Non-Symmetric Transport Addresses">
+      <t>The agent MUST set the candidate pair state to Failed if the
+      request and response are not symmetric.  
+      </t>
+    </section>
+
+    <t>NOTE: When the agent sets the candidate pair state to Failed as
+    a result of a connectivity check error, the agent does not change
+    the states of other candidate pairs.
+    </t>
+</section>
+
+
 <section title="Role Conflict">
-    <t>If the Binding request generates a 487 (Role Conflict) error
-    response, and if the ICE agent included an ICE-CONTROLLED attribute
-    in the request, the agent MUST switch to the controlling role. If
-    the ICE agent included an ICE-CONTROLLING attribute in the request,
-    the agent MUST switch to the controlled role.
-    </t>
-    <t>Once the ICE agent has switched its role, the agent MUST add the
-    candidate pair whose check generated the 487 error response to the
-    triggered check queue associated with the check list to which the
-    pair belongs, and set the candidate pair state to Waiting. When the
-    triggered connectivity check is later performed, the
-    ice-controlling/ice-controlled attribute of the Binding request will
-    indicate the agent's new role. The ICE agent MUST NOT change
-    the tie-breaker value.
-    </t>
-    <t>NOTE: A role switch requires an ICE agent to recompute pair priorities
-    (<xref target="sec-comp-pair-prio"/>), since the priority values
+    <t>If the response is a 487 (Role Conflict) error, the agent MUST
+    switch its role according the attributes in the request and add
+    the candidate pair to the triggered check queue and set the pair
+    state to Waiting. If the request included an ICE-CONTROLLED
+    attribute the agent MUST switch to the controlling role.  If the
+    request included an ICE-CONTROLLING attribute, the agent MUST
+    switch to the controlled role.  The ICE agent MUST NOT change the
+    tie-breaker value. After switching roles, the agent MUST recompute
+    pair priorities (<xref target="sec-comp-pair-prio"/>) since they
     depend on the role.
     </t>
+
     <t>NOTE: A role switch will also impact whether the ICE agent is responsible
     for nominating candidate pairs, and whether the agent is responsible
     for initiating the exchange of the updated candidate information with
     the peer once ICE is concluded.
     </t>
 </section>
-<section title="Failure">
-    <t>This section describes cases when the candidate pair state is set to Failed.
-    </t>
-    <t>NOTE: When the ICE agent sets the candidate pair state to Failed as a
-    result of a connectivity check error, the agent does not change the states
-    of other candidate pairs with the same foundation.
-    </t>
-    <section title="Non-Symmetric Transport Addresses">
-    <t>The ICE agent MUST check that the source and destination transport addresses
-    in the Binding request and response are symmetric. I.e., the source IP address
-    and port of the response MUST be equal to the destination IP address and port to which the
-    Binding request was sent, and that the destination IP address and port of the response
-    MUST be equal to the source IP address and port from which the Binding request was sent.
-    If the addresses are not symmetric, the ICE agent MUST set the candidate pair state
-    to Failed.
-    </t>
-    </section>
-    <section title="ICMP Error">
-    <t>An ICE agent MAY support processing of ICMP errors for connectivity
-    checks. If the agent supports processing of ICMP errors, and if a Binging
-    request generates an ICMP error, the agent SHOULD set the state of the candidate
-    pair to Failed.
-    </t>
-    </section>
-    <section title="Unrecoverable STUN Response">
-    <t>If the Binding request generates a STUN error response that is
-    unrecoverable <xref target="RFC5389"/>) or times out, the ICE agent SHOULD set
-    the candidate pair state to Failed.
-    </t>
-    </section>
-</section>
-
-<section title="Success">
-
-<t>A connectivity check is considered a success if each of the following criteria
-is true:
-<list style="symbols">
-<t>The Binding request generated a success response; and</t>
-<t>The source and destination transport addresses in the Binding
-request and response are symmetric.</t>
-</list></t>
 
 <section anchor="sec-learn-peer-client" title="Discovering Peer Reflexive Candidates">
 
-<t>The ICE agent MUST check the mapped address from the STUN
-response. If the transport address does not match any of the local
-candidates, the mapped address represents a new peer reflexive
-candidate which is added to the corresponding check list.
-The type, base, priority, and foundation are computed as follows.
+<t>The agent MUST check the mapped address in the response. If
+the transport address does not match any of the local candidates, the
+mapped address represents a new peer reflexive candidate which is
+added to the corresponding check list.  The type, base, priority, and
+foundation are computed as follows.
 </t>
 
 <t><list style="symbols">
@@ -1785,10 +1776,10 @@ the Binding request.</t>
 <t>The foundation is described in <xref target="sec-computing-foundations"/>.</t>
 </list></t>
 
-<t>The ICE agent does not need to pair the peer reflexive
+<t>The agent does not need to pair the peer reflexive
 candidate with remote candidates, as a valid candiate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
-If an ICE agent wishes to pair the peer reflexive candidate with
+If an aagent wishes to pair the peer reflexive candidate with
 remote candidates other than the one in the valid pair that will
 be generated, the agent MAY provide updated candidate information to
 the peer that includes the peer reflexive candidate. This will cause
@@ -1802,14 +1793,13 @@ mapped address of the response, and whose remote candidate equals the
 destination address to which the request was sent. This is called a
 valid pair.
 </t>
-<t>The valid pair may equal the pair that generated the connectivity
-check, or equal a different pair (perhaps in a different check list),
-or not equal any pair in any check list.
-</t>
+
 <t>For each check list, the agent maintains a list of valid pairs.
 This list is called the VALID LIST and is initially empty.  The valid
 list tracks whether or not a valid pair in it has been nominated or
-not.  This state is called the the Nominated Flag and is intially false.
+not, which means that valid pair SHOULD be used for sending media
+unless the sending agent detects that the candidate pair does not work
+This state is called the the Nominated Flag and is intially false.
 </t>
 
 <t>The agent adds a valid pair to a valid list as follows:
@@ -1821,69 +1811,50 @@ the valid list associated with the check list to which the pair belongs; or
 to the valid list associated with the check list of that pair. The pair that
 generated the check is not added to a valid list; or
 </t>
-<t>If the valid pair is not in any check list, the agent computes the priority
-for the pair based on the priority of each candidate, using the
-algorithm in <xref target="sec-forming"/>. The priority of the local
-candidate depends on its type. Unless the type is peer reflexive, the
-priority is equal to the priority signaled for that candidate in the candidate
-exchange. If the type is peer reflexive, it is equal to the PRIORITY
-attribute the agent placed in the Binding request that just
-completed. The priority of the remote candidate is taken from the
-candidate information of the peer. If the candidate does not appear
-there, then the check must have been a triggered check to a new remote
-candidate. In that case, the priority is taken as the value of the
+<t>If the valid pair is not in any check list, the agent computes the
+priority for the pair based on the priority of each candidate, using
+the algorithm in <xref target="sec-forming"/> and the pair is added to
+the valid list. If the local candidate is peer reflexive, the
+priority used in the algorithm for it is that of the PRIORITY
+attribute from the Binding request that just completed.  If the remote
+candidate's priority is not known from the exchanged candidate
+information, the priority used in the algorithm for it is that of the
 PRIORITY attribute in the Binding request that triggered the check
-that just completed. The pair is then added to the valid list.
+that just completed.  Otherwise, the priorities used come from the
+exchanged candidate information.
 </t>
 </list></t>
-<t>NOTE: It will be very common that the valid pair will not be in any check list.
-Recall that the check list has pairs whose local candidates are never
-reflexive; those pairs had their local candidates converted to
-the base of the reflexive candidates, and then pruned if they
-were redundant. When the response to the Binding request arrives, the
-mapped address will be reflexive if there is a NAT between the two. In
-that case, the valid pair will have a local candidate that doesn't
-match any of the pairs in the check list.
-</t>
+
 </section>
 
 
 <section title="Updating Candidate Pair States">
-<t>The ICE agent sets the state of both the candidate pair that generated
-the check, and the constructed valid pair, to Succeeded.
-Note that the pair which generated the check may be different than the
-valid pair constructed in <xref target="sec-valid-cons"/>.
+<t>The agent sets the states of both the candidate pair that generated
+the check and the constructed valid pair (which may be different) to
+Succeeded.
 </t>
-<t>The success of the connectivity check might also cause the state of other
-candidate pairs to change. The ICE agent MUST set the states for all other
-Frozen candidate pairs (in each check list in the check list set) with
-the same foundation to Waiting.
-</t>
-<t>NOTE: Within a given check list, candidate pairs with the same foundations will
-typically have different component ID values.
+<t>The agent MUST set the states for all other Frozen candidate pairs
+in all check lists with the same foundation to Waiting.
 </t>
 </section>
 
 <section title="Updating the Nominated Flag">
 
-<t>If the ICE agent was a controlling agent, and the agent had included a
-USE-CANDIDATE attribute in the Binding request, the valid pair
-generated from that check has its nominated flag value set to true. This
-flag indicates that this valid pair SHOULD be used for media, unless
-the sending agent detects that the candidate pair does not work.
-This concludes the ICE processing for this media stream or all
-media streams; see <xref target="sec-conclude"/>.
+<t>If the request had included a USE-CANDIDATE attribute in the
+Binding request, the controlling agent sets the Nominated Flag of the
+valid pair to true.  This concludes the ICE processing for this media
+stream; see <xref target="sec-conclude"/>.
 </t>
 
-<t>If the ICE agent is the controlled agent, the response may be the result
-of a triggered check that was sent in response to a request that
-itself had the USE-CANDIDATE attribute. This case is described in
-<xref target="sec-up-fav"/>, and may now result in setting the
-nominated flag for the pair learned from the original request.
+<t>If the response was the result of a triggered check that was sent
+in response to a request that itself had the USE-CANDIDATE attribute,
+the controlled agent may now set the Nominated Flag for the pair
+learned from the original request.  This case is described in <xref
+target="sec-up-fav"/>.
 </t>
 
 <t>An ICE agent MUST NOT select a candidate pair until it has sent a
-Binding request, and received the corresponding Binding response,
+Binding request and received the corresponding Binding response
 associated with the candidate pair.
 </t>
 
