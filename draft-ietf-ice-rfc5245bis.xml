@@ -644,6 +644,13 @@ This specification makes use of the following additional terminology:
 
 <t><list style="hanging">
 
+<t hangText="ICE Session:">
+An ICE session is the time starting with the candidate gathering, follwoed
+by all ICE-related actions (candidiate exchange, connectivity tests,
+candidate nomination and keep-alives) between two ICE agents until an
+ICE restart is triggered, or until the used candidates are released for
+other reasons.</t>
+
 <t hangText="ICE Agent:">
 An agent is the protocol implementation involved in the
 ICE candidate exchange.  There are two agents involved in a typical
