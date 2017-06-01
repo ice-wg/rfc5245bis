@@ -644,10 +644,11 @@ This specification makes use of the following additional terminology:
 
 <t><list style="hanging">
 
-<t hangText="ICE Agent:">
-An agent is the protocol implementation involved in the
-ICE candidate exchange.  There are two agents involved in a typical
-candidate exchange. </t>
+<t hangText="ICE Session:">
+An ICE session consists of all ICE-related actions starting with the candidate gathering,
+followed by the interactions (candidate exchange, connectivity checks,
+nominations and keep-alives) between the ICE agents until the candidates
+are released (due to an ICE restart or another reason). </t>
 
 <t hangText= "Initiating Peer, Initiating Agent, Initiator:">
 An initiating agent is the protocol implementation involved in the ICE
