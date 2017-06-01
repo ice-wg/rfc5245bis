@@ -8,7 +8,7 @@
 <?rfc subcompact='no'?>
 
 <rfc ipr="pre5378Trust200902" category="std" obsoletes="5245"
-     docName="draft-ietf-ice-rfc5245bis-09"
+     docName="draft-ietf-ice-rfc5245bis-latest"
 >
 
     <front>
@@ -643,6 +643,13 @@ This specification makes use of the following additional terminology:
 </t>
 
 <t><list style="hanging">
+
+<t hangText="ICE Session:">
+An ICE session is the time starting with the candidate gathering, follwoed
+by all ICE-related actions (candidiate exchange, connectivity tests,
+candidate nomination and keep-alives) between two ICE agents until an
+ICE restart is triggered, or until the ICE actions are terminated for
+other reasons.</t>
 
 <t hangText="ICE Agent:">
 An agent is the protocol implementation involved in the
@@ -2018,7 +2025,7 @@ available opportunity.
 </section>
 
 <section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
-<t>The generation of ordinary and triggered connectivity checks is govererned
+<t>The generation of ordinary and triggered connectivity checks is governed
 by timer Ta. As soon as the initial states for the candidate pairs in the
 CHECK LIST SET have been set, a check is performed for a candidate pair
 within the first CHECK LIST in the Running state, following
@@ -2064,11 +2071,11 @@ to perform connectivity checks for, abort these steps.
 
 <t>Once the agent has selected a candidate pair, for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
-with the local candiditate of the pair to the remote candidate of the pair, as described in
+with the local candidate of the pair to the remote candidate of the pair, as described in
 <xref target="sec-send-check"/>.
 </t>
 
-<t>Based on local policy, an agent MAY choose to terminate perfoming the
+<t>Based on local policy, an agent MAY choose to terminate performing the
 connectivity checks for one or more checks lists in the CHECK LIST SET
 at any time. However, only the controlling agent is allowed to
 conclude ICE (<xref target="sec-conclude"/>).
@@ -2120,7 +2127,7 @@ ordinary checks as described above.
 </t>
 <t>An ICE agent MUST be compliant to to <xref target="RFC5389"/>. A full
 implementation acts both as a STUN client and a STUN server, while a
-lite implemenation only acts as a STUN server (as it does not generate
+lite implementation only acts as a STUN server (as it does not generate
 connectivity checks).
 </t>
 
@@ -2328,7 +2335,7 @@ candidates for the media stream. The username fragment and password
 are the same as for all other local candidates for that media stream.
 </t>
 <t>The ICE agent does not need to pair the peer reflexive
-candidate with remote candidates, as a valid candiate pair will be
+candidate with remote candidates, as a valid candidate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
 If an ICE agent wishes to pair the peer reflexive candidate with
 other remote candidates besides the one in the valid pair that will
