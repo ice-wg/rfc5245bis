@@ -645,10 +645,10 @@ This specification makes use of the following additional terminology:
 <t><list style="hanging">
 
 <t hangText="ICE Session:">
-An ICE session consists of all ICE-related actions starting with the candidate gathering,
-followed by the interactions (candidate exchange, connectivity checks,
-nominations and keep-alives) between the ICE agents until the candidates
-are released (due to an ICE restart or another reason). </t>
+An ICE session consists of all ICE-related actions starting with the
+candidate gathering, followed by the interactions (candidate exchange,
+connectivity checks, nominations and keep-alives) between the ICE agents
+until all the candidates are released or ICE-restart is triggered.</t>
 
 <t hangText="ICE Agent:">
 An agent is the protocol implementation involved in the
