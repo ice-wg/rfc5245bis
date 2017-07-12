@@ -8,7 +8,7 @@
 <?rfc subcompact='no'?>
 
 <rfc ipr="pre5378Trust200902" category="std" obsoletes="5245"
-     docName="draft-ietf-ice-rfc5245bis-09"
+     docName="draft-ietf-ice-rfc5245bis-latest"
 >
 
     <front>
@@ -1813,59 +1813,59 @@ available opportunity.
 </section>
 
 <section anchor="sec-periodic-perform" title="Performing Connectivity Checks">
-<t>The generation of ordinary and triggered connectivity checks is govererned
+<t>The generation of ordinary and triggered connectivity checks is governed
 by timer Ta. As soon as the initial states for the candidate pairs in the
 check list set have been set, a check is performed for a candidate pair
 within the first check list in the Running state, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
+
 whenever Ta fires the next check list in the Running state in the check list set
 is selected, and a check is performed for a candidate within that check list.
 After the last check list in the Running state in the check list set has been
 processed, the first check list is selected again. Etc.
 </t>
-<t>NOTE: When timer Ta fires, and the agent processes a check list, if no check
-is performed for a pair in the check list (based on the rules below), the agent
-can immediately select the next check list in the Running state, without waiting
-for timer Ta to expire again.
-</t>
 
 <t>
 Whenever Ta fires, the agent will perform a check for a candidate pair within
-the selected check list as follows:
-<list style="symbols">
+the selected check list by performing the following steps:
+<list style="numbers">
 <t>If the triggered check queue associated with the check list contains
 one or more candidate pairs, the agent removes the top pair from the
-queue, performs a connectivity check on that pair and puts the candidate pair
-state to In-Progress; or
-</t>
-
-<t>If the triggered check queue associated with the check list is empty, and
-if there are one or more candidate pairs in the Waiting state, the agent selects
-the highest-priority candidate pair (if there are multiple pairs with the same
-priority, the pair with the lowest component ID is selected) in the Waiting
-state, performs a connectivity check on that pair and puts the candidate pair
-par state to In-Progress; or
+queue, performs a connectivity check on that pair, puts the candidate pair
+state to In-Progress, and aborts the subsequent steps.
 </t>
 
 <t>If there is no candidate pair in the Waiting state, and if there are one or
-more pairs in the Frozen state, for each pair in the Frozen state the the agent
+more pairs in the Frozen state, for each pair in the Frozen state the agent
 checks the foundation associated with the pair. For a given foundation, if there
 is no pair (in any check list in the check list set) in the Waiting or In-Progress state,
-the agent performs a connectivity check on the pair and puts the pair state to In-Prograss.
-If, for the same foundation, there are one or more pairs in the Waiting or In-Progress state,
-(in any check list in the check list set) the agent does not perform a connectivity check
-on the pair.
+the agent puts the candidate pair state to Waiting and continues with the next step.
+</t>
+
+<t>If there are one or more candidate pairs in the Waiting state, the agent selects
+the highest-priority candidate pair (if there are multiple pairs with the same
+priority, the pair with the lowest component ID is selected) in the Waiting
+state, performs a connectivity check on that pair, puts the candidate pair
+par state to In-Progress, and abort the subsequent steps.
+</t>
+
+<t>If this step is reached, no check could be performed for the selected check list.
+So, without waiting for timer Ta to expire again, select the next check list
+in the Running state and return to step #1. If this happens for every single
+check list in the Running state, meaning there are no remaining candidate pairs
+to perform connectivity checks for, abort these steps.
 </t>
 
 </list></t>
 
 <t>Once the agent has selected a candidate pair, for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
-with the local candiditate of the pair to the remote candidate of the pair, as described in
+with the local candidate of the pair to the remote candidate of the pair, as described in
 <xref target="sec-send-check"/>.
 </t>
 
-<t>Based on local policy, an agent MAY choose to terminate perfoming the
+
+<t>Based on local policy, an agent MAY choose to terminate performing the
 connectivity checks for one or more checks lists in the check list set
 at any time. However, only the controlling agent is allowed to
 conclude ICE (<xref target="sec-conclude"/>).
@@ -1917,7 +1917,7 @@ ordinary checks as described above.
 </t>
 <t>An ICE agent MUST be compliant to to <xref target="RFC5389"/>. A full
 implementation acts both as a STUN client and a STUN server, while a
-lite implemenation only acts as a STUN server (as it does not generate
+lite implementation only acts as a STUN server (as it does not generate
 connectivity checks).
 </t>
 
@@ -2119,7 +2119,7 @@ candidates for the media stream. The username fragment and password
 are the same as for all other local candidates for that media stream.
 </t>
 <t>The ICE agent does not need to pair the peer reflexive
-candidate with remote candidates, as a valid candiate pair will be
+candidate with remote candidates, as a valid candidate pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
 If an agent wishes to pair the peer reflexive candidate with
 remote candidates other than the one in the valid pair that will
