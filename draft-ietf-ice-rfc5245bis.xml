@@ -304,7 +304,7 @@ the TURN request will create a binding on each NAT, but only the
 outermost server reflexive candidate (the one nearest the TURN server)
 will be discovered by the agent. If the agent is not behind a NAT,
 then the base candidate will be the same as the server reflexive
-candidate and the server reflexive candidate is redundant will be
+candidate and the server reflexive candidate is redundant and will be
 eliminated.
 </t>
 
@@ -690,7 +690,9 @@ multiple components, each of which has to work for the media stream as
 a whole to work.</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
-specific port from an IP address on the host.
+specific port from an IP address on the host.  This includes IP
+addresses on physical interfaces and logical ones, such as ones
+obtained through Virtual Private Networks (VPNs).
 </t>
 
 <t hangText="Server Reflexive Candidate:"> A candidate whose IP
@@ -710,14 +712,15 @@ server, such as a TURN server.
 <t hangText="Base:"> The transport address that an agent sends from
 for a particular candidate. For host, server reflexive and peer reflexive
 candidates the base is the same as the host candidate. For relayed
-candidates the base is the same as the relayed candidate.
+candidates the base is the same as the relayed candidate (i.e., 
+the transport address used by the TURN server to send from).
 </t>
 
-<t hangText="Foundation:"> An arbitrary string used to group similar
-candidates and control candidates freezing.  Is the same for
-two candidates that have the same type, base IP address, protocol
-(UDP, TCP, etc.), and STUN or TURN server.  If any of these are
-different, then the foundation will be different.
+<t hangText="Foundation:"> An arbitrary string used in the freezing
+algorithm to group similar candidates.  Is the same for two candidates
+that have the same type, base IP address, protocol (UDP, TCP, etc.),
+and STUN or TURN server.  If any of these are different, then the
+foundation will be different.
 </t>
 
 <t hangText="Local Candidate:">A candidate that an agent has obtained
@@ -735,7 +738,7 @@ component is one whose transport address matches the default
 destination for that component.
 </t>
 
-<t hangText="Candidate Pair:"> The pair of a local candidate
+<t hangText="Candidate Pair:"> A pair of a local candidate
 and a remote candidate.
 </t>
 
@@ -827,8 +830,8 @@ specification.
 </t>
 
 <t>
-However at a higher level, the diagram below shows the how ICE agents
-(initiator and responder) exchange of their respective candidate(s) information.
+However at a higher level, the diagram below shows how the ICE agents
+(initiator and responder) exchange their respective candidate(s) information.
 </t>
 
 <figure title="Candidate Gathering and Exchange Sequence"
@@ -897,7 +900,7 @@ gathering MAY begin when an agent starts.
 
 <section title="Host Candidates">
 
-<t> Host candidates are obtained by binding to ports on a IP address
+<t> Host candidates are obtained by binding to ports on an IP address
 attached to an interface (physical or virtual, including VPN
 interfaces) on the host.
 </t>
@@ -928,6 +931,23 @@ not used. </t>
 
 <t>If an agent is using separate candidates for RTP and RTCP, it will
 end up with 2*K host candidates if an agent has K IP addresses.</t>
+
+<t>Note that the responding agent, when obtaining its candidates, will		
+typically know if the other agent supports RTP/RTCP multiplexing, in		
+which case it will not need to obtain a separate candidate for		
+RTCP. However, absence of a component ID 2 as such does not imply use		
+of RTCP/RTP multiplexing, as it could also mean that RTCP is not		
+used. </t>		
+		
+<t> For other than RTP-based streams, use of multiple components is		
+discouraged since using them increases the complexity of ICE		
+processing. If multiple components are needed, the component IDs		
+SHOULD start with 1 and increase by 1 for each component.		
+</t>		
+		
+<t>		
+The base for each host candidate is set to the candidate itself.		
+</t>		
 
 <t> The host candidates are gathered from all IP addresses with the
 following exceptions:
@@ -994,12 +1014,19 @@ target="sec-ta"/> for guidance on how to set Ta and the STUN
 retransmit timer, RTO.
 </t>
 
-<t>A successful Allocate response will provide the agent with a server
-reflexive candidate and a relayed candidate. If the Allocate request
-is rejected because the server lacks resources to fulfill it, the
-agent SHOULD instead send a Binding request to obtain a server
-reflexive candidate. A Binding response will provide the agent with
-only a a server reflexive candidate. 
+<t>The agent will receive a Binding or Allocate response. A successful
+Allocate response will provide the agent with a server reflexive
+candidate (obtained from the mapped address) and a relayed candidate
+in the XOR-RELAYED-ADDRESS attribute. If the Allocate request is
+rejected because the server lacks resources to fulfill it, the agent
+SHOULD instead send a Binding request to obtain a server reflexive
+candidate. A Binding response will provide the agent with only a
+server reflexive candidate (also obtained from the mapped
+address). The base of the server reflexive candidate is the host
+candidate from which the Allocate or Binding request was sent. The
+base of a relayed candidate is that candidate itself. If a relayed
+candidate is identical to a host candidate (which can happen in rare
+cases), the relayed candidate MUST be discarded.
 </t>
 
 <t>
@@ -1068,9 +1095,8 @@ reflexive candidate.
 <section anchor="sec-prioritizing" title="Prioritizing Candidates">
 <t>
 The prioritization process results in the assignment of a priority to
-each candidate. Each candidate MUST have a unique
-priority (unique in the scope of a component of a media stream in a session)
-that MUST be a positive integer between 1 and (2**31 - 1).
+each candidate. Each candidate for a media stream MUST have a unique
+priority that MUST be a positive integer between 1 and (2**31 - 1).
 This priority will be used by ICE to determine the order of the
 connectivity checks and the relative preference for candidates.
 </t>
@@ -1090,7 +1116,7 @@ initiating and the responding agent.
 
 <section anchor="sec-rec-form" title="Recommended Formula">
 
-<t>The recommended forumla combines a preference for the candidate
+<t>The recommended formula combines a preference for the candidate
 type (server reflexive, peer reflexive, relayed, and host), a
 preference for IP address for which the candidate was obtained, and
 component ID using the following formula:
@@ -1099,7 +1125,7 @@ component ID using the following formula:
 <figure><artwork>
 <![CDATA[
 priority = (2^24)*(type preference) +
-           (2^8)*(IP address preference) +
+           (2^8)*(local preference) +
            (2^0)*(256 - component ID)
 
 ]]></artwork></figure>
@@ -1117,12 +1143,12 @@ will never be peer reflexive candidates; candidates of these type are
 learned from the connectivity checks performed by ICE.
 </t>
 
-<t>The IP address preference MUST be an integer from 0 (lowest preference) 
+<t>The local preference MUST be an integer from 0 (lowest preference) 
 to 65535 (highest preference) inclusive. When there is only a single IP
 address, this value SHOULD be set to 65535.  If there
 are multiple candidates for a particular component for a particular
 media stream that have the same type, the local preference MUST be
-unique for each one. If an agent is dual-stack, the IP address preference
+unique for each one. If an agent is dual-stack, the local preference
 should be set according to the current best practice described in <xref
 target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
@@ -1143,7 +1169,7 @@ addresses, the recommendations in <xref target=
 "I-D.ietf-ice-dualstack-fairness"/> SHOULD be followed.  If multiple
 TURN servers are used, local priorities for the candidates obtained
 from the TURN servers are chosen in a similar fashion as for
-multihomed local candidates: the IP address preference value is used to
+multihomed local candidates: the local preference value is used to
 indicate a preference among different servers but the preference MUST
 be unique for each one.</t>
 
