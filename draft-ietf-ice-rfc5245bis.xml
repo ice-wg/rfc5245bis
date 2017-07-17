@@ -1131,7 +1131,7 @@ priority = (2^24)*(type preference) +
 ]]></artwork></figure>
 
 <t>
-The type preference MUST be an integer from 0 (lowest prefereence) to
+The type preference MUST be an integer from 0 (lowest preference) to
 126 (highest preference) inclusive and MUST be identical for all
 candidates of the same type and MUST be different for candidates of
 different types. The type preference for peer reflexive candidates
@@ -2318,7 +2318,7 @@ to full implementations.
 <t>
 In certain usages of ICE, both agents may end up choosing the same
 role, resulting in a role conflict.  The section describes a mechanism
-for detetecing and repairing role conflicts.  The usage document
+for detecting and repairing role conflicts.  The usage document
 MUST specify whether this mechanism is needed.
 </t>
 
@@ -2783,7 +2783,7 @@ roles to be determined.
 <t>If an agent wants to change the destinations of media streams, it
 MAY restart ICE to do so.</t>
 
-<t>If an agent want to change its implmentation level, it MAY restart
+<t>If an agent want to change its implementation level, it MAY restart
 ICE to do so.</t>
 
 <t>
