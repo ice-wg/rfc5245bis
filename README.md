@@ -2,7 +2,7 @@
 
 This is the working area for the Working Group internet-draft, "ICE bis".
 
-* [Editor's copy](https://ice-wg.github.io/rfc5245bis/)
+* [Editor's copy](https://ice-wg.github.io/rfc5245bis/) [![Build Status](https://travis-ci.org/ice-wg/rfc5245bis.svg?branch=master)](https://travis-ci.org/ice-wg/rfc5245bis)
 * [Working Group Draft] (https://tools.ietf.org/html/draft-ietf-ice-rfc5245bis)
 
 
