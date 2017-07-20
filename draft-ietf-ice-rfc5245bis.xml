@@ -1488,8 +1488,15 @@ frozen state is called "frozen".
 <t>
 The agent pairs each local candidate with each remote candidate for
 the same component of the same media stream with the same IP
-address 
-
+address.  It is	possible that some of the local candidates won't get paired with		
+remote candidates, and some of the remote candidates won't get paired		
+with local candidates. This can happen if one agent doesn't include		
+candidates for the all of the components for a media stream. If this		
+happens, the number of components for that media stream is effectively		
+reduced, and considered to be equal to the minimum across both agents		
+of the maximum component ID provided by each agent across all		
+components for the media stream.
+</t>
 
 <t>In the case of RTP, this would happen when one agent provides
 candidates for RTCP, and the other does not. As another example, the
@@ -2712,7 +2719,7 @@ not used by ICE, as described in <xref target="sec-freeing"/>.
 <t>
 If the peer is a full agent, the lite agent selects a candidate pair
 when the full agent nominates it.  When the lite agent has selected a
-candidate pair for all components of all media streams, it is
+candidate pair for all components of all media streams, the ICE session is
 Completed.
 </t>
 
@@ -2720,7 +2727,7 @@ Completed.
 If the peer is a lite agent, the agent pairs local candidates with
 remote candidates that are for the same media stream and have the same
 component, transport protocol, and IP address family.  For each
-component of each media stream, if there is only one canidate pair,
+component of each media stream, if there is only one candidate pair,
 that pair is added to the valid list.  If there is more than one pair,
 it is RECOMMENDED that an agent follow the procedures of RFC 6724
 <xref target="RFC6724"/> to select a pair and add it to the valid
@@ -2746,7 +2753,7 @@ complete.
 A full agent SHOULD NOT stop sending checks and responses from a
 candidate until three seconds after all media streams using that
 candidate are Completed, after which the agent MAY free the candidate
-and stop sending checks and resposnes from it.  The three-second delay
+and stop sending checks and respnoses from it.  The three-second delay
 handles cases when aggressive nomination is used, and the selected
 pairs can quickly change after ICE has completed.
 </t>
@@ -2843,7 +2850,7 @@ For each candidate pair that an agent is using to send media, if no
 packet has been sent on that pair in the last Tr seconds, an agent
 MUST send a keepalive on that pair.  Agents SHOULD use a Tr value of
 15 seconds. Agents MUST NOT use a Tr value smaller than 15 seconds.
-first. An agent MUST begin sending keepalives once a candidate pair is
+An agent MUST begin sending keepalives once a candidate pair is
 selected or a candidate pair is used to send media, whichever happens
 first.  An agent MUST stop sending keepalives once the session
 terminates or the media stream is removed.  
@@ -2906,14 +2913,27 @@ an agent creates a channel on the TURN server towards the remote
 candidate.  This is done using the procedures for channel creation as
 defined in Section 11 of <xref target="RFC5766"/>.
 </t>
+	
+The selected pair for a component of a media stream is:		
+<list style="symbols">		
+<t>		
+empty if the state of the CHECK LIST for that media stream is Running,		
+and there is no previous selected pair for that component due to an		
+ICE restart		
+</t>		
+		
+<t>		
+equal to the previous selected pair for a component of a media stream		
+if the state of the CHECK LIST for that media stream is Running, and		
+there was a previous selected pair for that component due to an ICE		
+restart		
+</t>
 
 <t>
 Unless an agent is able to produce a selected pair for all components
 associated with a media stream, the agent MUST NOT continue
 sending media for any component associated with that media stream.
 </t>
-****
-
 
 </section>
 
