@@ -1450,7 +1450,7 @@ address and port) in addition to the ICE parameters.
 
 <t>
 STUN connectivity checks between agents are authenticated using the
-short-term credential mechanism defined for STUN [RFC5389].  This
+short-term credential mechanism defined for <xref target="RFC5389"/>.  This
 mechanism relies on a username and password that are exchanged through
 protocol machinery between the client and server. The username part of
 this credential is formed by concatenating a username fragment from
@@ -1459,7 +1459,7 @@ password, used to compute the message integrity for requests it
 receives.  The username fragment and password are exchanged between
 the peers.  In addition to providing security, the username provides
 disambiguation and correlation of checks to media streams.  See
-Appendix B.4 for motivation.
+<xref target="sec-why-uname" /> for motivation.
 </t>
 
 <t>
