@@ -371,7 +371,7 @@ STUN response ->            /  check
 <t>
 It is important to note that the STUN requests are sent to and from
 the exact same IP addresses and ports that will be used for media
-(e.g., RTP and RTCP). Consequently, agents demultiplex STUN and
+(e.g., RTP, RTCP, ). Consequently, agents demultiplex STUN and
 media using the contents of the packets, rather than the port on which
 they are received.
 </t>
@@ -806,7 +806,7 @@ receiving media.
 pair selected by an ICE agent for sending media.
 Each of its candidates is called the selected candidate.
 Before a pair has been selected, any valid candidate pair
-can be used for sending media.
+can be used for sending and receiving media.
 </t>
 
 <t hangText="Using Protocol, ICE Usage:"> The protocol that uses ICE
@@ -932,18 +932,18 @@ not used. </t>
 <t>If an agent is using separate candidates for RTP and RTCP, it will
 end up with 2*K host candidates if an agent has K IP addresses.</t>
 
-<t>Note that the responding agent, when obtaining its candidates, will		
-typically know if the other agent supports RTP/RTCP multiplexing, in		
-which case it will not need to obtain a separate candidate for		
-RTCP. However, absence of a component ID 2 as such does not imply use		
-of RTCP/RTP multiplexing, as it could also mean that RTCP is not		
-used. </t>		
-		
-<t> For other than RTP-based streams, use of multiple components is		
-discouraged since using them increases the complexity of ICE		
-processing. If multiple components are needed, the component IDs		
-SHOULD start with 1 and increase by 1 for each component.		
-</t>		
+<t>Note that the responding agent, when obtaining its candidates, will
+typically know if the other agent supports RTP/RTCP multiplexing, in
+which case it will not need to obtain a separate candidate for
+RTCP. However, absence of a component ID 2 as such does not imply use
+of RTCP/RTP multiplexing, as it could also mean that RTCP is not
+used. </t>
+
+<t> For other than RTP-based streams, use of multiple components is
+discouraged since using them increases the complexity of ICE
+processing. If multiple components are needed, the component IDs
+SHOULD start with 1 and increase by 1 for each component.
+</t>
 		
 <t>		
 The base for each host candidate is set to the candidate itself.		
@@ -984,7 +984,14 @@ following exceptions:
 <section title="Server Reflexive and Relayed Candidates">
 
 <t>
-An agent SHOULD gather server reflexive and relayed candidates.
+An agent SHOULD gather server reflexive and relayed candidates.  These
+requirements are at SHOULD strength to allow for provider variation.
+Use of STUN and TURN servers may be unnecessary in certain networks
+and use of TURN servers may be expensive, so some deployments may
+elect not to use them.  If an agent does not gather server reflexive
+or relayed candidates, it is RECOMMENDED that the functionality be
+implemented and just disabled through configuration, so that it can be
+re-enabled through configuration if conditions change in the future.
 </t>
 
 <t>
@@ -998,9 +1005,17 @@ records with the "turn" service) be used to discover the TURN server.
 </t>
 
 <t>
-An agent MUST support the backwards compatibility mode for the Binding
-request defined in <xref target="RFC5389"/> and MUST ignore any
-ALTERNATE-SERVER attribute in a STUN Binding response.
+When multiple STUN or TURN servers are available (or when they are
+learned through DNS records and multiple results are returned), the
+agent MAY gather candidates for all of them and SHOULD gather
+candidates for at least one of them (one STUN server and one TURN
+server).  It does so by pairing host candidates with STUN or TURN
+servers and, for each pair, the agent sends a Binding or Allocate
+request to the server from the host candidate. Binding requests to a
+STUN server are not authenticated, and any ALTERNATE-SERVER attribute
+in a response is ignored. Agents MUST support the backwards
+compatibility mode for the Binding request defined in <xref
+target="RFC5389"/>. Allocate requests SHOULD be authenticated using a
 </t>
 
 <t>
@@ -1161,7 +1176,7 @@ target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 <section anchor="sec-guidelines" title="Guidelines for Choosing Type and Local Preferences">
 
 <t>The RECOMMENDED values for type preferences are 126 for host
-candidates, 110 for peer reflexivec andidates, 100 for server
+candidates, 110 for peer reflexive candidates, 100 for server
 reflexive candidates, and 0 for relayed candidates.</t>
 
 <t>If an agent is multihomed and has multiple IP
@@ -1268,10 +1283,10 @@ responding agents.
 
 <section anchor="sec-encoding" title="Encoding the Candidate Information">
 
-<t>Agents (initiating and responding) needs the following information
+<t>Agents (initiating and responding) need the following information
 about candidates to be exchanged.  How this information is encoded or
 exchanged is out of scope of this specification.  The using protocol
-should provide a means for exchaning new, additional information in
+should provide a means for exchanging new, additional information in
 the future, including per-candidate information.
 </t>
 
@@ -4791,6 +4806,49 @@ Additionally, using a Binding Indication allows integrity to be
 disabled, allowing for better performance. This is useful for
 large-scale endpoints, such as PSTN gateways and SBCs.
 </t>
+
+</section>
+
+<section anchor="sec-candidate-type-preference" title="Selecting Candidate Type Preference">
+
+<t>One criterion for selection of the type and local preference values
+is the use of a media intermediary, such as a TURN server, a tunnel
+service such as VPN server, or NAT.  With a media intermediary, if
+media is sent to that candidate, it will first transit the media
+intermediary before being received.  Relayed candidates are one type
+of candidate that involves a media intermediary.  Another are host
+candidates obtained from a VPN interface.  When media is transited
+through a media intermediary, it can have a positive or negative
+effect on the latency between transmission and reception.  It may or
+may not increase the packet losses, because of the additional router
+hops that may be taken.  It may increase the cost of providing
+service, since media will be routed in and right back out of a media
+intermediary run by a provider.  If these concerns are important, the
+type preference for relayed candidates must be carefully chosen.</t>
+
+<t>Another criterion for selection of preferences is IP address
+family.  ICE works with both IPv4 and IPv6.  It provides a transition
+mechanism that allows dual-stack hosts to prefer connectivity over
+IPv6, but to fall back to IPv4 in case the v6 networks are
+disconnected. Implementation should follow the guidelines from <xref
+target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessively delays
+in the connectivity check phase if broken paths exist.</t>
+
+<t>Another criterion for selecting preferences is topological
+awareness. This is most useful for candidates that make use of
+intermediaries. In those cases, if an agent has preconfigured or
+dynamically discovered knowledge of the topological proximity of the
+intermediaries to itself, it can use that to assign higher local
+preferences to candidates obtained from closer intermediaries.</t>
+
+<t>Another criterion for selecting preferences might be security or
+privacy.  If a user is a telecommuter, and therefore connected to a
+corporate network and a local home network, the user may prefer their
+voice traffic to be routed over the VPN or similar tunnel in order to
+keep it on the corporate network when communicating within the
+enterprise, but use the local network when communicating with users
+outside of the enterprise.  In such a case, a VPN address would have a
+higher local preference than any other address.</t>
 
 </section>
 
