@@ -371,9 +371,9 @@ STUN response ->            /  check
 <t>
 It is important to note that the STUN requests are sent to and from
 the exact same IP addresses and ports that will be used for media
-(e.g., RTP, RTCP, ). Consequently, agents demultiplex STUN and
-media using the contents of the packets, rather than the port on which
-they are received.
+(e.g., RTP, RTCP, or other protocols). Consequently, agents
+demultiplex STUN and media using the contents of the packets, rather
+than the port on which they are received.
 </t>
 
 <t>
@@ -1503,15 +1503,16 @@ frozen state is called "frozen".
 <t>
 The agent pairs each local candidate with each remote candidate for
 the same component of the same media stream with the same IP
-address.  It is	possible that some of the local candidates won't get paired with		
-remote candidates, and some of the remote candidates won't get paired		
-with local candidates. This can happen if one agent doesn't include		
-candidates for the all of the components for a media stream. If this		
-happens, the number of components for that media stream is effectively		
-reduced, and considered to be equal to the minimum across both agents		
-of the maximum component ID provided by each agent across all		
+address.  It is possible that some of the local candidates won't get paired with
+remote candidates, and some of the remote candidates won't get paired
+with local candidates. This can happen if one agent doesn't include
+candidates for the all of the components for a media stream. If this
+happens, the number of components for that media stream is effectively
+educed, and considered to be equal to the minimum across both agents
+of the maximum component ID provided by each agent across all
 components for the media stream.
 </t>
+
 
 <t>In the case of RTP, this would happen when one agent provides
 candidates for RTCP, and the other does not. As another example, the
@@ -2768,7 +2769,7 @@ complete.
 A full agent SHOULD NOT stop sending checks and responses from a
 candidate until three seconds after all media streams using that
 candidate are Completed, after which the agent MAY free the candidate
-and stop sending checks and respnoses from it.  The three-second delay
+and stop sending checks and responses from it.  The three-second delay
 handles cases when aggressive nomination is used, and the selected
 pairs can quickly change after ICE has completed.
 </t>
@@ -2928,21 +2929,23 @@ an agent creates a channel on the TURN server towards the remote
 candidate.  This is done using the procedures for channel creation as
 defined in Section 11 of <xref target="RFC5766"/>.
 </t>
-	
-The selected pair for a component of a media stream is:		
-<list style="symbols">		
-<t>		
-empty if the state of the CHECK LIST for that media stream is Running,		
-and there is no previous selected pair for that component due to an		
-ICE restart		
-</t>		
-		
-<t>		
-equal to the previous selected pair for a component of a media stream		
-if the state of the CHECK LIST for that media stream is Running, and		
-there was a previous selected pair for that component due to an ICE		
-restart		
+
+
+The selected pair for a component of a media stream is:
+<list style="symbols">
+<t>
+empty if the state of the CHECK LIST for that media stream is Running,
+and there is no previous selected pair for that component due to an
+ICE restart
 </t>
+
+<t>
+equal to the previous selected pair for a component of a media stream
+if the state of the CHECK LIST for that media stream is Running, and
+there was a previous selected pair for that component due to an ICE
+restart
+</t>
+</list>
 
 <t>
 Unless an agent is able to produce a selected pair for all components
