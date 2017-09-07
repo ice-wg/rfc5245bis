@@ -872,7 +872,7 @@ implementations.
 <t>
 </t>
 
-<section anchor="sec-full-impl-reqs" title="Procedures for Full Implementation">
+<section anchor="sec-full-impl-reqs" title="f Implementation">
 
 
 <section anchor="sec-gathering" title="Gathering Candidates">
@@ -2769,18 +2769,29 @@ complete.
 <section title="Full Implementation Procedures">
 
 <t>
-A full agent MAY free a local candidate (cease sending triggered
-checks and responses to checks) after all check lists (across all ICE
-sessions) which use the local candidate (contain a candidate pair with
-that local candidate) have reached the Completed state for more than 3
-seconds and none of the ICE sessions have selected a candidate pair
-with the local candidate.  Before that time, the agent SHOULD continue
-to listen for checks and send both responses to checks and triggered
-checks from that local candidate.  The three-second delay handles
-cases when aggressive nomination is used, and the selected pairs can
-quickly change after ICE has completed.  The need for checking check
-lists across all ICE sessions is for when an agent connects to many
-peers with the same local candidate (forking).
+The procedures in <xref target="sec-conclude"/> require that an
+agent continue to listen for STUN requests and continue to generate
+triggered checks for a media stream, even once processing for that
+stream completes. The rules in this section describe when it is safe
+for an agent to cease sending or receiving checks on a candidate that
+was not selected by ICE, and then free the candidate.
+</t>	
+	
+<t>
+Once a checklist has reached the Completed state, the agent SHOULD wait an
+additional three seconds, and then it can cease responding to checks or
+generating triggered checks on all local candidates other than
+the ones in the selected candidate pairs (one for each component).
+Once all ICE sessions have ceased using a given local candidate 
+(a candidate may be used by multiple ICE sessions, e.g. in forking scenarios), 
+the agent can free that candidate.  The three-second delay
+handles cases when aggressive nomination is used, and the selected pairs
+can quickly change after ICE has completed.
+</t>
+	
+<t>
+Freeing of server reflexive candidates is never
+explicit; it happens by lack of a keepalive.  
 </t>
 
 </section>
@@ -2788,9 +2799,9 @@ peers with the same local candidate (forking).
 <section title="Lite Implementation Procedures">
 
 <t>
-A lite implementation MAY free candidates not selected by ICE as soon
-as ICE processing has reached the Completed state for all peers for
-all media streams using those candidates.
+A lite implementation can free candidates not selected by ICE as soon
+as ICE processing has reached the Completed state for all ICE sessions
+using those candidates.
 </t>
 
 </section>
