@@ -2817,11 +2817,13 @@ The following actions can be accomplished only using an ICE restart
 (the agent MUST use ICE restarts to do so):
 </t>
 
+<t>
 <list style="symbols">
 <t>Change the destinations of media streams.</t>
 <t>Change from a lite implementation to a full implementation.</t>
 <t>Change from a full implementation to a lite implementation.</t>
 </list>
+</t>
 
 <t>
 To restart ICE, an agent MUST change both the password and the
@@ -2919,7 +2921,6 @@ stream is removed.
 
 <section anchor="sec-send-media" title="Sending Media">
 
-
 <t>
 An agent MAY send media on any valid candidate pair before a candidate
 pair is selected.
@@ -2945,6 +2946,7 @@ defined in Section 11 of <xref target="RFC5766"/>.
 </t>
 
 
+<t>
 The selected pair for a component of a media stream is:
 <list style="symbols">
 <t>
@@ -2960,6 +2962,7 @@ there was a previous selected pair for that component due to an ICE
 restart
 </t>
 </list>
+</t>
 
 <t>
 Unless an agent is able to produce a selected pair for all components
