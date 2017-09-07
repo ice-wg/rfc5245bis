@@ -1502,15 +1502,15 @@ frozen state is called "frozen".
 
 <t>
 The agent pairs each local candidate with each remote candidate for
-the same component of the same media stream with the same IP
-address.  It is possible that some of the local candidates won't get paired with
-remote candidates, and some of the remote candidates won't get paired
-with local candidates. This can happen if one agent doesn't include
-candidates for the all of the components for a media stream. If this
-happens, the number of components for that media stream is effectively
-educed, and considered to be equal to the minimum across both agents
-of the maximum component ID provided by each agent across all
-components for the media stream.
+the same component of the same media stream with the same IP address
+family.  It is possible that some of the local candidates won't get
+paired with remote candidates, and some of the remote candidates won't
+get paired with local candidates. This can happen if one agent doesn't
+include candidates for the all of the components for a media
+stream. If this happens, the number of components for that media
+stream is effectively educed, and considered to be equal to the
+minimum across both agents of the maximum component ID provided by
+each agent across all components for the media stream.
 </t>
 
 
@@ -2090,7 +2090,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     pair belongs, and set the candidate pair state to Waiting. When the
     triggered connectivity check is later performed, the
     ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
-    indicate the agent's new role. The ICE agent MUST NOT change
+    indicate the agent's new role. The ICE agent MAY change
     the tie-breaker value.
     </t>
     <t>NOTE: A role switch requires an ICE agent to recompute pair priorities
@@ -2339,10 +2339,11 @@ to full implementations.
 
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
-In certain usages of ICE, both agents may end up choosing the same
-role, resulting in a role conflict.  The section describes a mechanism
-for detecting and repairing role conflicts.  The usage document
-MUST specify whether this mechanism is needed.
+In certain usages of ICE (such as third party call control), both
+agents may end up choosing the same role, resulting in a role
+conflict.  The section describes a mechanism for detecting and
+repairing role conflicts.  The usage document MUST specify whether
+this mechanism is needed.
 </t>
 
 <t>
@@ -2627,11 +2628,13 @@ They are a matter of local optimization. The only requirement is that the
 agent MUST eventually pick one and only one candidate pair and generate a
 check for that pair with the USE-CANDIDATE attribute present.
 </t>
-<t>The controlled agent SHOULD select the candidate pair nominated by the
-controlling agent if the controlled agent is receiving Binding responses
-associated with that candidate pair. Before the agent has received Binding
-responses associated with the candidate pair, the agent can send media on
-any candidate for which it has received Binding responses.
+<t>The controlled agent SHOULD select the candidate pair nominated by
+the controlling agent if the controlled agent is receiving Binding
+responses associated with that candidate pair.  Before the agent has
+received Binding responses associated with the candidate pair, the
+agent can send media on any candidate for which it has received
+Binding responses.  However, if the controlled agent detects that the
+candidate pair does not work, it SHOULD NOT select the candidate pair.
 </t>
 <t>If more than one candidate pair is nominated by the controlling agent, the
 controlled agent SHOULD select the candidate pair with the highest priority.
@@ -2766,12 +2769,18 @@ complete.
 <section title="Full Implementation Procedures">
 
 <t>
-A full agent SHOULD NOT stop sending checks and responses from a
-candidate until three seconds after all media streams using that
-candidate are Completed, after which the agent MAY free the candidate
-and stop sending checks and responses from it.  The three-second delay
-handles cases when aggressive nomination is used, and the selected
-pairs can quickly change after ICE has completed.
+A full agent MAY free a local candidate (cease sending triggered
+checks and responses to checks) after all check lists (across all ICE
+sessions) which use the local candidate (contain a candidate pair with
+that local candidate) have reached the Completed state for more than 3
+seconds and none of the ICE sessions have selected a candidate pair
+with the local candidate.  Before that time, the agent SHOULD continue
+to listen for checks and send both responses to checks and triggered
+checks from that local candidate.  The three-second delay handles
+cases when aggressive nomination is used, and the selected pairs can
+quickly change after ICE has completed.  The need for checking check
+lists across all ICE sessions is for when an agent connects to many
+peers with the same local candidate (forking).
 </t>
 
 </section>
@@ -2798,16 +2807,21 @@ all media streams using those candidates.
 An agent MAY restart ICE for existing media streams.  An ICE restart
 causes all previous state of the media streams, excluding the roles of
 the agents to be flushed.  The only difference between an ICE restart
-and a brand new media session is that during the restart media can
-continue to be sent, and that a new media session always requires the
-roles to be determined.
+and a brand new media session is that during the restart, media can
+continue to be sent using existing media sessions, and that a new media
+session always requires the roles to be determined.
 </t>
 
-<t>If an agent wants to change the destinations of media streams, it
-MAY restart ICE to do so.</t>
+<t>
+The following actions can be accomplished only using an ICE restart
+(the agent MUST use ICE restarts to do so):
+</t>
 
-<t>If an agent want to change its implementation level, it MAY restart
-ICE to do so.</t>
+<list style="symbols">
+<t>Change the destinations of media streams.</t>
+<t>Change from a lite implementation to a full implementation.</t>
+<t>Change from a full implementation to a lite implementation.</t>
+</list>
 
 <t>
 To restart ICE, an agent MUST change both the password and the
@@ -2919,7 +2933,7 @@ selected.
 <t>
 An agent sends media from the base of the local candidate to the
 remote candidate. In the case of a local relayed candidate, media
-forwarded through the base (located in the TURN server), 
+is forwarded through the base (located in the TURN server), 
 using the procedures defined in <xref target="RFC5766"/>.
 </t>
 
@@ -2972,6 +2986,23 @@ in <xref target="RFC5766"/>.
 
 </section>
 
+<section title="Procedures for All Implementations">
+
+<t> ICE has interactions with jitter buffer adaptation mechanisms. An
+RTP stream can begin using one candidate, and switch to another one,
+though this happens rarely with ICE. The newer candidate may result in
+RTP packets taking a different path through the network -- one with
+different delay characteristics. As discussed below, agents are
+encouraged to re-adjust jitter buffers when there are changes in
+source or destination address of media packets. Furthermore, many
+audio codecs use the marker bit to signal the beginning of a
+talkspurt, for the purposes of jitter buffer adaptation. For such
+codecs, it is RECOMMENDED that the sender set the marker bit <xref
+target="RFC3550"/> when an agent switches transmission of media from
+one candidate pair to another.  </t>
+
+</section>
+
 </section>
 
 <section anchor="sec-recv-media" title="Receiving Media">
@@ -2985,6 +3016,12 @@ candidate exchange with the peer. Specific ICE usages MAY define rules
 that differs from this, e.g., by defining that media must not be sent
 until selected pairs have been procduced for each component associated
 with that media.
+</t>
+
+<t>It is
+RECOMMENDED that, when an agent receives an RTP packet with a new
+source or destination IP address for a particular media stream, that
+the agent re-adjust its jitter buffers.
 </t>
 
 <t>
@@ -3002,9 +3039,6 @@ SHOULD NOT be treated as an SSRC collision.
 
 
 </section>
-
-</section>
-
 
 <section anchor="sec-futureproof" title="Extensibility Considerations">
 
@@ -3780,7 +3814,7 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The ICE agent MUST NOT change
+for all streams, within an ICE session. The ICE agent MAY change
 the number when an ICE restart occurs.
 </t>
 
@@ -3791,7 +3825,7 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The ICE agent MUST NOT change
+for all streams, within an ICE session. The ICE agent MAY change
 the number when an ICE restart occurs.
 </t>
 
