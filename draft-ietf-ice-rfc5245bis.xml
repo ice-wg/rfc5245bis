@@ -2506,7 +2506,8 @@ any layer 2 markings the endpoint might be applying to media packets.
 <section anchor="sec-add-server-full" title="Additional Procedures for Full Implementations">
 
 <t>This subsection defines the additional server procedures applicable
-to full implementations.
+to full implementations, when the full implementation accepts the Binding 
+request.
 </t>
 
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
@@ -2793,13 +2794,12 @@ the pair that generated the check into the TRIGGERED CHECK QUEUE), this time wit
 the USE-CANDIDATE attribute. The connectivity check should succeed (since the
 previous did), causing the nominated flag value of that and only that pair
 to be set to true. However, if the connectivity check fails <xref target="sec-client-failure"/>, 
-the controlling agent MUST remove the candidate pair from the VALID LIST, and 
-MUST set the candidate pair state to Failed. After that, the controlling agent 
-MUST either try to nominate another pair in the VALID LIST, or set the CHECK LIST 
-state to Failed.</t>
-<t>Eventually, there will be only a single nominated pair in the VALID LIST for
-each component. Once the state of the CHECK LIST is set to Completed, that exact
-pair is selected by ICE for sending and receiving media for that component.
+the controlling agent MUST remove the candidate pair from the VALID LIST, set 
+the candidate pair state to Failed and set the CHECK LIST state to Failed.</t>
+<t>Eventually, if the nominations succeed, there will be only a single nominated 
+pair in the VALID LIST for each component. Once the state of the CHECK LIST is 
+set to Completed, that exact pair is selected by ICE for sending and receiving 
+media for that component.
 </t>
 <t>The criterion details for stopping the connectivity checks and for
 selecting a pair for nomiation, are outside the scope of this specification.
@@ -2807,19 +2807,20 @@ They are a matter of local optimization. The only requirement is that the
 agent MUST eventually pick one and only one candidate pair and generate a
 check for that pair with the USE-CANDIDATE attribute present.
 </t>
-<t>The controlled agent SHOULD select the candidate pair nominated by the
-controlling agent if the controlled agent is receiving Binding responses
-associated with that candidate pair. Before the agent has received Binding
-responses associated with the candidate pair, the agent can send media on
-any candidate for which it has received Binding responses. If the controlled
-agent does not want to (for whatever reason) select the pair nominated by the 
-controlling agent, the controlled agent MUST reject the associated Binding
-request with a 400 error code <xref target="RFC5389"/>.</t>
-<t>If more than one candidate pair is nominated by the controlling agent, the
-controlled agent SHOULD select the candidate pair with the highest priority.
-</t>
-<t>
-NOTE: A controlling agent that does not support this specification (i.e. it
+<t>If the controlled agent accepts the nomination request from the controlling
+agent, the controlled agent MUST select the nominated candidate pair, if the 
+controlled agent is receiving Binding responses associated with that candidate 
+pair. Before the agent has received Binding responses associated with the 
+candidate pair, the agent can send media on any candidate for which it has 
+received Binding responses.</t>
+<t>If the controlled agent does not accept the nomination request from the 
+controlling agent want to, the controlled agent MUST reject nomination request 
+with a 400 error code response <xref target="RFC5389"/>, and MUST set the 
+CHECK LIST state to Failed.</t>
+<t>If more than one candidate pair is nominated by the controlling agent, and if
+the controlled agent accepts multiple nominations requests, the controlled agent 
+MUST select the candidate pair with the highest priority.</t>
+<t>NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
 'ice2' ice option by endpoints supporting this specifcation should prevent
