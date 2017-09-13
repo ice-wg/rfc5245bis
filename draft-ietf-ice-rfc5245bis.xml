@@ -2814,9 +2814,9 @@ pair. Before the agent has received Binding responses associated with the
 candidate pair, the agent can send media on any candidate for which it has 
 received Binding responses.</t>
 <t>If the controlled agent does not accept the nomination request from the 
-controlling agent want to, the controlled agent MUST reject nomination request 
-with a 400 error code response <xref target="RFC5389"/>, and MUST set the 
-CHECK LIST state to Failed.</t>
+controlling agent, the controlled agent MUST reject the nomination request with 
+an appropriate error code response (e.g., 400) <xref target="RFC5389"/>, and MUST 
+set the CHECK LIST state to Failed.</t>
 <t>If more than one candidate pair is nominated by the controlling agent, and if
 the controlled agent accepts multiple nominations requests, the controlled agent 
 MUST select the candidate pair with the highest priority.</t>
