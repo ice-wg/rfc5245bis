@@ -1298,11 +1298,40 @@ the future, including per-candidate information.
 
 <t><list style="hanging">
 
-<t hangText="Candidates: "> For each candidiate, the type, IP address,
-transport protocol, transport protocol port, foundation (up to 32 characters),
-component ID, priority, related address, and extensability parameters.  
-The related address MAY be omitted or
-set to invalid values if the agent does not want to reveal them.
+<t hangText="Candidates: ">One or more candidates.  For each
+candidate:
+</t>
+
+<t>
+  <list style="hanging">
+    <t hangText="Address:"> The IP address and transport
+    protocol port of the candidate. </t>
+
+    <t hangText="Transport:"> The transport protocol of the candidate.
+    This MAY be omitted if the using protocol will only ever run over
+    a single transport protocol. If it runs over more than one, or if
+    others are anticipated to be used in the future, this should be
+    present. </t>
+
+    <t hangText="Foundation:"> A sequence of up to 32 characters.</t>
+
+    <t hangText="Component ID:"> The component ID of the candidate.
+    This MAY be omitted if the using protocol does not use the concept
+    of components.</t>
+
+    <t hangText="Priority:">The 32-bit priority of the candidate.</t>
+
+    <t hangText="Type:">The type of the candidate.</t>
+
+    <t hangText="Related Address and Port:">The related IP address and
+    port of the candidate. These MAY be omitted or set to invalid
+    values if the agent does not want to reveal them, e.g., for
+    privacy reasons. </t>
+
+    <t hangText="Extensibility Parameters:"> The using protocol should
+    define some means for adding new per-candidate ICE parameters in
+    the future. </t>
+  </list>
 </t>
 
 <t hangText="Lite or Full: ">Whether the agent is a lite agent or full
@@ -1468,7 +1497,7 @@ of this specification.
 
 <t>
 There is one check list for each media stream.  To form a check list,
-an agent (initiaing and responding) forms candidate pairs, computes
+an agent (initiating and responding) forms candidate pairs, computes
 pair priorities, orders pairs by priority, prunes pairs, removes
 lower-priority pairs, and sets check list states. If candidates are
 added to a check list (e.g, due to detection of peer reflexive
