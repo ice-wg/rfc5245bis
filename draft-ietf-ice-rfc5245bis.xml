@@ -4882,7 +4882,7 @@ family.  ICE works with both IPv4 and IPv6.  It provides a transition
 mechanism that allows dual-stack hosts to prefer connectivity over
 IPv6, but to fall back to IPv4 in case the v6 networks are
 disconnected. Implementation should follow the guidelines from <xref
-target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessively delays
+target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessive delays
 in the connectivity check phase if broken paths exist.</t>
 
 <t>Another criterion for selecting preferences is topological
