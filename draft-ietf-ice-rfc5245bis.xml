@@ -1353,6 +1353,22 @@ attributes (ice-options).
 </list></t>
 
 <t>
+If the using protocol is using the ICE mismatch feature, a way is
+needed to convey this parameter in answers. It is a boolean flag.
+</t>
+
+<t> The exchange of parameters is symmetric; both agents need to send
+the same set of attributes as defined above.  </t>
+
+<t>
+The using protocol may (or may not) need to deal with backwards
+compatibility with older implementations that do not support ICE. If
+the fallback mechanism is being used, then presumably the using
+protocol provides a way of conveying the default candidate (its IP
+address and port) in addition to the ICE parameters.
+</t>
+
+<t>
 Once an agent has sent its candidate information, it MUST be
 prepared to receive both STUN and media packets on each candidate. As
 discussed in <xref target="sec-send-media"/>, media packets can be
@@ -1505,7 +1521,9 @@ candidates), the agent will re-perform these steps for the updated
 check list.
 </t>
 <section title="Check List State">
-<t>Each check list has one of the following states:</t>
+<t>Each CHECK LIST has a state, which captures the state of ICE checks
+for the media stream associated with the CHECK LIST. The states
+are:</t>
 <t><list style="hanging">
 
 <t hangText="Running:">The check list is neither Completed yet nor
@@ -1526,9 +1544,9 @@ failed, which means the check list has failed.
 </t>
 
 </list></t>
-<t>Additionally, a check list with at least one pair in the waiting
+<t>Additionally, a check list with at least one pair in the Waiting
 state is called "active", while a check list with all pairs in the
-frozen state is called "frozen".
+frozen state is called "Frozen".
 </t>
 
 </section>
@@ -1778,8 +1796,13 @@ Pairs move between states as shown in <xref target="fig-state-fsm"/>.
 
 <t><list style="numbers">
 
+<t>
+The initial states for each pair in a CHECK LIST are computed by
+performing the following sequence of steps:
+</t>
+
 <t>The check lists are placed in an ordered list (the order is determined
-by each ICE usage), called the CHECK LIST SET.
+by each ICE usage), called the check list set.
 </t>
 
 <t>
