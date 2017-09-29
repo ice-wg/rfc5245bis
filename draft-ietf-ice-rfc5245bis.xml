@@ -540,7 +540,7 @@ candidate pairs to be used for media.
 <t>
 When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
-found and then selects a candidate pair from the valid candidate pairs
+found and then chooses a candidate pair from the valid candidate pairs
 and sends a STUN request on the selected pair with a flag set to indicate
 to the controlled peer that it has nominated the selected pair.
 This is shown in <xref target="fig-regular-select"/>.
@@ -564,7 +564,8 @@ STUN request + flag ->      \  L's
 
 <t>
 Once the STUN transaction with the flag completes, both sides cancel
-any future checks for that media stream and will send media using this pair.
+any future checks for that media stream and will send and receive
+media using this pair.
 </t>
 
 <t>
@@ -693,7 +694,9 @@ host), priority, foundation, and base.
 <t hangText="Component:"> A component is a piece of a media stream
 requiring a single transport address; a media stream may require
 multiple components, each of which has to work for the media stream as
-a whole to work.</t>
+a whole to work.  For media streams based on RTP, unless RTP and RTCP
+are multiplexed in the same port, there are two components per media
+stream -- one for RTP, and one for RTCP.</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
 specific port from an IP address on the host.  This includes IP
@@ -794,8 +797,9 @@ candidate pair.  In any session, one agent is always controlling. The
 other is the controlled agent.
 </t>
 
-<t hangText="Controlled Agent:"> The ICE agent that waits for the 
-controlling agent to nominate a candidate pair.
+<t hangText="Controlled Agent:"> The ICE agent that waits for the
+controlling agent to nominate a candidate pair and selects the
+candidate nominated by the controlling side.
 </t>
 
 <t hangText="Nomination, Regular Nomination:"> The process of the
