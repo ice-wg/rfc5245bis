@@ -1302,11 +1302,40 @@ the future, including per-candidate information.
 
 <t><list style="hanging">
 
-<t hangText="Candidates: "> For each candidiate, the type, IP address,
-transport protocol, transport protocol port, foundation (up to 32 characters),
-component ID, priority, related address, and extensability parameters.  
-The related address MAY be omitted or
-set to invalid values if the agent does not want to reveal them.
+<t hangText="Candidates: ">One or more candidates.  For each
+candidate:
+</t>
+
+<t>
+  <list style="hanging">
+    <t hangText="Address:"> The IP address and transport
+    protocol port of the candidate. </t>
+
+    <t hangText="Transport:"> The transport protocol of the candidate.
+    This MAY be omitted if the using protocol will only ever run over
+    a single transport protocol. If it runs over more than one, or if
+    others are anticipated to be used in the future, this should be
+    present. </t>
+
+    <t hangText="Foundation:"> A sequence of up to 32 characters.</t>
+
+    <t hangText="Component ID:"> The component ID of the candidate.
+    This MAY be omitted if the using protocol does not use the concept
+    of components.</t>
+
+    <t hangText="Priority:">The 32-bit priority of the candidate.</t>
+
+    <t hangText="Type:">The type of the candidate.</t>
+
+    <t hangText="Related Address and Port:">The related IP address and
+    port of the candidate. These MAY be omitted or set to invalid
+    values if the agent does not want to reveal them, e.g., for
+    privacy reasons. </t>
+
+    <t hangText="Extensibility Parameters:"> The using protocol should
+    define some means for adding new per-candidate ICE parameters in
+    the future. </t>
+  </list>
 </t>
 
 <t hangText="Lite or Full: ">Whether the agent is a lite agent or full
@@ -1326,6 +1355,22 @@ attributes (ice-options).
 </t>
 
 </list></t>
+
+<t>
+If the using protocol is using the ICE mismatch feature, a way is
+needed to convey this parameter in answers. It is a boolean flag.
+</t>
+
+<t> The exchange of parameters is symmetric; both agents need to send
+the same set of attributes as defined above.  </t>
+
+<t>
+The using protocol may (or may not) need to deal with backwards
+compatibility with older implementations that do not support ICE. If
+the fallback mechanism is being used, then presumably the using
+protocol provides a way of conveying the default candidate (its IP
+address and port) in addition to the ICE parameters.
+</t>
 
 <t>
 Once an agent has sent its candidate information, it MUST be
@@ -1472,7 +1517,7 @@ of this specification.
 
 <t>
 There is one check list for each media stream.  To form a check list,
-an agent (initiaing and responding) forms candidate pairs, computes
+an agent (initiating and responding) forms candidate pairs, computes
 pair priorities, orders pairs by priority, prunes pairs, removes
 lower-priority pairs, and sets check list states. If candidates are
 added to a check list (e.g, due to detection of peer reflexive
@@ -1480,7 +1525,9 @@ candidates), the agent will re-perform these steps for the updated
 check list.
 </t>
 <section title="Check List State">
-<t>Each check list has one of the following states:</t>
+<t>Each CHECK LIST has a state, which captures the state of ICE checks
+for the media stream associated with the CHECK LIST. The states
+are:</t>
 <t><list style="hanging">
 
 <t hangText="Running:">The check list is neither Completed yet nor
@@ -1501,9 +1548,9 @@ failed, which means the check list has failed.
 </t>
 
 </list></t>
-<t>Additionally, a check list with at least one pair in the waiting
+<t>Additionally, a check list with at least one pair in the Waiting
 state is called "active", while a check list with all pairs in the
-frozen state is called "frozen".
+frozen state is called "Frozen".
 </t>
 
 </section>
@@ -1753,8 +1800,13 @@ Pairs move between states as shown in <xref target="fig-state-fsm"/>.
 
 <t><list style="numbers">
 
+<t>
+The initial states for each pair in a CHECK LIST are computed by
+performing the following sequence of steps:
+</t>
+
 <t>The check lists are placed in an ordered list (the order is determined
-by each ICE usage), called the CHECK LIST SET.
+by each ICE usage), called the check list set.
 </t>
 
 <t>
