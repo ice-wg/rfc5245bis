@@ -1357,12 +1357,10 @@ attributes (ice-options).
 </list></t>
 
 <t>
-If the using protocol is using the ICE mismatch feature, a way is
-needed to convey this parameter in answers. It is a boolean flag.
+If the using protocol is vulnerable to, and able to detect, ICE mismatch
+(<xref target="sec-verify"/>), a way is needed for the detecting agent to 
+convey this information to its peer. It is a boolean flag.
 </t>
-
-<t> The exchange of parameters is symmetric; both agents need to send
-the same set of attributes as defined above.  </t>
 
 <t>
 The using protocol may (or may not) need to deal with backwards
@@ -1382,19 +1380,21 @@ for media.
 
 </section>
 
-<section anchor="sec-verify" title="Verifying ICE Support">
-
+<section anchor="sec-verify" title="ICE Mismatch">
 <t>
-Certain middleboxes, such as ALGs, may alter the ICE candidate
-information that breaks ICE. If the using protocol is vulnerable to
-this kind of changes, called ICE mismatch, the responding agent needs
-to detect this and signal this back to the initiating agent. The
-details on whether this is needed and how it is done is defined by the
-usage specifications. One exception to the above is that an initiating
-agent would never indicate ICE mismatch.
+Certain middleboxes, such as ALGs, can alter signaling
+information that breaks ICE. This is referred to as ICE mismatch.
+If the using protocol is vulnerable to ICE mismatch, the responding 
+agent needs to be able to detect it and inform the peer agent 
+about the ICE mismatch. 
 </t>
-
+<t>
+Each using protocol needs to define whether the using protocol is vulnerable
+to ICE mismatch, how ICE mismatch is detected, and whether specific 
+actions need to be taken when ICE mismatch is detected.
+</t>
 </section>
+
 
 </section>
 
@@ -2058,8 +2058,8 @@ in a Binding request.
 </section>
 
 <section anchor="sec-tie-client" title="ICE-CONTROLLED and ICE-CONTROLLING">
-<t>The controlling ICE agent MUST include the ICE-CONTROLLED attribute in a Binding
-request. The controlled ICE agent MUST include the ICE-CONTROLLING attribute in
+<t>The controlling ICE agent MUST include the ICE-CONTROLLING attribute in a Binding
+request. The controlled ICE agent MUST include the ICE-CONTROLLED attribute in
 a Binding request.
 </t>
 <t>The content of either attribute are used as tie-breaker values
