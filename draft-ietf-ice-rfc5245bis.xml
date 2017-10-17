@@ -1357,12 +1357,10 @@ attributes (ice-options).
 </list></t>
 
 <t>
-If the using protocol is using the ICE mismatch feature, a way is
-needed to convey this parameter in answers. It is a boolean flag.
+If the using protocol is vulnerable to, and able to detect, ICE mismatch
+(<xref target="sec-verify"/>), a way is needed for the detecting agent to 
+convey this information to its peer. It is a boolean flag.
 </t>
-
-<t> The exchange of parameters is symmetric; both agents need to send
-the same set of attributes as defined above.  </t>
 
 <t>
 The using protocol may (or may not) need to deal with backwards
@@ -1382,18 +1380,20 @@ for media.
 
 </section>
 
-<section anchor="sec-verify" title="Verifying ICE Support">
+<section anchor="sec-verify" title="ICE Mismatch">
 
 <t>
-Certain middleboxes, such as ALGs, may alter the ICE candidate
-information that breaks ICE. If the using protocol is vulnerable to
-this kind of changes, called ICE mismatch, the responding agent needs
-to detect this and signal this back to the initiating agent. The
-details on whether this is needed and how it is done is defined by the
-usage specifications. One exception to the above is that an initiating
-agent would never indicate ICE mismatch.
+Certain middleboxes, such as ALGs, can alter signaling
+information that breaks ICE. This is referred to as ICE mismatch.
+If the using protocol is vulnerable to ICE mismatch, the responding 
+agent needs to be able to detect it and inform the peer agent 
+about the ICE mismatch. 
 </t>
-
+<t>
+Each using protocol needs to define whether the using protocol is vulnerable
+to ICE mismatch, how ICE mismatch is detected, and whether specific 
+actions need to be taken when ICE mismatch is detected.
+</t>
 </section>
 
 </section>
@@ -2058,8 +2058,8 @@ in a Binding request.
 </section>
 
 <section anchor="sec-tie-client" title="ICE-CONTROLLED and ICE-CONTROLLING">
-<t>The controlling ICE agent MUST include the ICE-CONTROLLED attribute in a Binding
-request. The controlled ICE agent MUST include the ICE-CONTROLLING attribute in
+<t>The controlling ICE agent MUST include the ICE-CONTROLLING attribute in a Binding
+request. The controlled ICE agent MUST include the ICE-CONTROLLED attribute in
 a Binding request.
 </t>
 <t>The content of either attribute are used as tie-breaker values
@@ -2669,47 +2669,52 @@ updating of state machinery.
 
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
-<t>Prior to nominating, the agent let connectivity quecks continue until
+<t>Prior to nominating, the agent let connectivity checks continue until
 some stopping criterion is met. After that, based on an evaluation
 criterion, the agent selects a pair among the valid pairs in the valid list
 for nomination.
 </t>
-<t>Once the controlling agent has selected a valid pair for nomination, it
+<t>Once the controlling agent has picked a valid pair for nomination, it
 repeats the connectivity check that produced this valid pair (by enqueueing
 the pair that generated the check into the triggered check queue), this time with
 the USE-CANDIDATE attribute. The connectivity check should succeed (since the
 previous did), causing the nominated flag value of that and only that pair
-to be set to true. However, if the connectivity check fails <xref target="sec-client-failure"/>, 
+to be set to true. The pair is then considered the pair selected by ICE (referred to
+as the selected pair) for a given component.</t> 
+<t>However, if the connectivity check fails <xref target="sec-client-failure"/>, 
 the controlling agent MUST remove the candidate pair from the VALID LIST, set 
 the candidate pair state to Failed and set the CHECK LIST state to Failed.</t>
-<t>Eventually, if the nominations succeed, there will be only a single nominated 
-pair in the VALID LIST for each component. Once the state of the CHECK LIST is 
-set to Completed, that exact pair is selected by ICE for sending and receiving 
-media for that component.
-</t>
-<t>The criterion details for stopping the connectivity checks and for
-selecting a pair for nomiation, are outside the scope of this specification.
+<t>Eventually, if the nominations succeed, there will be a selected pair for
+each component. Once that occurs, the state of the CHECK LIST is set to Completed.</t>
+<t>The criterion details for stopping the connectivity checks, and for
+picking a pair for nomination, are outside the scope of this specification.
 They are a matter of local optimization. The only requirement is that the
-agent MUST eventually pick one and only one candidate pair and generate a
-check for that pair with the USE-CANDIDATE attribute present.
+agent MUST, for a given component, eventually pick one and only one candidate 
+pair and nominate that pair by generating a check for that pair with the 
+USE-CANDIDATE attribute present.
 </t>
-<t>If the controlled agent accepts the nomination request from the controlling
-agent, the controlled agent MUST select the nominated candidate pair, if the 
-controlled agent is receiving Binding responses associated with that candidate 
-pair. Before the agent has received Binding responses associated with the 
-candidate pair, the agent can send media on any candidate for which it has 
-received Binding responses.</t>
+<t>Once the controlled agent has accepted a nomination request, the agent MUST
+only send media on the nominated pair. However, the agent MUST be able to receive 
+media on all valid pairs for a short period of time, until the controlling agent 
+has received the response to the nomination request. After that, the controlled 
+agent only needs to receive media on the nominated pair (which becomes the selected pair
+once the controlling agent receives the response to the nomination request).
+</t>
+<t>Once the controlling agent has received a successful response to a nomination request, 
+the agent MUST send media on the nominated pair (which has now become the selected pair). 
+The agent only needs to receive media on the selected pair.
+</t>
 <t>If the controlled agent does not accept the nomination request from the 
 controlling agent, the controlled agent MUST reject the nomination request with 
 an appropriate error code response (e.g., 400) <xref target="RFC5389"/>, and MUST 
 set the CHECK LIST state to Failed.</t>
 <t>If more than one candidate pair is nominated by the controlling agent, and if
-the controlled agent accepts multiple nominations requests, the controlled agent 
-MUST select the candidate pair with the highest priority.</t>
+the controlled agent accepts multiple nominations requests, the pair with the
+highest priority becomes the selected pair.</t>
 <t>NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
-'ice2' ice option by endpoints supporting this specifcation should prevent
+'ice2' ice option by endpoints supporting this specification should prevent
 such controlling agents from using aggressive nomination.
 </t>
 
