@@ -1438,8 +1438,9 @@ other MUST take the controlled role. Both agents will form check
 lists, run the ICE state machines, and generate connectivity
 checks. The controlling agent will execute the logic in <xref
 target="sec-conclude-full"/> to nominate pairs that will become
-(if the nominations succeed) the selected pairs, and then both agents 
-end ICE as described in <xref target="sec-conc-state"/>.
+(if the connectivity checks associated with the nominations succeed) 
+the selected pairs, and then both agents end ICE as described in 
+<xref target="sec-conc-state"/>.
 
 </t>
 
@@ -1448,10 +1449,10 @@ controlling role, and the lite agent MUST take the controlled
 role. The full agent will form check lists, run the ICE state
 machines, and generate connectivity checks. That agent will execute
 the logic in <xref target="sec-conclude-full"/> to nominate pairs that
-will become (if the nominations succeed) the selected pairs, and use 
-the logic in <xref target="sec-conc-state"/> to end ICE. The lite 
-implementation will just listen for connectivity checks, receive them 
-and respond to them, and then conclude ICE as described in <xref
+will become (if the connectivity checks associated with the nominations succeed) 
+the selected pairs, and use the logic in <xref target="sec-conc-state"/> to 
+end ICE. The lite implementation will just listen for connectivity checks, 
+receive them and respond to them, and then conclude ICE as described in <xref
 target="sec-lite-conclude"/>. For the lite implementation, the state
 of ICE processing for each media stream is considered to be Running,
 and the state of ICE overall is Running.
@@ -2669,24 +2670,24 @@ updating of state machinery.
 
 <section anchor="sec-choose-favor" title="Nominating Pairs">
 
-<t>Prior to nominating, the agent let connectivity quecks continue until
+<t>Prior to nominating, the controlling agent let connectivity quecks continue until
 some stopping criterion is met. After that, based on an evaluation
-criterion, the agent picks a pair among the valid pairs in the valid list
+criterion, the controlling agent picks a pair among the valid pairs in the valid list
 for nomination.
 </t>
 <t>Once the controlling agent has picked a valid pair for nomination, it
 repeats the connectivity check that produced this valid pair (by enqueueing
 the pair that generated the check into the triggered check queue), this time with
 the USE-CANDIDATE attribute. The connectivity check should succeed (since the
-previous did), causing the nominated flag value of that and only that pair
+previous did), causing the nominated flag value of that candidate pair
 to be set to true. However, if the connectivity check fails <xref target="sec-client-failure"/>, 
 the controlling agent MUST remove the candidate pair from the VALID LIST, set 
 the candidate pair state to Failed and set the CHECK LIST state to Failed.</t>
 <t>Eventually, if the nominations succeed, there will be only a single nominated 
-pair in the VALID LIST for each component of the media stream. Once the state of the CHECK LIST is 
-set to Completed (when there is a nominated pair for each component of the media stream), 
-that pair becomes the selected pair, and is used for sending and receiving media for that component
-of the media stream.
+pair in the VALID LIST for each component of the media stream. Once the state of 
+the CHECK LIST is set to Completed (when there is a nominated pair for each component 
+of the media stream), that pair becomes the selected pair, and is used for sending and 
+receiving media for that component of the media stream.
 </t>
 <t>The criterion details for stopping the connectivity checks and for
 selecting a pair for nomiation, are outside the scope of this specification.
@@ -2694,16 +2695,15 @@ They are a matter of local optimization. The only requirement is that the
 agent MUST eventually pick one and only one candidate pair and generate a
 check for that pair with the USE-CANDIDATE attribute present.
 </t>
-<t>If the controlled agent accepts the nomination request from the controlling
-agent, the controlled agent MUST select the nominated candidate pair, if the 
-controlled agent is receiving Binding responses associated with that candidate 
-pair. Before the agent has received Binding responses associated with the 
-candidate pair, the agent can send media on any candidate for which it has 
-received Binding responses.</t>
 <t>If the controlled agent does not accept the nomination request from the 
 controlling agent, the controlled agent MUST reject the nomination request with 
 an appropriate error code response (e.g., 400) <xref target="RFC5389"/>, and MUST 
 set the CHECK LIST state to Failed.</t>
+<t>As described in <xref target="sec-up-fav"/>, when the controlled agent receives
+a nomination request from the controlling agent, it might need to send a connectivity
+check towards the controlling agent. If the check succeeds the controlled agent will 
+set the value of the nominated flag of the pair to true. If the check does not succeed
+the controlled agent MUST set the check list state to Failed.</t>
 <t>If more than one candidate pair is nominated by the controlling agent, and if
 the controlled agent accepts multiple nominations requests, the controlled agent 
 MUST select the candidate pair with the highest priority.</t>
