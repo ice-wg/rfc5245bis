@@ -541,8 +541,8 @@ candidate pairs to be used for media.
 When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
 found and then chooses a candidate pair from the valid candidate pairs
-and sends a STUN request on the selected pair with a flag set to indicate
-to the controlled peer that it has nominated the selected pair.
+and sends a STUN request on the pair with a flag*** set to indicate
+to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
 
@@ -793,30 +793,32 @@ generate connectivity checks.
 </t>
 
 <t hangText="Controlling Agent:"> The ICE agent that nominates a
-candidate pair.  In any session, one agent is always controlling. The
+candidate pair. In any session, one agent is always controlling. The
 other is the controlled agent.
 </t>
 
 <t hangText="Controlled Agent:"> The ICE agent that waits for the
-controlling agent to nominate a candidate pair and selects the
-candidate nominated by the controlling side.
+controlling agent to nominate a candidate pair.
 </t>
 
 <t hangText="Nomination, Regular Nomination:"> The process of the
 controlling agent indicating to the controlled agent which candidate
-pair the controlled agent should use to send media.
+pair the agents should use for sending and receiving media.
 </t>
 
-<t hangText="Nominated:"> If a valid candidate pair has its nominated
-flag set, it means that it may be selected by ICE for sending and
-receiving media.
+<t hangText="Nominated:"> Once the nomination of a candidate pair has
+succeeded, the candidiate pair has become nominated, and has
+its nominated flag set.***
 </t>
 
 <t hangText="Selected Pair, Selected Candidate Pair:"> The candidate
-pair selected by an ICE agent for sending media.
-Each of its candidates is called the selected candidate.
-Before a pair has been selected, any valid candidate pair
-can be used for sending and receiving media.
+pair used for sending and receiving media for a component of a media stream is
+referred to as the selected pair. Before selected pairs have been produced for a media stream, 
+any valid candidate pair associated with a component of a media stream
+can be used for sending and receiving media for the component.
+Once there are nominated pairs for each component of a media
+stream, the nominated pairs become the selected pairs for the media stream. 
+The candidates associated with the selected pairs are referred to as selected candidates.
 </t>
 
 <t hangText="Using Protocol, ICE Usage:"> The protocol that uses ICE
@@ -1435,9 +1437,9 @@ started the ICE processing MUST take the controlling role, and the
 other MUST take the controlled role. Both agents will form check
 lists, run the ICE state machines, and generate connectivity
 checks. The controlling agent will execute the logic in <xref
-target="sec-conclude-full"/> to nominate pairs that will be selected
-by ICE, and then both agents end ICE as described in <xref
-target="sec-conc-state"/>.
+target="sec-conclude-full"/> to nominate pairs that will become
+(if the nominations succeed) the selected pairs, and then both agents 
+end ICE as described in <xref target="sec-conc-state"/>.
 
 </t>
 
@@ -1446,10 +1448,10 @@ controlling role, and the lite agent MUST take the controlled
 role. The full agent will form check lists, run the ICE state
 machines, and generate connectivity checks. That agent will execute
 the logic in <xref target="sec-conclude-full"/> to nominate pairs that
-will be selected by ICE, and use the logic in <xref
-target="sec-conc-state"/> to end ICE. The lite implementation will
-just listen for connectivity checks, receive them and respond to them,
-and then conclude ICE as described in <xref
+will become (if the nominations succeed) the selected pairs, and use 
+the logic in <xref target="sec-conc-state"/> to end ICE. The lite 
+implementation will just listen for connectivity checks, receive them 
+and respond to them, and then conclude ICE as described in <xref
 target="sec-lite-conclude"/>. For the lite implementation, the state
 of ICE processing for each media stream is considered to be Running,
 and the state of ICE overall is Running.
@@ -1531,11 +1533,10 @@ are:</t>
 <t><list style="hanging">
 
 <t hangText="Running:">The check list is neither Completed yet nor
-Failed yet.  Check lists are initially set
-to the Running state.
+Failed yet. Check lists are initially set to the Running state.
 </t>
 
-<t hangText="Completed:">The check list has a selected candidate pair
+<t hangText="Completed:">The check list contains a selected pair
 for each component of the media stream.
 </t>
 
@@ -1929,16 +1930,15 @@ by timer Ta. As soon as the initial states for the candidate pairs in the
 check list set have been set, a check is performed for a candidate pair
 within the first check list in the Running state, following
 the procedures in <xref target="sec-connectivity_check"/>. After that,
-
 whenever Ta fires the next check list in the Running state in the check list set
-is selected, and a check is performed for a candidate within that check list.
+is picked, and a check is performed for a candidate within that check list.
 After the last check list in the Running state in the check list set has been
-processed, the first check list is selected again. Etc.
+processed, the first check list is picked again. Etc.
 </t>
 
 <t>
 Whenever Ta fires, the agent will perform a check for a candidate pair within
-the selected check list by performing the following steps:
+the picked check list by performing the following steps:
 <list style="numbers">
 <t>If the triggered check queue associated with the check list contains
 one or more candidate pairs, the agent removes the top pair from the
@@ -1953,14 +1953,14 @@ is no pair (in any check list in the check list set) in the Waiting or In-Progre
 the agent puts the candidate pair state to Waiting and continues with the next step.
 </t>
 
-<t>If there are one or more candidate pairs in the Waiting state, the agent selects
+<t>If there are one or more candidate pairs in the Waiting state, the agent picks
 the highest-priority candidate pair (if there are multiple pairs with the same
-priority, the pair with the lowest component ID is selected) in the Waiting
+priority, the pair with the lowest component ID is picked) in the Waiting
 state, performs a connectivity check on that pair, puts the candidate pair
 par state to In-Progress, and abort the subsequent steps.
 </t>
 
-<t>If this step is reached, no check could be performed for the selected check list.
+<t>If this step is reached, no check could be performed for the picked check list.
 So, without waiting for timer Ta to expire again, select the next check list
 in the Running state and return to step #1. If this happens for every single
 check list in the Running state, meaning there are no remaining candidate pairs
@@ -1969,7 +1969,7 @@ to perform connectivity checks for, abort these steps.
 
 </list></t>
 
-<t>Once the agent has selected a candidate pair, for which a connectivity check is to
+<t>Once the agent has picked a candidate pair, for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
 with the local candidate of the pair to the remote candidate of the pair, as described in
 <xref target="sec-send-check"/>.
@@ -2598,7 +2598,7 @@ candidate is equal to the part after the colon of the USERNAME in the
 Binding request that was just received. Using that username fragment,
 the agent can check the candidates received from its peer (there
 may be more than one in cases of forking), and find this username
-fragment. The corresponding password is then selected.
+fragment. The corresponding password is then picked.
 </t>
 
 <!-- end triggered checks -->
@@ -2671,10 +2671,10 @@ updating of state machinery.
 
 <t>Prior to nominating, the agent let connectivity quecks continue until
 some stopping criterion is met. After that, based on an evaluation
-criterion, the agent selects a pair among the valid pairs in the valid list
+criterion, the agent picks a pair among the valid pairs in the valid list
 for nomination.
 </t>
-<t>Once the controlling agent has selected a valid pair for nomination, it
+<t>Once the controlling agent has picked a valid pair for nomination, it
 repeats the connectivity check that produced this valid pair (by enqueueing
 the pair that generated the check into the triggered check queue), this time with
 the USE-CANDIDATE attribute. The connectivity check should succeed (since the
@@ -2683,9 +2683,10 @@ to be set to true. However, if the connectivity check fails <xref target="sec-cl
 the controlling agent MUST remove the candidate pair from the VALID LIST, set 
 the candidate pair state to Failed and set the CHECK LIST state to Failed.</t>
 <t>Eventually, if the nominations succeed, there will be only a single nominated 
-pair in the VALID LIST for each component. Once the state of the CHECK LIST is 
-set to Completed, that exact pair is selected by ICE for sending and receiving 
-media for that component.
+pair in the VALID LIST for each component of the media stream. Once the state of the CHECK LIST is 
+set to Completed (when there is a nominated pair for each component of the media stream), 
+that pair becomes the selected pair, and is used for sending and receiving media for that component
+of the media stream.
 </t>
 <t>The criterion details for stopping the connectivity checks and for
 selecting a pair for nomiation, are outside the scope of this specification.
@@ -2802,10 +2803,12 @@ not used by ICE, as described in <xref target="sec-freeing"/>.
 </t>
 
 <t>
-If the peer is a full agent, the lite agent selects a candidate pair
-when the full agent nominates it.  When the lite agent has selected a
-candidate pair for all components of all media streams, the ICE session is
-Completed.
+If the peer is a full agent, once the lite agent accepts a nomination request
+for a candidate pair, the lite agent considers the pair nominated. Once there
+are nominated pairs for each component of a media stream, the pairs become
+the selected pairs for the components of the media stream. Once the lite agent 
+has produced selected pairs for all components of all media streams, the ICE session
+state is set to Completed.
 </t>
 
 <t>
@@ -2840,14 +2843,15 @@ agent continue to listen for STUN requests and continue to generate
 triggered checks for a media stream, even once processing for that
 stream completes. The rules in this section describe when it is safe
 for an agent to cease sending or receiving checks on a candidate that
-was not selected by ICE, and then free the candidate.
+did not become a selected candidate (is not associated with a selected pair), 
+and then free the candidat.
 </t>	
 	
 <t>
 Once a checklist has reached the Completed state, the agent SHOULD wait an
 additional three seconds, and then it can cease responding to checks or
 generating triggered checks on all local candidates other than
-the ones in the selected candidate pairs (one for each component).
+the ones that became selected candidates.
 Once all ICE sessions have ceased using a given local candidate 
 (a candidate may be used by multiple ICE sessions, e.g. in forking scenarios), 
 the agent can free that candidate.  The three-second delay
@@ -2865,9 +2869,9 @@ explicit; it happens by lack of a keepalive.
 <section title="Lite Implementation Procedures">
 
 <t>
-A lite implementation can free candidates not selected by ICE as soon
-as ICE processing has reached the Completed state for all ICE sessions
-using those candidates.
+A lite implementation can free candidates that did not become selected candidates 
+as soon as ICE processing has reached the Completed state for all ICE sessions
+using those candidates***.
 </t>
 
 </section>
@@ -2953,16 +2957,22 @@ STUN-based keepalives for UDP streams, and as such, STUN keepalives
 MUST be used when an agent is a full ICE implementation and is
 communicating with a peer that supports ICE (lite or full).
 </t>
-
 <t>
 For each candidate pair that an agent is using to send media, if no
 packet has been sent on that pair in the last Tr seconds, an agent
-MUST send a keepalive on that pair.  Agents SHOULD use a Tr value of
+MUST send a keepalive on that pair. Agents SHOULD use a Tr value of
 15 seconds. Agents MUST NOT use a Tr value smaller than 15 seconds.
-An agent MUST begin sending keepalives once a candidate pair is
-selected or a candidate pair is used to send media, whichever happens
-first.  An agent MUST stop sending keepalives once the session
-terminates or the media stream is removed.  
+</t>
+<t>
+Once selected pairs have been produced for a media stream, keepalives 
+are only sent on those pairs.
+</t>
+<t>
+An agent MUST stop sending keepalives on a media stream if the media stream is
+removed. If the ICE session is terminated, an agent MUST stop sending
+keepalives on all media streams.
+</t>
+<t>
 An agent MAY use another value for Tr, e.g. based on
 configuration or network/NAT characteristics. For example, if
 an agent has a dynamic way to discover the binding lifetimes of the
@@ -2985,13 +2995,6 @@ as discussed in <xref target="RFC5389"/>, but there is no impact on
 ICE processing otherwise.
 </t>
 
-<t>
-An agent MUST begin the keepalive processing once ICE has selected
-candidates for usage with media, or media begins to flow, whichever
-happens first. Keepalives end once the session terminates or the media
-stream is removed.
-</t>
-
 </section>
 
 <section title="Media Handling">
@@ -2999,13 +3002,13 @@ stream is removed.
 <section anchor="sec-send-media" title="Sending Media">
 
 <t>
-An agent MAY send media on any valid candidate pair before a candidate
-pair is selected.
+An agent MAY send media on any valid candidate pair before 
+selected pairs have been produced for the media stream.
 </t>
 
 <t>
-An agent MUST send media on the selected candidate pair after it is
-selected.
+Once selected pairs have been produced for a media stream, an 
+agent MUST send media on those pairs.
 </t>
 
 <t>
@@ -3042,7 +3045,7 @@ restart
 </t>
 
 <t>
-Unless an agent is able to produce a selected pair for all components
+Unless an agent is able to produce a selected pair for each component
 associated with a media stream, the agent MUST NOT continue
 sending media for any component associated with that media stream.
 </t>
@@ -3089,13 +3092,12 @@ one candidate pair to another.  </t>
 
 <t>
 Even though ICE agents are only allowed to send media using valid
-candidate pairs (and, once a candidate pair has been selected, only
-on the selected pair) ICE implementations SHOULD by default be prepared
+candidate pairs (and, once selected pairs have been produced, only
+on the selected pairs) ICE implementations SHOULD by default be prepared
 to receive media on any of the candidates provided in the most recent
 candidate exchange with the peer. Specific ICE usages MAY define rules
 that differs from this, e.g., by defining that media must not be sent
-until selected pairs have been procduced for each component associated
-with that media.
+until selected pairs have been produced for a media stream.
 </t>
 
 <t>It is
@@ -4260,7 +4262,7 @@ even in a globally connected Internet, to serve as a means for
 detecting whether a router failure has temporarily disrupted
 connectivity, for example. ICE also helps prevent certain security
 attacks that have nothing to do with NAT. However, what ICE does is
-help phase out other UNSAF mechanisms. ICE effectively selects amongst
+help phase out other UNSAF mechanisms. ICE effectively picks amongst
 those mechanisms, prioritizing ones that are better, and
 deprioritizing ones that are worse. Local IPv6 addresses can be
 preferred. As NATs begin to dissipate as IPv6 is introduced, server
