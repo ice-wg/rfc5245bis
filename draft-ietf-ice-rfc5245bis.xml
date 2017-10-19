@@ -541,7 +541,7 @@ candidate pairs to be used for media.
 When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
 found and then chooses a candidate pair from the valid candidate pairs
-and sends a STUN request on the pair with a flag*** set to indicate
+and sends a STUN request on the pair with a flag set to indicate
 to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
@@ -807,8 +807,8 @@ pair the agents should use for sending and receiving media.
 </t>
 
 <t hangText="Nominated:"> Once the nomination of a candidate pair has
-succeeded, the candidiate pair has become nominated, and has
-its nominated flag set.***
+succeeded, the candidate pair has become nominated, and has
+its nominated flag set.
 </t>
 
 <t hangText="Selected Pair, Selected Candidate Pair:"> The candidate
@@ -2867,7 +2867,7 @@ explicit; it happens by lack of a keepalive.
 <t>
 A lite implementation can free candidates that did not become selected candidates 
 as soon as ICE processing has reached the Completed state for all ICE sessions
-using those candidates***.
+using those candidates.
 </t>
 
 </section>
