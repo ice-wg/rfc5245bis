@@ -3571,6 +3571,17 @@ into the Completed state, and agent R can also send media.
 <section anchor="sec-security" title="Security Considerations">
 
 <t>
+The process of probing for candidates reveals the source addresses of
+the client and its peer to any on-network listening attacker, and the
+process of exchanging candidates reveals the addresses to any attacker
+that is able to see the negotiation. Some addresses, such as the server
+reflexive addresses gathered through the local interface of VPN users,
+may be sensitive information. If these potential attacks can not be
+mitigated, the implementation may want to institute controls for which
+addresses are revealed to the negotiation and/or probing process. Such
+controls need to be specified as part of the ICE usage.
+</t>
+<t>
 There are several types of attacks possible in an ICE system. This
 section considers these attacks and their countermeasures. These
 countermeasures include:
