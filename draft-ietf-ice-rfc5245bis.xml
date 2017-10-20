@@ -1356,7 +1356,7 @@ attributes (ice-options).
 
 <t>
 If the using protocol is using the ICE mismatch feature, there MUST be a way 
-to convey is this parameter in messages where it can occur. It is a boolean flag.
+to convey this parameter in messages where it can occur. It is a boolean flag.
 </t>
 
 <t>
