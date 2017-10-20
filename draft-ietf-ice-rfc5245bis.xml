@@ -64,8 +64,7 @@
             (ICE). ICE makes use of the Session Traversal Utilities
             for NAT (STUN) protocol and its extension, Traversal Using
             Relay NAT (TURN).</t>
-
-	    <t> This document obsoletes RFC 5245. </t>
+	        <t>This document obsoletes RFC 5245.</t>
         </abstract>
     </front>
 
@@ -122,16 +121,15 @@ target="RFC4091"/> and <xref target="RFC4092"/>.
 
 <section title="Overview of ICE">
 
-<t> In a typical ICE deployment, we have two endpoints (known as ICE
-AGENTS) that want to communicate.  They are able to communicate
-indirectly via some signaling protocol (such as SIP), by which they
-can exchange ICE candidates. Note that ICE is not intended for NAT
-traversal for the signaling protocol, which is assumed to be provided
-via another mechanism. At the beginning of the ICE process, the agents
-are ignorant of their own topologies.  In particular, they might or
-might not be behind a NAT (or multiple tiers of NATs). ICE allows the
-agents to discover enough information about their topologies to
-potentially find one or more paths by which they can communicate.
+<t> In a typical ICE deployment, there are two endpoints (ICE agents) 
+that want to communicate. Note that ICE is not intended for NAT traversal 
+for the signaling protocol, which is assumed to be provided via another mechanism. 
+ICE assumes that the agents are able to communicate via some signaling protocol. 
+At the beginning of the ICE process, the agents are ignorant of their own 
+topologies. In particular, the agents may or may not be behind NATs (or 
+multiple tiers of NATs). ICE allows the agents to discover enough information 
+about their topologies to potentially find one or more paths by which 
+they can communicate.
 </t>
 
 <t>
@@ -142,7 +140,7 @@ their own respective NATs though they may not be aware of it. The type
 of NAT and its properties are also unknown. Agents L and R are capable
 of engaging in an candidate exchange process, whose purpose is to set
 up a media session between L and R. Typically, this exchange will
-occur through a signaling (e.g., SIP) server.
+occur through a signaling server (e.g., SIP proxy).
 </t>
 
 <t>
@@ -177,7 +175,7 @@ align="center"><artwork>
 
 
 <t>The basic idea behind ICE is as follows: each agent has a variety
-of candidate TRANSPORT ADDRESSES (combination of IP address and port
+of candidate transport addresses (combination of IP address and port
 for a particular transport protocol, which is always UDP in this
 specification) it could use to communicate with the other agent. These
 might include:
@@ -200,7 +198,7 @@ practice, however, many combinations will not work. For instance, if L
 and R are both behind NATs, their directly attached interface
 addresses are unlikely to be able to communicate directly (this is why
 ICE is needed, after all!). The purpose of ICE is to discover which
-pairs of addresses will work.  The way that ICE does this is to
+pairs of addresses will work. The way that ICE does this is to
 systematically try all possible pairs (in a carefully sorted order)
 until it finds one or more that work.
 </t>
@@ -208,13 +206,13 @@ until it finds one or more that work.
 <section title="Gathering Candidate Addresses">
 <t>
 In order to execute ICE, an agent has to identify all of its address
-candidates. A CANDIDATE is a transport address -- a combination of IP
+candidates. A candidate is a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
 specified here). This document defines three types of candidates, some
 derived from physical or logical network interfaces, others
-discoverable via STUN and TURN.  Naturally, one viable candidate is a
+discoverable via STUN and TURN. Naturally, one viable candidate is a
 transport address obtained directly from a local interface. Such a
-candidate is called a HOST CANDIDATE. The local interface could be
+candidate is called a host candidate. The local interface could be
 Ethernet or WiFi, or it could be one that is obtained through a tunnel
 mechanism, such as a Virtual Private Network (VPN) or Mobile IP
 (MIP). In all cases, such a network interface appears to the agent as
@@ -223,14 +221,13 @@ allocated.
 </t>
 
 <t> If an agent is multihomed, it obtains a candidate from each IP
-address. Depending on the location of the PEER (the other agent in the
-session) on the IP network relative to the agent, the agent may be
-reachable by the peer through one or more of those IP
-addresses. Consider, for example, an agent that has a local IP address
-on a private net 10 network (I1), and a second connected to the public
-Internet (I2). A candidate from I1 will be directly reachable when
-communicating with a peer on the same private net 10 network, while a
-candidate from I2 will be directly reachable when communicating with a
+address. Depending on the location of the peer agent on the IP network
+relative to the agent, the agent may be reachable by the peer through 
+one or more of those IP addresses. Consider, for example, an agent that 
+has a local IP address on a private net 10 network (I1), and a second 
+connected to the public Internet (I2). A candidate from I1 will be directly 
+reachable when communicating with a peer on the same private net 10 network, 
+while a candidate from I2 will be directly reachable when communicating with a
 peer on the public Internet. Rather than trying to guess which IP
 address will work, the initiating agent sends both the candidates to its
 peer.
@@ -238,8 +235,8 @@ peer.
 
 <t> Next, the agent uses STUN or TURN to obtain additional
 candidates. These come in two flavors: translated addresses on the
-public side of a NAT (SERVER REFLEXIVE CANDIDATES) and addresses on
-TURN servers (RELAYED CANDIDATES). When TURN servers are utilized,
+public side of a NAT (server reflexive candidates) and addresses on
+TURN servers (relayed candidates). When TURN servers are utilized,
 both types of candidates are obtained from the TURN server. If only
 STUN servers are utilized, only server reflexive candidates are
 obtained from them.  The relationship of these candidates to the host
@@ -286,7 +283,7 @@ figure, the notation X:x means IP address X and UDP port x.
 port X:x, the NAT (assuming there is one) will create a binding
 X1':x1', mapping this server reflexive candidate to the host candidate
 X:x. Outgoing packets sent from the host candidate will be translated
-by the NAT to the server reflexive candidate.  Incoming packets sent
+by the NAT to the server reflexive candidate. Incoming packets sent
 to the server reflexive candidate will be translated by the NAT to the
 host candidate and forwarded to the agent. The host candidate
 associated with a given server reflexive candidate is the BASE.
@@ -339,8 +336,8 @@ channel. When R receives the candidates from L, it performs the same
 gathering process and responds with its own list of candidates. At the
 end of this process, each agent has a complete list of both its
 candidates and its peer's candidates. It pairs them up, resulting in
-CANDIDATE PAIRS.  To see which pairs work, each agent schedules a
-series of CHECKS. Each check is a STUN request/response transaction
+candidate pairs. To see which pairs work, each agent schedules a
+series of connectivity checks. Each check is a STUN request/response transaction
 that the client will perform on a particular candidate pair by sending
 a STUN request from the local candidate to the remote candidate.
 </t>
@@ -381,16 +378,15 @@ Because a STUN Binding request is used for the connectivity check, the
 STUN Binding response will contain the agent's translated transport
 address on the public side of any NATs between the agent and its
 peer. If this transport address is different from that of other candidates the
-agent already learned, it represents a new candidate, called a PEER
-REFLEXIVE CANDIDATE, which then gets tested by ICE just the same as
-any other candidate.
+agent already learned, it represents a new candidate (peer reflexive candidate), 
+which then gets tested by ICE just the same as any other candidate.
 </t>
 
 <t>
 As an optimization, as soon as R gets L's check message, R schedules a
 connectivity check message to be sent to L on the same candidate
 pair. This accelerates the process of finding a valid candidate, and
-is called a TRIGGERED CHECK.
+is called a triggered check.
 </t>
 
 <t>
@@ -408,7 +404,7 @@ Because the algorithm above searches all candidate pairs, if a working
 pair exists it will eventually find it no matter what order the
 candidates are tried in. In order to produce faster (and better)
 results, the candidates are sorted in a specified order. The resulting
-list of sorted candidate pairs is called the CHECK LIST. The algorithm
+list of sorted candidate pairs is called the check list. The algorithm
 is described in <xref target="sec-prioritizing"/> but follows two
 general principles:
 <list style="symbols">
@@ -431,7 +427,7 @@ NATs.
 <t>
 The agent works through this check list by sending a STUN request for
 the next candidate pair on the list periodically. These are called
-ORDINARY CHECKS.
+ordinary checks.
 </t>
 
 <t>
@@ -466,7 +462,7 @@ candidates".
 
 <t>
 Each candidate is associated with a property called its
-FOUNDATION. Two candidates have the same foundation when they are
+foundation. Two candidates have the same foundation when they are
 "similar" -- of the same type and obtained from the same host
 candidate and STUN/TURN server using the same protocol. Otherwise,
 their foundation is different. A candidate pair has a foundation too,
@@ -532,7 +528,7 @@ better than one with higher priority.
 
 <t>
 Consequently, ICE assigns one of the agents in the role of the
-CONTROLLING AGENT, and the other of the CONTROLLED AGENT. The
+controlling agent, and the other of the controlled agent. The
 controlling agent nominates a candidate pair from the valid
 candidate pairs to be used for media.
 </t>
@@ -540,8 +536,8 @@ candidate pairs to be used for media.
 <t>
 When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each media stream is
-found and then chooses a candidate pair from the valid candidate pairs
-and sends a STUN request on the pair with a flag set to indicate
+found and then picks a candidate pair from the valid candidate pairs
+and sends a STUN request on the pair, using an attribute to indicate
 to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
@@ -563,9 +559,13 @@ STUN request + flag ->      \  L's
 ]]></artwork></figure>
 
 <t>
-Once the STUN transaction with the flag completes, both sides cancel
-any future checks for that media stream and will send and receive
-media using this pair.
+Once the controlled agent receives the STUN request with the attribute, it
+will check (unless the check has already been done) the same pair.
+If the transactions above succeed, the agents will set the nominated flag
+for the pairs, and will cancel any future checks for that component 
+of the media stream. Once an agent has set the nominated flag for each component
+of a media stream, the pairs become the selected pairs. After that, only the selected
+pairs will be used for sending and receiving media associated with that media stream.
 </t>
 
 <t>
