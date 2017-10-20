@@ -1293,13 +1293,12 @@ responding agents.
 
 </section>
 
-<section anchor="sec-encoding" title="Encoding the Candidate Information">
+<section anchor="sec-encoding" title="ICE usage information exchange">
 
-<t>Agents (initiating and responding) need the following information
-about candidates to be exchanged.  How this information is encoded or
-exchanged is out of scope of this specification.  The using protocol
-should provide a means for exchanging new, additional information in
-the future, including per-candidate information.
+<t>ICE agents (initiating and responding) need the following information
+about candidates to be exchanged. Each ICE usage MUST define how the information
+is exchanged with the using protocol. This section describes the information that
+needs to be exchanged.
 </t>
 
 <t><list style="hanging">
@@ -1314,10 +1313,8 @@ candidate:
     protocol port of the candidate. </t>
 
     <t hangText="Transport:"> The transport protocol of the candidate.
-    This MAY be omitted if the using protocol will only ever run over
-    a single transport protocol. If it runs over more than one, or if
-    others are anticipated to be used in the future, this should be
-    present. </t>
+    This MAY be omitted if the using protocol only runs over
+    a single transport protocol. </t>
 
     <t hangText="Foundation:"> A sequence of up to 32 characters.</t>
 
@@ -1332,25 +1329,24 @@ candidate:
     <t hangText="Related Address and Port:">The related IP address and
     port of the candidate. These MAY be omitted or set to invalid
     values if the agent does not want to reveal them, e.g., for
-    privacy reasons. </t>
+    privacy reasons.</t>
 
     <t hangText="Extensibility Parameters:"> The using protocol should
     define some means for adding new per-candidate ICE parameters in
-    the future. </t>
+    the future.</t>
   </list>
 </t>
 
 <t hangText="Lite or Full: ">Whether the agent is a lite agent or full
-agent. </t>
+agent.</t>
 
 <t hangText="Connectivity check pacing value:">The pacing value for
-connectivity checks that the agent wishes to use.  If the agent wishes
-to use a value other than default, it MUST include this in the exchange. </t>
+connectivity checks that the agent wishes to use. This MAY be omitted if
+the agent wishes to use a defined default value.</t>
 
 <t hangText="Username Fragment and Password:"> Values used to perform
- connectivity checks. The username fragment MUST
-contain at least 24 bits of randomness, and the password MUST contain
-at least 128 bits of randomness. </t>
+connectivity checks. The username fragment MUST contain at least 24 bits 
+of randomness, and the password MUST contain at least 128 bits of randomness.</t>
 
 <t hangText="Extensions:"> New media-stream or session-level 
 attributes (ice-options).
@@ -1359,12 +1355,9 @@ attributes (ice-options).
 </list></t>
 
 <t>
-If the using protocol is using the ICE mismatch feature, a way is
-needed to convey this parameter in answers. It is a boolean flag.
+If the using protocol is using the ICE mismatch feature, there MUST be a way 
+to convey is this parameter in messages where it can occur. It is a boolean flag.
 </t>
-
-<t> The exchange of parameters is symmetric; both agents need to send
-the same set of attributes as defined above.  </t>
 
 <t>
 The using protocol may (or may not) need to deal with backwards
