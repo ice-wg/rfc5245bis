@@ -2521,7 +2521,7 @@ the agent does not pair this candidate with any local candidates.
 
 <t>
 Next, the agent constructs a pair whose local candidate is equal to
-the transport address on which the STUN request was received, and a
+the transport address (as seen by the agent) on which the STUN request was received, and a
 remote candidate equal to the source transport address where the
 request came from (which may be the peer reflexive remote candidate
 that was just learned). The local candidate will either be a host
