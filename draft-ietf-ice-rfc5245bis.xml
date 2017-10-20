@@ -1355,8 +1355,9 @@ attributes (ice-options).
 </list></t>
 
 <t>
-If the using protocol is using the ICE mismatch feature, there MUST be a way 
-to convey this parameter in messages where it can occur. It is a boolean flag.
+If the using protocol is vulnerable to, and able to detect, ICE mismatch
+(<xref target="sec-verify"/>), a way is needed for the detecting agent to 
+convey this information to its peer. It is a boolean flag.
 </t>
 
 <t>
