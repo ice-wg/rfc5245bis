@@ -678,9 +678,9 @@ responding agent, the peer is the initiating agent. </t>
 transport protocol (such as UDP or TCP) port.</t>
 
 <t hangText="Media, Media Stream, Media Session:"> When ICE is used to
-setup communication sessions, the media is usually transported over RTP,
+setup multimedia sessions, the media is usually transported over RTP,
 and a media stream composes of a stream of RTP packets. When ICE is
-used with other than communication sessions, the terms "media", "media
+used with other than multimedia sessions, the terms "media", "media
 stream", and "media session" are still used in this specification to
 refer to the IP data packets that are exchanged between the peers on
 the path created and tested with ICE. </t>
