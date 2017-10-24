@@ -124,21 +124,21 @@ target="RFC4091"/> and <xref target="RFC4092"/>.
 <t> In a typical ICE deployment, there are two endpoints (ICE agents) 
 that want to communicate. Note that ICE is not intended for NAT traversal 
 for the signaling protocol, which is assumed to be provided via another mechanism. 
-ICE assumes that the agents are able to communicate via some signaling protocol. 
-At the beginning of the ICE process, the agents are ignorant of their own 
-topologies. In particular, the agents may or may not be behind NATs (or 
-multiple tiers of NATs). ICE allows the agents to discover enough information 
-about their topologies to potentially find one or more paths by which 
-they can communicate.
+ICE assumes that the agents are able to establish a signaling connection between
+each other.
+</t>
+<r> 
+Initially, the agents are ignorant of their own topologies. In particular, the 
+agents may or may not be behind NATs (or multiple tiers of NATs). ICE allows the 
+agents to discover enough information about their topologies to potentially find 
+one or more paths by which they can establish a media session.
 </t>
 
 <t>
-<xref target="fig-ice-ref-arch"/> shows a typical environment for ICE
-deployment. The two endpoints are labelled L and R (for left and
-right, which helps visualize call flows). Both L and R are behind
-their own respective NATs though they may not be aware of it. The type
-of NAT and its properties are also unknown. Agents L and R are capable
-of engaging in an candidate exchange process, whose purpose is to set
+<xref target="fig-ice-ref-arch"/> shows a typical ICE deployment. The agents are 
+labelled L and R. Both L and R are behind their own respective NATs though they may 
+not be aware of it. The type of NAT and its properties are also unknown. L and R 
+are capable of engaging in an candidate exchange process, whose purpose is to set
 up a media session between L and R. Typically, this exchange will
 occur through a signaling server (e.g., SIP proxy).
 </t>
@@ -203,14 +203,14 @@ systematically try all possible pairs (in a carefully sorted order)
 until it finds one or more that work.
 </t>
 
-<section title="Gathering Candidate Addresses">
+<section title="Gathering Candidates">
 <t>
 In order to execute ICE, an agent has to identify all of its address
-candidates. A candidate is a transport address -- a combination of IP
+candidates. A candidate has a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
-specified here). This document defines three types of candidates, some
+specified here). There are different types of candidates, some
 derived from physical or logical network interfaces, others
-discoverable via STUN and TURN. Naturally, one viable candidate is a
+discoverable via STUN and TURN. Naturally, one viable candidate has a
 transport address obtained directly from a local interface. Such a
 candidate is called a host candidate. The local interface could be
 Ethernet or WiFi, or it could be one that is obtained through a tunnel
@@ -218,19 +218,6 @@ mechanism, such as a Virtual Private Network (VPN) or Mobile IP
 (MIP). In all cases, such a network interface appears to the agent as
 a local interface from which ports (and thus candidates) can be
 allocated.
-</t>
-
-<t> If an agent is multihomed, it obtains a candidate from each IP
-address. Depending on the location of the peer agent on the IP network
-relative to the agent, the agent may be reachable by the peer through 
-one or more of those IP addresses. Consider, for example, an agent that 
-has a local IP address on a private net 10 network (I1), and a second 
-connected to the public Internet (I2). A candidate from I1 will be directly 
-reachable when communicating with a peer on the same private net 10 network, 
-while a candidate from I2 will be directly reachable when communicating with a
-peer on the public Internet. Rather than trying to guess which IP
-address will work, the initiating agent sends both the candidates to its
-peer.
 </t>
 
 <t> Next, the agent uses STUN or TURN to obtain additional
@@ -383,6 +370,20 @@ which then gets tested by ICE just the same as any other candidate.
 </t>
 
 <t>
+Because the algorithm above searches all candidate pairs, if a working
+pair exists it will eventually find it no matter what order the
+candidates are tried in. In order to produce faster (and better)
+results, the candidates are sorted in a specified order. The resulting
+list of sorted candidate pairs is called the check list.
+</t>
+
+<t>
+The agent works through the check list by sending a STUN request for
+the next candidate pair on the list periodically. These are called
+ordinary checks.
+</t>
+
+<t>
 As an optimization, as soon as R gets L's check message, R schedules a
 connectivity check message to be sent to L on the same candidate
 pair. This accelerates the process of finding a valid candidate, and
@@ -394,42 +395,6 @@ At the end of this handshake, both L and R know that they can
 send (and receive) messages end-to-end in both directions.
 </t>
 
-</section>
-
-
-<section title="Sorting Candidates">
-
-<t>
-Because the algorithm above searches all candidate pairs, if a working
-pair exists it will eventually find it no matter what order the
-candidates are tried in. In order to produce faster (and better)
-results, the candidates are sorted in a specified order. The resulting
-list of sorted candidate pairs is called the check list. The algorithm
-is described in <xref target="sec-prioritizing"/> but follows two
-general principles:
-<list style="symbols">
-<t>Each agent gives its candidates a numeric priority, which is sent
-along with the candidate to the peer.</t>
-<t>The local and remote priorities are combined so that each
-agent has the same ordering for the candidate pairs.</t>
-</list>
-</t>
-
-<t>
-The second property is important for getting ICE to work when there
-are NATs in front of L and R. Frequently, NATs will not allow packets
-in from a host until the agent behind the NAT has sent a packet
-towards that host. Consequently, ICE checks in each direction will not
-succeed until both sides have sent a check through their respective
-NATs.
-</t>
-
-<t>
-The agent works through this check list by sending a STUN request for
-the next candidate pair on the list periodically. These are called
-ordinary checks.
-</t>
-
 <t>
 In general, the priority algorithm is designed so that candidates of
 similar type get similar priorities and so that more direct routes
@@ -439,106 +404,28 @@ NATs).  Within those guidelines, however, agents have a fair amount of
 discretion about how to tune their algorithms.
 </t>
 
-</section>
-
-<section title="Frozen Candidates">
-
-<t> The previous description only addresses the case where the agents
-wish to establish a media session with one COMPONENT (a piece of a
-media stream requiring a single transport address; a media stream may
-require multiple components, each of which has to work for the media
-stream as a whole to be work). Sometimes (e.g., with RTP and RTCP in
-separate components), the agents actually need to establish
-connectivity for more than one flow. </t>
-
 <t>
-The network properties are likely to be very similar for each
-component (especially because RTP and RTCP are sent and received
-from the same IP address). It is usually possible to leverage
-information from one media component in order to determine the best
-candidates for another. ICE does this with a mechanism called "frozen
-candidates".
-</t>
-
-<t>
-Each candidate is associated with a property called its
-foundation. Two candidates have the same foundation when they are
-"similar" -- of the same type and obtained from the same host
-candidate and STUN/TURN server using the same protocol. Otherwise,
-their foundation is different. A candidate pair has a foundation too,
-which is just the concatenation of the foundations of its two
-candidates. Initially, only candidate pairs with unique
-foundations are tested and other candidate pairs are marked
-"frozen". When connectivity checks succeed for a candidate pair,
-other candidate pairs with the same foundation are unfrozen. This
-avoids repeated checking of components that are superficially more
-attractive but in fact are likely to fail.
-</t>
-
-<t>
-While we've described "frozen" here as a separate mechanism for
-expository purposes, in fact it is an integral part of ICE and the ICE
-prioritization algorithm automatically ensures that the right
-candidates are unfrozen and checked in the right order. However, if
-the ICE usage does not utilize multiple components or media streams,
-it does not need to implement this algorithm.
+A media stream might consist of multiple components (pieces of a media
+stream that require their own set of candidates, e.g., RTP and RTCP).
 </t>
 
 </section>
 
-<section title="Security for Checks">
 
+<section title="Nominating Candidate Pairs And Concluding ICE">
 <t>
-Because ICE is used to discover which addresses can be used to send
-media between two agents, it is important to ensure that the process
-cannot be hijacked to send media to the wrong location. Each STUN
-connectivity check is covered by a message authentication code (MAC)
-computed using a key exchanged in the signaling channel. This MAC
-provides message integrity and data origin authentication, thus
-stopping an attacker from forging or modifying connectivity check
-messages. Furthermore, if for example a SIP <xref target="RFC3261"/>
-caller is using ICE, and their call forks, the ICE exchanges happen
-independently with each forked recipient. In such a case, the keys
-exchanged in the signaling help associate each ICE exchange with each
-forked recipient.
-
+ICE assigns one of the agents in the role of the
+controlling agent, and the other of the controlled agent. For each
+component of a media stream, the controlling agent nominates a candidate 
+pair from the valid candidate pairs to be used for media. The exact timing
+of the nomination is based on local policy.
 </t>
-
-</section>
-
-<section title="Concluding ICE">
-
-<t>
-ICE checks are performed in a specific sequence, so that high-priority
-candidate pairs are checked first, followed by lower-priority
-ones. One way to conclude ICE is to declare victory as soon as a check
-for each component of each media stream completes
-successfully. Indeed, this is a reasonable algorithm, and details for
-it are provided below. However, it is possible that a packet loss will
-cause a higher-priority check to take longer to complete.  In that
-case, allowing ICE to run a little longer might produce better
-results. More fundamentally, however, the prioritization defined by
-this specification may not yield "optimal" results. As an example, if
-the aim is to select low-latency media paths, usage of a relay is a
-hint that latencies may be higher, but it is nothing more than a
-hint. An actual round-trip time (RTT) measurement could be made, and
-it might demonstrate that a pair with lower priority is actually
-better than one with higher priority.
-</t>
-
-<t>
-Consequently, ICE assigns one of the agents in the role of the
-controlling agent, and the other of the controlled agent. The
-controlling agent nominates a candidate pair from the valid
-candidate pairs to be used for media.
-</t>
-
 <t>
 When nominating, the controlling agent lets the checks continue
-until at least one valid candidate pair for each media stream is
-found and then picks a candidate pair from the valid candidate pairs
-and sends a STUN request on the pair, using an attribute to indicate
-to the controlled peer that it has nominated the pair.
+until at least one valid candidate pair for each component of a 
+media stream is found and then picks a candidate pair from the valid 
+candidate pairs and sends a STUN request on the pair, using an attribute 
+to indicate to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
 
@@ -567,59 +454,44 @@ of the media stream. Once an agent has set the nominated flag for each component
 of a media stream, the pairs become the selected pairs. After that, only the selected
 pairs will be used for sending and receiving media associated with that media stream.
 </t>
+</section>
 
+<section title="ICE Restart">
 <t>
 Once ICE is concluded, it can be restarted at any time for one or all
 of the media streams by either agent. This is done by sending an updated
 candidate information indicating a restart.
 </t>
-
 </section>
 
 <section title="Lite Implementations">
-
 <t>
-In order for ICE to work, both agents need to support it.
-However, certain agents will always be connected to the public
+Certain ICE agents will always be connected to the public
 Internet and have a public IP address at which it can receive packets
 from any correspondent. To make it easier for these devices to support
-ICE, ICE defines a special type of implementation called LITE (in
-contrast to the normal FULL implementation). Lite agents only use 
+ICE, ICE defines a special type of implementation called lite (in
+contrast to the normal full implementation). Lite agents only use 
 host candidates and do not generate connectivity checks or run
 the state machines, though they need to be able to respond to
-connectivity checks. When a lite implementation connects with a full
-implementation, the full agent takes the role of the controlling
-agent, and the lite agent takes on the controlled role. When two lite
-implementations connect, no checks are sent.
+connectivity checks.
 </t>
-
-<t>For guidance on when a
-lite implementation is appropriate, see the discussion in <xref
-target="sec-liteandfull"/>.
-</t>
-
-<t>
-It is important to note that the lite implementation was added to this
-specification to provide a stepping stone to full implementation. Even
-for devices that are always connected to the public Internet, a full
-implementation is preferable if achievable.
-</t>
-
+</section>
 </section>
 
-<section title="Usages of ICE">
+<section title="ICE Usage">
 
 <t>This document specifies generic use of ICE with protocols that
-provide means to exchange candidate information between the ICE peers.
+provide means to exchange candidate information between the ICE agents.
 The specific details of (i.e how to encode candidate information and
-the actual candidate exchange process) for different protocols using
-ICE are described in separate usage documents. One possible way the
-agents can exchange the candidate information is to use <xref
-target="RFC3264"/> based Offer/Answer semantics as part of the SIP
-<xref target="RFC3261"/> protocol <xref
-target="I-D.ietf-mmusic-ice-sip-sdp"/>.
+the actual candidate exchange process) for different protocols
+using ICE (referred to as using protocol) are described in separate 
+usage documents. 
 </t>
-</section>
+<t>
+One mechanism for agents to exchange the candidate information by using
+<xref target="RFC3264"/> based Offer/Answer semantics as part of the SIP
+<xref target="RFC3261"/> protocol <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
+</t>
 </section>
 
 <section title="Terminology">
