@@ -73,12 +73,12 @@
 <section title="Introduction">
 
 <t>Protocols establishing communication sessions between peers typically
-involve exchanging IP addresses and ports for the media sources and
+involve exchanging IP addresses and ports for the data sources and
 sinks. However this poses challenges when operated through Network Address
 Translators (NATs) <xref target="RFC3235"/>. These protocols also seek to
-create a media flow directly between participants, so that there is
+create a data flow directly between participants, so that there is
 no application layer intermediary between them.  This is done to
-reduce media latency, decrease packet loss, and reduce the
+reduce data latency, decrease packet loss, and reduce the
 operational costs of deploying the application.  However, this is
 difficult to accomplish through NATs.  A full treatment of the reasons
 for this is beyond the scope of this specification.  </t>
@@ -101,7 +101,7 @@ complexity and brittleness into the system. What is needed is a single
 solution that is flexible enough to work well in all situations.  </t>
 
 <t> This specification defines Interactive Connectivity Establishment
-(ICE) as a technique for NAT traversal for UDP-based media streams
+(ICE) as a technique for NAT traversal for UDP-based data streams
 (though ICE has been extended to handle other transport protocols,
 such as TCP <xref target="RFC6544"/>). ICE works by exchanging a
 multiplicity of IP addresses and ports which are then tested for
@@ -112,7 +112,7 @@ Session Traversal Utilities for NAT (STUN) specification <xref
 target="RFC5389"/>. ICE also makes use of Traversal Using Relays
 around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
 Because ICE exchanges a multiplicity of IP addresses and ports for
-each media stream, it also allows for address selection for multihomed
+each data stream, it also allows for address selection for multihomed
 and dual-stack hosts, and for this reason it deprecates <xref
 target="RFC4091"/> and <xref target="RFC4092"/>.
 </t>
@@ -127,11 +127,11 @@ for the signaling protocol, which is assumed to be provided via another mechanis
 ICE assumes that the agents are able to establish a signaling connection between
 each other.
 </t>
-<r> 
+<t> 
 Initially, the agents are ignorant of their own topologies. In particular, the 
 agents may or may not be behind NATs (or multiple tiers of NATs). ICE allows the 
 agents to discover enough information about their topologies to potentially find 
-one or more paths by which they can establish a media session.
+one or more paths by which they can establish a data session.
 </t>
 
 <t>
@@ -139,7 +139,7 @@ one or more paths by which they can establish a media session.
 labelled L and R. Both L and R are behind their own respective NATs though they may 
 not be aware of it. The type of NAT and its properties are also unknown. L and R 
 are capable of engaging in an candidate exchange process, whose purpose is to set
-up a media session between L and R. Typically, this exchange will
+up a data session between L and R. Typically, this exchange will
 occur through a signaling server (e.g., SIP proxy).
 </t>
 
@@ -205,7 +205,7 @@ until it finds one or more that work.
 
 <section title="Gathering Candidates">
 <t>
-In order to execute ICE, an agent has to identify all of its address
+In order to execute ICE, an ICE agent has to identify all of its address
 candidates. A candidate has a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
 specified here). There are different types of candidates, some
@@ -321,7 +321,7 @@ Once L has gathered all of its candidates, it orders them in highest
 to lowest-priority and sends them to R over the signaling
 channel. When R receives the candidates from L, it performs the same
 gathering process and responds with its own list of candidates. At the
-end of this process, each agent has a complete list of both its
+end of this process, each ICE agent has a complete list of both its
 candidates and its peer's candidates. It pairs them up, resulting in
 candidate pairs. To see which pairs work, each agent schedules a
 series of connectivity checks. Each check is a STUN request/response transaction
@@ -354,9 +354,9 @@ STUN response ->            /  check
 
 <t>
 It is important to note that the STUN requests are sent to and from
-the exact same IP addresses and ports that will be used for media
+the exact same IP addresses and ports that will be used for data
 (e.g., RTP, RTCP, or other protocols). Consequently, agents
-demultiplex STUN and media using the contents of the packets, rather
+demultiplex STUN and data using the contents of the packets, rather
 than the port on which they are received.
 </t>
 
@@ -398,14 +398,14 @@ send (and receive) messages end-to-end in both directions.
 <t>
 In general, the priority algorithm is designed so that candidates of
 similar type get similar priorities and so that more direct routes
-(that is, through fewer media relays and through fewer NATs) are
-preferred over indirect ones (ones with more media relays and more
+(that is, through fewer data relays and through fewer NATs) are
+preferred over indirect ones (ones with more data relays and more
 NATs).  Within those guidelines, however, agents have a fair amount of
 discretion about how to tune their algorithms.
 </t>
 
 <t>
-A media stream might consist of multiple components (pieces of a media
+A data stream might consist of multiple components (pieces of a data
 stream that require their own set of candidates, e.g., RTP and RTCP).
 </t>
 
@@ -414,16 +414,16 @@ stream that require their own set of candidates, e.g., RTP and RTCP).
 
 <section title="Nominating Candidate Pairs And Concluding ICE">
 <t>
-ICE assigns one of the agents in the role of the
+ICE assigns one of the ICE agents in the role of the
 controlling agent, and the other of the controlled agent. For each
-component of a media stream, the controlling agent nominates a candidate 
-pair from the valid candidate pairs to be used for media. The exact timing
+component of a data stream, the controlling agent nominates a candidate 
+pair from the valid candidate pairs to be used for data. The exact timing
 of the nomination is based on local policy.
 </t>
 <t>
 When nominating, the controlling agent lets the checks continue
 until at least one valid candidate pair for each component of a 
-media stream is found and then picks a candidate pair from the valid 
+data stream is found and then picks a candidate pair from the valid 
 candidate pairs and sends a STUN request on the pair, using an attribute 
 to indicate to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
@@ -450,16 +450,16 @@ Once the controlled agent receives the STUN request with the attribute, it
 will check (unless the check has already been done) the same pair.
 If the transactions above succeed, the agents will set the nominated flag
 for the pairs, and will cancel any future checks for that component 
-of the media stream. Once an agent has set the nominated flag for each component
-of a media stream, the pairs become the selected pairs. After that, only the selected
-pairs will be used for sending and receiving media associated with that media stream.
+of the data stream. Once an agent has set the nominated flag for each component
+of a data stream, the pairs become the selected pairs. After that, only the selected
+pairs will be used for sending and receiving data associated with that data stream.
 </t>
 </section>
 
 <section title="ICE Restart">
 <t>
 Once ICE is concluded, it can be restarted at any time for one or all
-of the media streams by either agent. This is done by sending an updated
+of the data streams by either ICE agent. This is done by sending an updated
 candidate information indicating a restart.
 </t>
 </section>
@@ -519,10 +519,10 @@ candidate gathering, followed by the interactions (candidate exchange,
 connectivity checks, nominations and keep-alives) between the ICE agents
 until all the candidates are released or ICE-restart is triggered.</t>
 
-<t hangText="ICE Agent:">
-An ICE agent is the protocol implementation involved in the
-ICE candidate exchange.  There are two agents involved in a typical
-candidate exchange. </t>
+<t hangText="ICE Agent, Agent:">
+An ICE agent (sometimes simply referred to as an agent) is the protocol 
+implementation involved in the ICE candidate exchange. There are two agents 
+involved in a typical candidate exchange. </t>
 
 <t hangText= "Initiating Peer, Initiating Agent, Initiator:">
 An initiating agent is an ICE agent that initiates the ICE candidate exchange
@@ -541,7 +541,7 @@ protocol that can be used for exchanging the candidate
 information. </t>
 
 <t hangText="Peer:">
-From the perspective of one of the agents in a session, its peer is
+From the perspective of one of the ICE agents in a session, its peer is
 the other agent. Specifically, from the perspective of the initiating
 agent, the peer is the responding agent.  From the perspective of the
 responding agent, the peer is the initiating agent. </t>
@@ -549,40 +549,38 @@ responding agent, the peer is the initiating agent. </t>
 <t hangText="Transport Address:"> The combination of an IP address and
 transport protocol (such as UDP or TCP) port.</t>
 
-<t hangText="Media, Media Stream, Media Session:"> When ICE is used to
-setup multimedia sessions, the media is usually transported over RTP,
-and a media stream composes of a stream of RTP packets. When ICE is
-used with other than multimedia sessions, the terms "media", "media
-stream", and "media session" are still used in this specification to
-refer to the IP data packets that are exchanged between the peers on
-the path created and tested with ICE. </t>
+<t hangText="Data, Data Stream, Data Session:"> When ICE is used to
+setup multimedia sessions, the data is transported using some protocol.
+Media data is usually transported over RTP, and a media data stream 
+composes of a stream of RTP packets. Data session refers to data packets
+that are exchanged between the peer on the path created and tested with ICE.</t>
 
 <t hangText="Candidate, Candidate Information:"> A transport address
-that is a potential point of contact for receipt of media. Candidates
+that is a potential point of contact for receipt of data. Candidates
 also have properties -- their type (server reflexive, relayed, or
 host), priority, foundation, and base.
 </t>
 
-<t hangText="Component:"> A component is a piece of a media stream.
-A media stream may require multiple components, each of which has to
-work in order for the media stream as a while for work. For media streams 
+<t hangText="Component:"> A component is a piece of a data stream.
+A data stream may require multiple components, each of which has to
+work in order for the data stream as a while for work. For media data streams 
 based on RTP, unless RTP and RTCP are multiplexed in the same port, there 
-are two components per media stream -- one for RTP, and one for RTCP.
+are two components per media data stream -- one for RTP, and one for RTCP.
 A component has a candidate pair, which cannot be used by other components</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
-specific port from an IP address on the host.  This includes IP
+specific port from an IP address on the host. This includes IP
 addresses on physical interfaces and logical ones, such as ones
 obtained through Virtual Private Networks (VPNs).
 </t>
 
 <t hangText="Server Reflexive Candidate:"> A candidate whose IP
-address and port are a binding allocated by a NAT for an agent when it
+address and port are a binding allocated by a NAT for an ICE agent when it
 sent a packet through the NAT to a server, such as a STUN server.
 </t>
 
 <t hangText="Peer Reflexive Candidate:"> A candidate whose IP
-address and port are a binding allocated by a NAT for an agent when it
+address and port are a binding allocated by a NAT for an ICE agent when it
 sent a packet through the NAT to its peer.
 </t>
 
@@ -590,7 +588,7 @@ sent a packet through the NAT to its peer.
 server, such as a TURN server.
 </t>
 
-<t hangText="Base:"> The transport address that an agent sends from
+<t hangText="Base:"> The transport address that an ICE agent sends from
 for a particular candidate. For host, server reflexive and peer reflexive
 candidates the base is the same as the host candidate. For relayed
 candidates the base is the same as the relayed candidate (i.e., 
@@ -604,17 +602,17 @@ and STUN or TURN server.  If any of these are different, then the
 foundation will be different.
 </t>
 
-<t hangText="Local Candidate:">A candidate that an agent has obtained
+<t hangText="Local Candidate:">A candidate that an ICE agent has obtained
 and may send to its peer.
 </t>
 
-<t hangText="Remote Candidate:">A candidate that an agent received
+<t hangText="Remote Candidate:">A candidate that an ICE agent received
 from its peer.
 </t>
 
 <t hangText="Default Destination/Candidate:"> The default destination
-for a component of a media stream is the transport address that would
-be used by an agent that is not ICE-aware.  A default candidate for a
+for a component of a data stream is the transport address that would
+be used by an ICE agent that is not ICE-aware. A default candidate for a
 component is one whose transport address matches the default
 destination for that component.
 </t>
@@ -630,11 +628,11 @@ to the remote candidate of a candidate pair.
 </t>
 
 <t hangText="Check List:"> An ordered set of candidate pairs that an
-agent will use to generate checks.
+ICE agent will use to generate checks.
 </t>
 
 <t hangText="Ordinary Check:"> A connectivity check generated by an
-agent as a consequence of a timer that fires periodically, instructing
+ICE agent as a consequence of a timer that fires periodically, instructing
 it to send a check.
 </t>
 
@@ -643,7 +641,7 @@ consequence of the receipt of a connectivity check from the peer.
 </t>
 
 <t hangText="Valid List:"> An ordered set of candidate pairs for a
-media stream that have been validated by a successful STUN
+data stream that have been validated by a successful STUN
 transaction.
 </t>
 
@@ -675,21 +673,21 @@ controlling agent to nominate a candidate pair.
 
 <t hangText="Nomination, Regular Nomination:"> The process of the
 controlling agent indicating to the controlled agent which candidate
-pair the agents should use for sending and receiving media.
+pair the ICE agents should use for sending and receiving data.
 </t>
 
-<t hangText="Nominated:"> Once the nomination of a candidate pair has
-succeeded, the candidate pair has become nominated, and has
-its nominated flag set.
+<t hangText="Nominated, Nominated Flag:"> Once the nomination of a 
+candidate pair has succeeded, the candidate pair has become nominated, 
+and the value of its nominated flag is set to true.
 </t>
 
 <t hangText="Selected Pair, Selected Candidate Pair:"> The candidate
-pair used for sending and receiving media for a component of a media stream is
-referred to as the selected pair. Before selected pairs have been produced for a media stream, 
-any valid candidate pair associated with a component of a media stream
-can be used for sending and receiving media for the component.
-Once there are nominated pairs for each component of a media
-stream, the nominated pairs become the selected pairs for the media stream. 
+pair used for sending and receiving data for a component of a data stream is
+referred to as the selected pair. Before selected pairs have been produced for a data stream, 
+any valid candidate pair associated with a component of a data stream
+can be used for sending and receiving data for the component.
+Once there are nominated pairs for each component of a data
+stream, the nominated pairs become the selected pairs for the data stream. 
 The candidates associated with the selected pairs are referred to as selected candidates.
 </t>
 
@@ -762,10 +760,10 @@ implementations.
 <section anchor="sec-gathering" title="Gathering Candidates">
 
 <t>
-An agent gathers candidates when it believes that communication is
-imminent.  An initiating agent can do this based on a user interface
+An ICE agent gathers candidates when it believes that communication is
+imminent. An initiating agent can do this based on a user interface
 cue, or based on an explicit request to initiate a session.  Every
-candidate has a transport address.  It also has a type and a base.
+candidate has a transport address. It also has a type and a base.
 Four types are defined and gathered by this specification -- host
 candidates, server reflexive candidates, peer reflexive candidates,
 and relayed candidates.  The server reflexive candidates are gathered
@@ -790,15 +788,15 @@ attached to an interface (physical or virtual, including VPN
 interfaces) on the host.
 </t>
 
-<t>For each component of each media stream the agent wishes to use,
+<t>For each component of each data stream the ICE agent wishes to use,
 the agent SHOULD obtain a candidate on each IP address that the host
-has, with the exceptions listed below.  The agent
+has, with the exceptions listed below. The agent
 obtains each candidate by binding to a UDP port on the specific IP
 address. A host candidate (and indeed every candidate) is always
 associated with a specific component for which it is a candidate. </t>
 
 <t> Each component has an ID assigned to it, called the component ID.
-For RTP-based media streams, unless both RTP and RTCP are multiplexed
+For RTP-based media data streams, unless both RTP and RTCP are multiplexed
 in the same UDP port (RTP/RTCP multiplexing), the RTP itself has a
 component ID of 1, and RTCP a component ID of 2. In case of RTP/RTCP
 multiplexing, a component ID of 1 is used for both RTP and RTCP.</t>
@@ -875,11 +873,11 @@ preferred over permanent addresses.</t>
 <section title="Server Reflexive and Relayed Candidates">
 
 <t>
-An agent SHOULD gather server reflexive and relayed candidates.  These
+An ICE agent SHOULD gather server reflexive and relayed candidates.  These
 requirements are at SHOULD strength to allow for provider variation.
 Use of STUN and TURN servers may be unnecessary in certain networks
 and use of TURN servers may be expensive, so some deployments may
-elect not to use them.  If an agent does not gather server reflexive
+elect not to use them. If an agent does not gather server reflexive
 or relayed candidates, it is RECOMMENDED that the functionality be
 implemented and just disabled through configuration, so that it can be
 re-enabled through configuration if conditions change in the future.
@@ -926,7 +924,7 @@ retransmit timer, RTO.
 Allocate response will provide the agent with a server reflexive
 candidate (obtained from the mapped address) and a relayed candidate
 in the XOR-RELAYED-ADDRESS attribute. If the Allocate request is
-rejected because the server lacks resources to fulfill it, the agent
+rejected because the server lacks resources to fulfil it, the agent
 SHOULD instead send a Binding request to obtain a server reflexive
 candidate. A Binding response will provide the agent with only a
 server reflexive candidate (also obtained from the mapped
@@ -953,7 +951,7 @@ candidates are prioritized like IPv4 server reflexive candidates.
 <section anchor="sec-computing-foundations" title="Computing Foundations">
 
 <t>
-The agent assigns each candidate a foundation.  Two candidates MUST
+The ICE agent assigns each candidate a foundation. Two candidates MUST
 have the same foundation when all of the following are true:
 </t>
 
@@ -1009,7 +1007,7 @@ candidates as appropriate when new interfaces appear.
 <section anchor="sec-prioritizing" title="Prioritizing Candidates">
 <t>
 The prioritization process results in the assignment of a priority to
-each candidate. Each candidate for a media stream MUST have a unique
+each candidate. Each candidate for a data stream MUST have a unique
 priority that MUST be a positive integer between 1 and (2**31 - 1).
 This priority will be used by ICE to determine the order of the
 connectivity checks and the relative preference for candidates.
@@ -1061,8 +1059,8 @@ learned from the connectivity checks performed by ICE.
 to 65535 (highest preference) inclusive. When there is only a single IP
 address, this value SHOULD be set to 65535.  If there
 are multiple candidates for a particular component for a particular
-media stream that have the same type, the local preference MUST be
-unique for each one. If an agent is dual-stack, the local preference
+data stream that have the same type, the local preference MUST be
+unique for each one. If an ICE agent is dual-stack, the local preference
 should be set according to the current best practice described in <xref
 target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
@@ -1078,7 +1076,7 @@ target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 candidates, 110 for peer reflexive candidates, 100 for server
 reflexive candidates, and 0 for relayed candidates.</t>
 
-<t>If an agent is multihomed and has multiple IP
+<t>If an ICE agent is multihomed and has multiple IP
 addresses, the recommendations in <xref target=
 "I-D.ietf-ice-dualstack-fairness"/> SHOULD be followed.  If multiple
 TURN servers are used, local priorities for the candidates obtained
@@ -1100,7 +1098,7 @@ security, privacy, and others.</t>
 <section anchor="sec-el-red" title="Eliminating Redundant Candidates">
 
 <t>
-Next, agents (initiating and responding) eliminate redundant
+Next, the ICE agents (initiating and responding) eliminate redundant
 candidates. Two candidates
 can have the same transport address yet have different bases, and
 these would not be considered redundant. Frequently, a server
@@ -1117,11 +1115,11 @@ eliminate the redundant candidate with the lower priority.
 
 <t>
 Lite implementations only utilize host candidates. A lite
-implementation MUST, for each component of each media stream, allocate
+implementation MUST, for each component of each data stream, allocate
 zero or one IPv4 candidates. It MAY allocate zero or more IPv6
 candidates, but no more than one per each IPv6 address utilized by the
 host. Since there can be no more than one IPv4 candidate per component
-of each media stream, if an agent has multiple IPv4 addresses, it MUST
+of each data stream, if an ICE agent has multiple IPv4 addresses, it MUST
 choose one for allocating the candidate. If a host is dual-stack, it
 is RECOMMENDED that it allocate one IPv4 candidate and one global IPv6
 address. With the lite implementation, ICE cannot be used to
@@ -1132,7 +1130,7 @@ the other.
 </t>
 
 <t>Each component has an ID assigned to it, called the component ID.
-For RTP-based media streams, unless RTCP is multiplexed in the same
+For RTP-based media data streams, unless RTCP is multiplexed in the same
 port with RTP, the RTP itself has a component ID of 1, and RTCP a
 component ID of 2. If an agent is using RTCP without multiplexing, it
 MUST obtain candidates for it.  However, absence of a component ID 2
@@ -1144,7 +1142,7 @@ Each candidate is assigned a foundation. The foundation MUST be
 different for two candidates allocated from different IP addresses,
 and MUST be the same otherwise. A simple integer that increments for
 each IP address will suffice. In addition, each candidate MUST be
-assigned a unique priority amongst all candidates for the same media
+assigned a unique priority amongst all candidates for the same data
 stream. This priority SHOULD be equal to:
 </t>
 
@@ -1164,8 +1162,8 @@ value for IP addresses described in RFC 6724 <xref target="RFC6724"/>.
 
 <t>
 Next, an agent chooses a default candidate for each component of each
-media stream. If a host is IPv4-only, there would only be one
-candidate for each component of each media stream, and therefore that
+data stream. If a host is IPv4-only, there would only be one
+candidate for each component of each data stream, and therefore that
 candidate is the default. If a host is IPv6 or dual-stack, the
 selection of default is a matter of local policy. This default SHOULD
 be chosen such that it is the candidate most likely to be used with
@@ -1257,10 +1255,10 @@ address and port) in addition to the ICE parameters.
 
 <t>
 Once an agent has sent its candidate information, it MUST be
-prepared to receive both STUN and media packets on each candidate. As
-discussed in <xref target="sec-send-media"/>, media packets can be
+prepared to receive both STUN and data packets on each candidate. As
+discussed in <xref target="sec-send-media"/>, data packets can be
 sent to a candidate prior to its appearance as the default destination
-for media.
+for data.
 </t>
 
 </section>
@@ -1270,7 +1268,7 @@ for media.
 Certain middleboxes, such as ALGs, can alter signaling
 information in ways that break ICE. This is referred to as ICE mismatch.
 If the using protocol is vulnerable to ICE mismatch, the responding 
-agent needs to be able to detect it and inform the peer agent 
+agent needs to be able to detect it and inform the peer ICE agent 
 about the ICE mismatch. 
 </t>
 <t>
@@ -1286,7 +1284,7 @@ actions need to be taken when ICE mismatch is detected.
 <section anchor="sec-candidate_proc" title="ICE Candidate Processing">
 
 <t>
-Once an agent has gathered its candidates and exchanged candidates with its peer
+Once an ICE agent has gathered its candidates and exchanged candidates with its peer
 (<xref target="sec-gathering_exchange"/>), it will determine its own role. In addition,
 full implementations will form check lists, and begin performing connectivity checks with the peer.
 </t>
@@ -1297,13 +1295,13 @@ full implementations will form check lists, and begin performing connectivity ch
 <section anchor="sec-role" title="Determining Role">
 
 <t>
-For each session, each agent (Initiating and Responding) takes on a
+For each session, each ICE agent (Initiating and Responding) takes on a
 role. There are two roles -- controlling and controlled. The
 controlling agent is responsible for the choice of the final candidate
 pairs used for communications. For a full agent, this means nominating
-the candidate pairs that can be used by ICE for each media stream, and
+the candidate pairs that can be used by ICE for each data stream, and
 for updating the peer with the ICE's selection, when needed. The
-controlled agent is told which candidate pairs to use for each media
+controlled agent is told which candidate pairs to use for each data
 stream, and does not require updating the peer to signal this
 information. The sections below describe in detail the actual
 procedures followed by controlling and controlled nodes.
@@ -1315,7 +1313,7 @@ follows:
 </t>
 
 <t><list style="hanging">
-<t hangText="Both agents are full:"> The Initiating Agent which
+<t hangText="Both agents are full:"> The initiating agent which
 started the ICE processing MUST take the controlling role, and the
 other MUST take the controlled role. Both agents will form check
 lists, run the ICE state machines, and generate connectivity
@@ -1337,11 +1335,11 @@ the selected pairs, and use the logic in <xref target="sec-conc-state"/> to
 end ICE. The lite implementation will just listen for connectivity checks, 
 receive them and respond to them, and then conclude ICE as described in <xref
 target="sec-lite-conclude"/>. For the lite implementation, the state
-of ICE processing for each media stream is considered to be Running,
+of ICE processing for each data stream is considered to be Running,
 and the state of ICE overall is Running.
 </t>
 
-<t hangText="Both lite:"> The Initiating Agent which started the ICE
+<t hangText="Both lite:"> The initiating agent which started the ICE
 processing MUST take the controlling role, and the other MUST take the
 controlled role. In this case, no connectivity checks are ever
 sent. Rather, once the candidates are exchanged, each agent performs
@@ -1350,7 +1348,7 @@ connectivity checks. It is possible that both agents will believe they
 are controlled or controlling. In the latter case, the conflict is
 resolved through glare detection capabilities in the signaling
 protocol enabling the candidate exchange. The state of ICE processing
-for each media stream is considered to be Running, and the state of
+for each data stream is considered to be Running, and the state of
 ICE overall is Running.
 </t>
 </list>
@@ -1384,13 +1382,13 @@ a role conflict.
 </t>
 
 <t>
-NOTE: The ICE agents needs to inform each other whether they are full
+NOTE: The agents needs to inform each other whether they are full
 or lite before the roles are determined. The mechanism for that is
 signalling protocol specific, and outside the scope of the document.
 </t>
 
 <t>
-An ICE agent MUST be prepared that the peer might re-determine the roles
+An agent MUST be prepared that the peer might re-determine the roles
 as part of any ICE restart, even if the criteria for doing so are not
 fulfilled. This can happen if the peer is compliant with an older version
 of this specification.
@@ -1402,8 +1400,8 @@ of this specification.
 <section anchor="sec-forming" title="Forming the Check Lists">
 
 <t>
-There is one check list for each media stream.  To form a check list,
-an agent (initiating and responding) forms candidate pairs, computes
+There is one check list for each data stream. To form a check list,
+an ICE agent (initiating and responding) forms candidate pairs, computes
 pair priorities, orders pairs by priority, prunes pairs, removes
 lower-priority pairs, and sets check list states. If candidates are
 added to a check list (e.g, due to detection of peer reflexive
@@ -1412,7 +1410,7 @@ check list.
 </t>
 <section title="Check List State">
 <t>Each check list has a state, which captures the state of ICE checks
-for the media stream associated with the check list. The states
+for the data stream associated with the check list. The states
 are:</t>
 <t><list style="hanging">
 
@@ -1421,11 +1419,11 @@ Failed yet. Check lists are initially set to the Running state.
 </t>
 
 <t hangText="Completed:">The check list contains a nominated pair
-for each component of the media stream.
+for each component of the data stream.
 </t>
 
 <t hangText="Failed:">The check list does not have a valid candidate
-pair for each component of the media stream and all of the candidate
+pair for each component of the data stream and all of the candidate
 pairs in the check list are in either the Failed or Succeeded state.
 In other words, at least one component of the check list has candidate
 pairs that are all in the Failed state, which means the component has 
@@ -1443,16 +1441,16 @@ frozen state is called "Frozen".
 <section title="Forming Candidate Pairs">
 
 <t>
-The agent pairs each local candidate with each remote candidate for
-the same component of the same media stream with the same IP address
+The ICE agent pairs each local candidate with each remote candidate for
+the same component of the same data stream with the same IP address
 family.  It is possible that some of the local candidates won't get
 paired with remote candidates, and some of the remote candidates won't
 get paired with local candidates. This can happen if one agent doesn't
-include candidates for the all of the components for a media
-stream. If this happens, the number of components for that media
+include candidates for the all of the components for a data
+stream. If this happens, the number of components for that data
 stream is effectively reduced, and considered to be equal to the
 minimum across both agents of the maximum component ID provided by
-each agent across all components for the media stream.
+each agent across all components for the data stream.
 </t>
 
 
@@ -1477,7 +1475,7 @@ paired with other than link-local addresses. </t>
 The candidate pairs whose local and remote candidates are both the
 default candidates for a particular component is called the
 default candidate pair for that component. This is the pair that
-would be used to transmit media if both agents had not
+would be used to transmit data if both agents had not
 been ICE aware.
 </t>
 
@@ -1541,7 +1539,7 @@ pairs, and check lists.
 <section anchor="sec-comp-pair-prio" title="Computing Pair Priority and Ordering Pairs">
 
 <t>
-The agent computes a priority for each candidate pair. Let G be the
+The ICE agent computes a priority for each candidate pair. Let G be the
 priority for the candidate provided by the controlling agent. Let D be
 the priority for the candidate provided by the controlled agent.
 The priority for a pair is computed as follows, where G>D?1:0 
@@ -1569,7 +1567,7 @@ them is arbitrary.
 This sorted list of candidate pairs is used to determine a sequence of
 connectivity checks that will be performed. Each check involves
 sending a request from a local candidate to a remote candidate. Since
-an agent cannot send requests directly from a reflexive candidate
+an ICE agent cannot send requests directly from a reflexive candidate
 (server reflexive or peer reflexive), but only from its base, the
 agent next goes through the sorted list of candidate pairs. For each
 pair where the local candidate is reflexive, the candidate MUST be
@@ -1582,7 +1580,7 @@ candidate pair if it is redundant with a higher priority candidate
 pair in the same check list.  Two candidate pairs are redundant if
 their local candidates have the same base and their remote candidates
 are identical.   The result is a sequence of ordered candidate
-pairs, called the check list for that media stream.
+pairs, called the check list for that data stream.
 </t>
 
 </section>
@@ -1591,7 +1589,7 @@ pairs, called the check list for that media stream.
 
 <t>
 In order to limit the attacks described in <xref
-target="sec-ice-hammer"/>, an agent MUST limit the total number of
+target="sec-ice-hammer"/>, an ICE agent MUST limit the total number of
 connectivity checks the agent performs across all check lists to a
 specific value, and this value MUST be configurable. A default of 100
 is RECOMMENDED. This limit is enforced by discarding the
@@ -1686,7 +1684,7 @@ Pairs move between states as shown in <xref target="fig-state-fsm"/>.
 <t><list style="numbers">
 
 <t>
-The initial states for each pair in a CHECK LIST are computed by
+The initial states for each pair in a check list are computed by
 performing the following sequence of steps:
 </t>
 
@@ -1695,7 +1693,7 @@ by each ICE usage), called the check list set.
 </t>
 
 <t>
-The agent initially places all candidate pairs in the Frozen state.
+The ICE agent initially places all candidate pairs in the Frozen state.
 </t>
 
 <t>The agent sets all of the check lists in the check list set to the Running
@@ -1705,7 +1703,7 @@ state.
 <t>
 For each foundation, the agent sets the state of exactly one candidate
 pair to the Waiting state (unfreezing it).  The candidate pair to
-unfreeze is choosen by finding the first candidate pair (ordered by
+unfreeze is chosen by finding the first candidate pair (ordered by
 lowest component ID and then highest priority if component IDs are
 equal) in the first check list (according to the usage-defined check 
 list set order) that has that foundation.
@@ -1729,7 +1727,7 @@ The table in <xref target="fig-state-initial"/> illustrates an example.
 
 Table legend:
 
-Each row (m1, m2,...) represents a check list associated with a media
+Each row (m1, m2,...) represents a check list associated with a data
 stream. m1 represents the first check list in the check list set.
 
 Each column (f1, f2,...) represents a foundation. Every candidate pair
@@ -1799,7 +1797,7 @@ if all check lists are Failed, and Running otherwise.
 <section anchor="sec-periodic" title="Scheduling Checks">
 <section anchor="sec-periodic-queue" title="Triggered Check Queue">
 <t>
-Once the agent has computed the check lists and created the check list set,
+Once the ICE agent has computed the check lists and created the check list set,
 as described in <xref target="sec-forming"/>, the agent will begin performing
 connectivity checks (ordinary and triggered). For triggered connectivity checks,
 the agent maintains a FIFO queue for each check list, referred to as the 
@@ -1821,7 +1819,7 @@ processed, the first check list is picked again. Etc.
 </t>
 
 <t>
-Whenever Ta fires, the agent will perform a check for a candidate pair within
+Whenever Ta fires, the ICE agent will perform a check for a candidate pair within
 the picked check list by performing the following steps:
 <list style="numbers">
 <t>If the triggered check queue associated with the check list contains
@@ -1892,12 +1890,12 @@ ordinary checks as described above.
 
  <t>
  If the lite implementation is the controlling agent (which will
- only happen if the peer agent is also a lite implementation), it
+ only happen if the peer ICE agent is also a lite implementation), it
  selects a candidate pair based on the ones in the candidate exchange 
  (for IPv4, there is only ever one pair), and then updating the peer 
  with the new candidate information reflecting that selection, when 
  needed (it is never needed for an IPv4-only host). The controlled 
- agent is told which candidate pairs to use for each media stream, and 
+ agent is told which candidate pairs to use for each data stream, and 
  no further candidate updates are needed to signal this information.
  </t>
 
@@ -1934,16 +1932,16 @@ candidate type preference of peer reflexive candidates.
 </section>
 
 <section title="USE-CANDIDATE">
-<t>The controlling ICE agent MUST include the USE-CANDIDATE attribute in
+<t>The controlling agent MUST include the USE-CANDIDATE attribute in
 order to nominate a candidate pair <xref target="sec-choose-favor"/>.
-The controlled ICE agent MUST NOT include the USE-CANDIDATE attribute
+The controlled agent MUST NOT include the USE-CANDIDATE attribute
 in a Binding request.
 </t>
 </section>
 
 <section anchor="sec-tie-client" title="ICE-CONTROLLED and ICE-CONTROLLING">
-<t>The controlling ICE agent MUST include the ICE-CONTROLLING attribute in a Binding
-request. The controlled ICE agent MUST include the ICE-CONTROLLED attribute in
+<t>The controlling agent MUST include the ICE-CONTROLLING attribute in a Binding
+request. The controlled agent MUST include the ICE-CONTROLLED attribute in
 a Binding request.
 </t>
 <t>The content of either attribute are used as tie-breaker values
@@ -1957,10 +1955,10 @@ when an ICE role conflict occurs <xref target="sec-role-conflict"/>.
 <section anchor="sec-permissions" title="Creating Permissions for Relayed Candidates">
 <t>If the connectivity check is being sent using a relayed local
 candidate, the client MUST create a permission first if it has not
-already created one previously.  It would have created one previously
+already created one previously. It would have created one previously
 if it had told the TURN server to create a permission for the given
 relayed candidate towards the IP address of the remote candidate.  To
-create the permission, the agent follows the procedures defined in
+create the permission, the ICE agent follows the procedures defined in
 <xref target="RFC5766"/>.  The permission MUST be created towards the
 IP address of the remote candidate.  It is RECOMMENDED that the agent
 defer creation of a TURN channel until ICE completes, in which case
@@ -1976,7 +1974,7 @@ short-term credential mechanism.
 </t>
 <t>The username for the credential is formed by concatenating the
 username fragment provided by the peer with the username fragment
-of the agent sending the request, separated by a colon (":").
+of the ICE agent sending the request, separated by a colon (":").
 </t>
 <t>The password is equal to the password provided by
 the peer.
@@ -1996,10 +1994,10 @@ response).
 
 <section title="DiffServ Treatment">
 <t>If an ICE agent is using Diffserv Codepoint markings <xref
-target="RFC2475"/> in its media packets, the agent SHOULD apply
+target="RFC2475"/> in its data packets, the agent SHOULD apply
 those same markings to its connectivity checks.
 </t>
-<t>If multiple DSCP markings are used on the media packets, the
+<t>If multiple DSCP markings are used on the data packets, the
 agent SHOULD choose one of them for use with the connectivity check.
 </t>
 </section>
@@ -2030,23 +2028,23 @@ a role conflict, a failure, or a success, according to the procedures below.
     <t>If the Binding request generates a 487 (Role Conflict) error
     response, and if the ICE agent included an ICE-CONTROLLED attribute
     in the request, the agent MUST switch to the controlling role. If
-    the ICE agent included an ICE-CONTROLLING attribute in the request,
+    the agent included an ICE-CONTROLLING attribute in the request,
     the agent MUST switch to the controlled role.
     </t>
-    <t>Once the ICE agent has switched its role, the agent MUST add the
+    <t>Once the agent has switched its role, the agent MUST add the
     candidate pair whose check generated the 487 error response to the
     triggered check queue associated with the check list to which the
     pair belongs, and set the candidate pair state to Waiting. When the
     triggered connectivity check is later performed, the
     ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
-    indicate the agent's new role. The ICE agent MAY change
+    indicate the agent's new role. The agent MAY change
     the tie-breaker value.
     </t>
-    <t>NOTE: A role switch requires an ICE agent to recompute pair priorities
+    <t>NOTE: A role switch requires an agent to recompute pair priorities
     (<xref target="sec-comp-pair-prio"/>), since the priority values
     depend on the role.
     </t>
-    <t>NOTE: A role switch will also impact whether the ICE agent is responsible
+    <t>NOTE: A role switch will also impact whether the agent is responsible
     for nominating candidate pairs, and whether the agent is responsible
     for initiating the exchange of the updated candidate information with
     the peer once ICE is concluded.
@@ -2066,7 +2064,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     and port of the response MUST be equal the destination IP address and port to which the
     Binding request was sent, and that the destination IP address and port of the response
     MUST be equal to the source IP address and port from which the Binding request was sent.
-    If the addresses are not symmetric, the ICE agent MUST set the candidate pair state
+    If the addresses are not symmetric, the agent MUST set the candidate pair state
     to Failed.
     </t>
     </section>
@@ -2121,8 +2119,8 @@ the Binding request.</t>
 <t>The foundation is described in <xref target="sec-computing-foundations"/>.</t>
 </list></t>
 <t>The peer reflexive candidate is then added to the list of local
-candidates for the media stream. The username fragment and password
-are the same as for all other local candidates for that media stream.
+candidates for the data stream. The username fragment and password
+are the same as for all other local candidates for that data stream.
 </t>
 <t>The ICE agent does not need to pair the peer reflexive
 candidate with remote candidates, as a valid candidate pair will be
@@ -2136,7 +2134,7 @@ the peer reflexive candidate to be paired with all other remote candidates.
 </section>
 
 <section anchor="sec-valid-cons" title="Constructing a Valid Pair">
-<t>The agent constructs a candidate pair whose local candidate equals the
+<t>The ICE agent constructs a candidate pair whose local candidate equals the
 mapped address of the response, and whose remote candidate equals the
 destination address to which the request was sent. This is called a
 valid pair.
@@ -2146,11 +2144,11 @@ it may equal a different pair in a check list (sometimes in a different check li
 than the one to which the pair that generated the connectivity checks),
 or it may be a pair not currently in any check list.
 </t>
-<t>The ICE agent maintains a separate list, referred to as the valid list. There is
+<t>The agent maintains a separate list, referred to as the valid list. There is
 a valid list for each check list in the check list set. The valid list will contain 
 valid pairs. Initially each valid list is empty.
 </t>
-<t>Each valid pair within the valid list has a flag, called the Nominated Flag.
+<t>Each valid pair within the valid list has a flag, called the nominated flag.
 When a valid pair is added to a valid list, the flag value is set to 'false'.
 </t>
 <t>The valid pair will be added to a valid list as follows:
@@ -2190,7 +2188,7 @@ match any of the pairs in the check list.
 
 
 <section title="Updating Candidate Pair States">
-<t>The agent sets the states of both the candidate pair that generated
+<t>The ICE agent sets the states of both the candidate pair that generated
 the check and the constructed valid pair (which may be different) to
 Succeeded.
 </t>
@@ -2204,8 +2202,8 @@ typically have different component ID values.
 
 <section title="Updating the Nominated Flag">
 <t>If the controlling agent sends a Binding request with the USE-CANDIDATE
-attribute set, and if the agent receives a successful response to the request, 
-the agent sets the Nominated Flag of the pair to true. If the request fails
+attribute set, and if the ICE agent receives a successful response to the request, 
+the agent sets the nominated flag of the pair to true. If the request fails
 <xref target="sec-client-failure"/>, the agent MUST remove the candidate pair 
 from the valid list, set the candidate pair state to Failed and set the check list 
 state to Failed.
@@ -2213,11 +2211,11 @@ state to Failed.
 <t>If the controlled agent receives a successful response to a Binding request
 sent by the agent, and that Binding request was triggered by a received Binding
 request with the USE-CANDIDATE attribute set <xref target="sec-triggered"/>, the
-agent sets the Nominated Flag of the pair to true. If the triggered request
+agent sets the nominated flag of the pair to true. If the triggered request
 fails, the agent MUST remove the candidate pair from the valid list, set the 
 candidate pair state to Failed and set the check list state to Failed.
 </t>
-<t>Once the Nominated Flag is set for a component of a media stream, it concludes
+<t>Once the nominated flag is set for a component of a data stream, it concludes
 the ICE processing for that component. See <xref target="sec-conclude"/>.
 </t>
 </section>
@@ -2232,7 +2230,7 @@ Regardless of whether a connectivity check was successful or failed, the
 completion of the check may require updating of check list states.
 For each check list in the check list set, if all of the candidate pairs
 are in either Failed or Succeeded state, and if there is not a valid pair in
-the valid list for each component of the media stream associated with the
+the valid list for each component of the data stream associated with the
 check list, the state of the check list is set to Failed. If there is a
 valid pair for each component in the valid list, the state of the check
 list is set to Succeeded.
@@ -2246,7 +2244,7 @@ list is set to Succeeded.
 <section anchor="sec-serverproc" title="STUN Server Procedures">
 
 <t>
-An agent (lite or full) MUST be prepared to receive Binding requests
+An ICE agent (lite or full) MUST be prepared to receive Binding requests
 on the base of each candidate it included in its most recent candidate
 exchange.
 </t>
@@ -2281,9 +2279,9 @@ utilize the FINGERPRINT mechanism.
 
 <t>
 If the agent is using Diffserv Codepoint markings <xref
-target="RFC2475"/> in its media packets, it SHOULD apply the same
+target="RFC2475"/> in its data packets, it SHOULD apply the same
 markings to Binding responses. The same would apply to any layer 2
-markings the endpoint might be applying to media packets.
+markings the endpoint might be applying to data packets.
 </t>
 
 <section anchor="sec-add-server-full" title="Additional Procedures for Full Implementations">
@@ -2296,7 +2294,7 @@ request.
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
 In certain usages of ICE (such as third party call control), both
-agents may end up choosing the same role, resulting in a role
+ICE agents may end up choosing the same role, resulting in a role
 conflict.  The section describes a mechanism for detecting and
 repairing role conflicts.  The usage document MUST specify whether
 this mechanism is needed.
@@ -2413,7 +2411,7 @@ the local candidate to which the request was sent.
 </t>
 
 <t>This candidate is added to the list of remote candidates. However,
-the agent does not pair this candidate with any local candidates.
+the ICE agent does not pair this candidate with any local candidates.
 </t>
 
 </section>
@@ -2500,7 +2498,7 @@ fragment. The corresponding password is then picked.
 <section anchor="sec-up-fav" title="Updating the Nominated Flag">
 
 <t>If the controlled agent receives a Binding request with the USE-CANDIDATE
-attribute set, and if the agent accepts the request, the following action
+attribute set, and if the ICE agent accepts the request, the following action
 is based on the state of the pair computed in <xref target="sec-triggered"/>:
 <list style="symbols">
 <t>If the state of this pair is Succeeded, it means that the check
@@ -2522,7 +2520,7 @@ state to Failed.
 controlling agent, the controlled agent MUST reject the nomination request with 
 an appropriate error code response (e.g., 400) <xref target="RFC5389"/>.
 </t>
-<t>Once the Nominated Flag is set for a component of a media stream, it concludes
+<t>Once the nominated flag is set for a component of a data stream, it concludes
 the ICE processing for that component. See <xref target="sec-conclude"/>.
 </t>
 </section>
@@ -2533,7 +2531,7 @@ the ICE processing for that component. See <xref target="sec-conclude"/>.
 <section title="Additional Procedures for Lite Implementations">
 
 <t>If the controlled agent receives a Binding request with the USE-CANDIDATE
-attribute set, and if the agent accepts the request, the agent 
+attribute set, and if the ICE agent accepts the request, the agent 
 constructs a candidate pair whose local candidate is equal to the 
 transport address on which the request was received, and whose remote 
 candidate is equal to the source transport address of the request that 
@@ -2541,7 +2539,7 @@ was received. This candidate pair is assigned an arbitrary priority, and
 placed into the valid list of the associated check list. The agent 
 sets the nominated flag for that pair to true. 
 </t>
-<t>Once the Nominated Flag is set for a component of a media stream, it concludes
+<t>Once the nominated flag is set for a component of a data stream, it concludes
 the ICE processing for that component. See <xref target="sec-conclude"/>.
 </t>
 </section>
@@ -2556,7 +2554,7 @@ the ICE processing for that component. See <xref target="sec-conclude"/>.
 
 <section anchor="sec-conclude" title="Concluding ICE Processing">
 
-<t>This section describes how an agent completes ICE.
+<t>This section describes how an ICE agent completes ICE.
 </t>
 
 <section anchor="sec-conclude-full" title="Procedures for Full Implementations">
@@ -2579,12 +2577,12 @@ the pair that generated the check into the triggered check queue), this time wit
 the USE-CANDIDATE attribute <xref target="sec-up-fav"/>.
 </t>
 <t>Eventually, if the nominations succeed, both the controlling and controlled agents
-will have a single nominated pair in the valid list for each component of the media stream. 
-Once an agent sets the state of the check list is set to Completed (when there is a nominated pair 
-for each component of the media stream), that pair becomes the selected pair for that agent, and 
-is used for sending and receiving media for that component of the media stream.
+will have a single nominated pair in the valid list for each component of the data stream. 
+Once an ICE agent sets the state of the check list is set to Completed (when there is a nominated pair 
+for each component of the data stream), that pair becomes the selected pair for that agent, and 
+is used for sending and receiving data for that component of the data stream.
 </t>
-<t>If an agent is not able to produce selected pairs for a media stream, the agent MUST take proper
+<t>If an agent is not able to produce selected pairs for a data stream, the agent MUST take proper
 actions for informing the other agent, and e.g., removing the stream. The exact actions are outside
 the scope of this specification.
 </t>
@@ -2617,18 +2615,18 @@ more than one of the following cases can apply:
 
 <t><list style="symbols">
 
-<t>If there are no nominated pairs in the valid list for a media
+<t>If there are no nominated pairs in the valid list for a data
 stream and the state of the check list is Running, ICE processing
 continues.
 </t>
 
 
 <t>If there is at least one nominated pair in the valid list for a
-media stream and the state of the check list is Running:
+data stream and the state of the check list is Running:
 <list style="symbols">
-<t>The agent MUST remove all Waiting and Frozen pairs in the CHECK
+<t>The ICE agent MUST remove all Waiting and Frozen pairs in the CHECK
 LIST and triggered check queue for the same component as the nominated
-pairs for that media stream.
+pairs for that data stream.
 </t>
 <t>If an In-Progress pair in the check list is for the same component
 as a nominated pair, the agent SHOULD cease retransmissions for its
@@ -2639,18 +2637,18 @@ pair for that component.
 </t>
 
 <t>Once there is at least one nominated pair in the valid list for
-every component of at least one media stream and the state of the
+every component of at least one data stream and the state of the
 check list is Running:
 <list style="symbols">
 <t>The agent MUST change the state of processing for its check list
-for that media stream to Completed. </t>
+for that data stream to Completed. </t>
 <t>The agent MUST continue to respond to any checks it may still
-receive for that media stream, and MUST perform triggered checks if
+receive for that data stream, and MUST perform triggered checks if
 required by the processing of <xref target="sec-serverproc"/>.
 </t>
 <t>The agent MUST continue retransmitting any In-Progress checks for
 that check list.</t>
-<t>The agent MAY begin transmitting media for this media stream as
+<t>The agent MAY begin transmitting data for this data stream as
 described in <xref target="sec-send-media"/>.
 </t>
 </list>
@@ -2663,17 +2661,17 @@ described in <xref target="sec-send-media"/>.
 </t>
 
 <t>If the state of the check list is Failed, ICE has not been
-able to complete for this media stream. The correct behavior depends
-on the state of the check lists for other media streams:
+able to complete for this data stream. The correct behavior depends
+on the state of the check lists for other data streams:
 <list style="symbols">
 <t>If all check lists are Failed, ICE processing overall is considered
 to be in the Failed state, and the agent SHOULD consider the session a
 failure, SHOULD NOT restart ICE, and the controlling agent SHOULD
 terminate the entire session. </t>
-<t>If at least one of the check lists for other media streams is
-Completed, the controlling agent SHOULD remove the failed media stream
+<t>If at least one of the check lists for other data streams is
+Completed, the controlling agent SHOULD remove the failed data stream
 from the session while sending updated candidate list to its peer.</t>
-<t> If none of the check lists for other media streams are
+<t> If none of the check lists for other data streams are
 Completed, but at least one is Running, the agent SHOULD let ICE
 continue.</t>
 </list>
@@ -2688,31 +2686,31 @@ continue.</t>
 <section anchor="sec-lite-conclude" title="Procedures for Lite Implementations">
 
 <t>
-When ICE concludes, a lite agent can free host candidates that were
+When ICE concludes, a lite ICE agent can free host candidates that were
 not used by ICE, as described in <xref target="sec-freeing"/>.
 </t>
 
 <t>
 If the peer is a full agent, once the lite agent accepts a nomination request
 for a candidate pair, the lite agent considers the pair nominated. Once there
-are nominated pairs for each component of a media stream, the pairs become
-the selected pairs for the components of the media stream. Once the lite agent 
-has produced selected pairs for all components of all media streams, the ICE session
+are nominated pairs for each component of a data stream, the pairs become
+the selected pairs for the components of the data stream. Once the lite agent 
+has produced selected pairs for all components of all data streams, the ICE session
 state is set to Completed.
 </t>
 
 <t>
 If the peer is a lite agent, the agent pairs local candidates with
-remote candidates that are for the same media stream and have the same
+remote candidates that are for the same data stream and have the same
 component, transport protocol, and IP address family.  For each
-component of each media stream, if there is only one candidate pair,
+component of each data stream, if there is only one candidate pair,
 that pair is added to the valid list.  If there is more than one pair,
 it is RECOMMENDED that an agent follow the procedures of RFC 6724
 <xref target="RFC6724"/> to select a pair and add it to the valid
 list.
 </t>
 
-<t>If all of the components for all media streams had one pair, the
+<t>If all of the components for all data streams had one pair, the
 state of ICE processing is Completed.  Otherwise, the controlling
 agent MUST send an updated candidate list to reconcile different
 agents selecting different candidate pairs. ICE processing is
@@ -2729,8 +2727,8 @@ complete.
 
 <t>
 The procedures in <xref target="sec-conclude"/> require that an
-agent continue to listen for STUN requests and continue to generate
-triggered checks for a media stream, even once processing for that
+ICE agent continue to listen for STUN requests and continue to generate
+triggered checks for a data stream, even once processing for that
 stream completes. The rules in this section describe when it is safe
 for an agent to cease sending or receiving checks on a candidate that
 did not become a selected candidate (is not associated with a selected pair), 
@@ -2775,11 +2773,11 @@ using those candidates.
 
 <section anchor="sec-restart" title="ICE Restarts">
 <t>
-An agent MAY restart ICE for existing media streams.  An ICE restart
-causes all previous state of the media streams, excluding the roles of
+An ICE agent MAY restart ICE for existing data streams. An ICE restart
+causes all previous state of the data streams, excluding the roles of
 the agents to be flushed.  The only difference between an ICE restart
-and a brand new media session is that during the restart, media can
-continue to be sent using existing media sessions, and that a new media
+and a brand new data session is that during the restart, data can
+continue to be sent using existing data sessions, and that a new data
 session always requires the roles to be determined.
 </t>
 
@@ -2790,7 +2788,7 @@ The following actions can be accomplished only using an ICE restart
 
 <t>
 <list style="symbols">
-<t>Change the destinations of media streams.</t>
+<t>Change the destinations of data streams.</t>
 <t>Change from a lite implementation to a full implementation.</t>
 <t>Change from a full implementation to a lite implementation.</t>
 </list>
@@ -2798,13 +2796,13 @@ The following actions can be accomplished only using an ICE restart
 
 <t>
 To restart ICE, an agent MUST change both the password and the
-username fragment for the media stream(s) being restarted.  The new
+username fragment for the data stream(s) being restarted.  The new
 candidate set MAY include some, none, or all of the previous
 candidates.
 </t>
 
 <t>
-As described in <xref target="sec-role"/>, ICE agents MUST NOT
+As described in <xref target="sec-role"/>, agents MUST NOT
 re-determine the roles as part as an ICE restart, unless certain
 criteria that require the roles to be re-determined are fulfilled.
 </t>
@@ -2819,11 +2817,11 @@ criteria that require the roles to be re-determined are fulfilled.
 This section defines a new ICE option, 'ice2'. The ICE option
 indicates that the ICE agent that includes it in a candidate exchange
 is compliant to this specification. For example, the
-ICE agent will not use the aggressive nomination procedure
+agent will not use the aggressive nomination procedure
 defined in <xref target="RFC5245"/>.
 </t>
 <t>
-An ICE agent compliant to this specification MUST inform the peer
+An agent compliant to this specification MUST inform the peer
 about the compliance using the 'ice2' option.
 </t>
 <t>
@@ -2839,29 +2837,29 @@ is defined in <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
 <section anchor="sec-keepalives" title="Keepalives">
 
 <t>
-All endpoints MUST send keepalives for each media session. These
+All endpoints MUST send keepalives for each data session. These
 keepalives serve the purpose of keeping NAT bindings alive for the
-media session. The keepalives SHOULD be sent using a
+data session. The keepalives SHOULD be sent using a
 format that is supported by its peer. ICE endpoints allow for
 STUN-based keepalives for UDP streams, and as such, STUN keepalives
-MUST be used when an agent is a full ICE implementation and is
+MUST be used when an ICE agent is a full ICE implementation and is
 communicating with a peer that supports ICE (lite or full).
 </t>
 <t>
-For each candidate pair that an agent is using to send media, if no
+For each candidate pair that an agent is using to send data, if no
 packet has been sent on that pair in the last Tr seconds, an agent
 MUST send a keepalive on that pair. Agents SHOULD use a Tr value of 
 15 seconds. Agents MAY use a bigger value, but MUST NOT use a value 
 smaller than 15 seconds.
 </t>
 <t>
-Once selected pairs have been produced for a media stream, keepalives 
+Once selected pairs have been produced for a data stream, keepalives 
 are only sent on those pairs.
 </t>
 <t>
-An agent MUST stop sending keepalives on a media stream if the media stream is
+An agent MUST stop sending keepalives on a data stream if the data stream is
 removed. If the ICE session is terminated, an agent MUST stop sending
-keepalives on all media streams.
+keepalives on all data streams.
 </t>
 <t>
 An agent MAY use another value for Tr, e.g. based on
@@ -2878,36 +2876,36 @@ authentication mechanism. It SHOULD contain the FINGERPRINT attribute
 to aid in demultiplexing, but SHOULD NOT contain any other
 attributes. It is used solely to keep the NAT bindings alive.  The
 Binding Indication is sent using the same local and remote candidates
-that are being used for media. Though Binding Indications are used for
+that are being used for data. Though Binding Indications are used for
 keepalives, an agent MUST be prepared to receive a connectivity check
 as well. If a connectivity check is received, a response is generated
 as discussed in <xref target="RFC5389"/>, but there is no impact on
 ICE processing otherwise.
 </t>
 <t>
-ICE agents MUST by default use STUN keepalives. Individual ICE usages and
+Agents MUST by default use STUN keepalives. Individual ICE usages and
 ICE extensions MAY specify usage/extension-specific keepalives.
 </t>
 
 </section>
 
-<section title="Media Handling">
+<section title="Data Handling">
 
-<section anchor="sec-send-media" title="Sending Media">
+<section anchor="sec-send-media" title="Sending Data">
 
 <t>
-An agent MAY send media on any valid candidate pair before 
-selected pairs have been produced for the media stream.
+An ICE agent MAY send data on any valid candidate pair before 
+selected pairs have been produced for the data stream.
 </t>
 
 <t>
-Once selected pairs have been produced for a media stream, an 
-agent MUST send media on those pairs.
+Once selected pairs have been produced for a data stream, an 
+agent MUST send data on those pairs.
 </t>
 
 <t>
-An agent sends media from the base of the local candidate to the
-remote candidate. In the case of a local relayed candidate, media
+An agent sends data from the base of the local candidate to the
+remote candidate. In the case of a local relayed candidate, data
 is forwarded through the base (located in the TURN server), 
 using the procedures defined in <xref target="RFC5766"/>.
 </t>
@@ -2921,17 +2919,17 @@ defined in Section 11 of <xref target="RFC5766"/>.
 
 
 <t>
-The selected pair for a component of a media stream is:
+The selected pair for a component of a data stream is:
 <list style="symbols">
 <t>
-empty if the state of the check list for that media stream is Running,
+empty if the state of the check list for that data stream is Running,
 and there is no previous selected pair for that component due to an
 ICE restart
 </t>
 
 <t>
-equal to the previous selected pair for a component of a media stream
-if the state of the check list for that media stream is Running, and
+equal to the previous selected pair for a component of a data stream
+if the state of the check list for that data stream is Running, and
 there was a previous selected pair for that component due to an ICE
 restart
 </t>
@@ -2940,8 +2938,8 @@ restart
 
 <t>
 Unless an agent is able to produce a selected pair for each component
-associated with a media stream, the agent MUST NOT continue
-sending media for any component associated with that media stream.
+associated with a data stream, the agent MUST NOT continue
+sending data for any component associated with that data stream.
 </t>
 
 </section>
@@ -2949,14 +2947,14 @@ sending media for any component associated with that media stream.
 <section title="Procedures for Lite Implementations">
 
 <t>
-A lite implementation MUST NOT send media until it has a valid list
-that contains a candidate pair for each component of that media
-stream. Once that happens, the agent MAY begin sending media
-packets. To do that, it sends media to the remote candidate in the
+A lite implementation MUST NOT send data until it has a valid list
+that contains a candidate pair for each component of that data
+stream. Once that happens, the ICE agent MAY begin sending data
+packets. To do that, it sends data to the remote candidate in the
 pair (setting the destination address and port of the packet equal to
 that remote candidate), and will send it from the base associated with the
-candidate pair used for sending media. In case of a relayed
-candidate, media is sent from the agent and forwarded through
+candidate pair used for sending data. In case of a relayed
+candidate, data is sent from the agent and forwarded through
 the base (located in the TURN server), using the procedures defined
 in <xref target="RFC5766"/>.
 </t>
@@ -2969,34 +2967,34 @@ in <xref target="RFC5766"/>.
 RTP stream can begin using one candidate, and switch to another one,
 though this happens rarely with ICE. The newer candidate may result in
 RTP packets taking a different path through the network -- one with
-different delay characteristics. As discussed below, agents are
+different delay characteristics. As discussed below, ICE agents are
 encouraged to re-adjust jitter buffers when there are changes in
-source or destination address of media packets. Furthermore, many
+source or destination address of data packets. Furthermore, many
 audio codecs use the marker bit to signal the beginning of a
 talkspurt, for the purposes of jitter buffer adaptation. For such
 codecs, it is RECOMMENDED that the sender set the marker bit <xref
-target="RFC3550"/> when an agent switches transmission of media from
+target="RFC3550"/> when an agent switches transmission of data from
 one candidate pair to another.  </t>
 
 </section>
 
 </section>
 
-<section anchor="sec-recv-media" title="Receiving Media">
+<section anchor="sec-recv-media" title="Receiving Data">
 
 <t>
-Even though ICE agents are only allowed to send media using valid
+Even though ICE agents are only allowed to send data using valid
 candidate pairs (and, once selected pairs have been produced, only
 on the selected pairs) ICE implementations SHOULD by default be prepared
-to receive media on any of the candidates provided in the most recent
-candidate exchange with the peer. Specific ICE usages MAY define rules
-that differs from this, e.g., by defining that media must not be sent
-until selected pairs have been produced for a media stream.
+to receive data on any of the candidates provided in the most recent
+candidate exchange with the peer. ICE usages MAY define rules
+that differs from this, e.g., by defining that data must not be sent
+until selected pairs have been produced for a data stream.
 </t>
 
 <t>It is
 RECOMMENDED that, when an agent receives an RTP packet with a new
-source or destination IP address for a particular media stream, that
+source or destination IP address for a particular media data stream, that
 the agent re-adjust its jitter buffers.
 </t>
 
@@ -3005,11 +3003,11 @@ RFC 3550 <xref target="RFC3550"/> describes an algorithm in Section
 8.2 for detecting synchronization source (SSRC) collisions and
 loops. These algorithms are based, in part, on seeing different source
 transport addresses with the same SSRC. However, when ICE is used,
-such changes will sometimes occur as the media streams switch between
-candidates. An agent will be able to determine that a media stream is
+such changes will sometimes occur as the media data streams switch between
+candidates. An agent will be able to determine that a media data stream is
 from the same peer as a consequence of the STUN exchange that proceeds
-media transmission. Thus, if there is a change in source transport
-address, but the media packets come from the same peer agent, this
+media data transmission. Thus, if there is a change in source transport
+address, but the media data packets come from the same peer agent, this
 MUST NOT be treated as an SSRC collision.
 </t>
 
@@ -3019,9 +3017,9 @@ MUST NOT be treated as an SSRC collision.
 <section anchor="sec-futureproof" title="Extensibility Considerations">
 
 <t>
-This specification makes very specific choices about how both agents
+This specification makes very specific choices about how both ICE agents
 in a session coordinate to arrive at the set of candidate pairs that
-are selected for media. It is anticipated that future specifications
+are selected for data. It is anticipated that future specifications
 will want to alter these algorithms, whether they are simple changes
 like timer tweaks or larger changes like a revamp of the priority
 algorithm. When such a change is made, providing interoperability
@@ -3057,8 +3055,8 @@ triggered checks.
 </t>
 
 <t>
-ICE is also extensible to other media streams beyond RTP, and for
-transport protocols beyond UDP. Extensions to ICE for non-RTP media
+ICE is also extensible to other data streams beyond RTP, and for
+transport protocols beyond UDP. Extensions to ICE for non-RTP data
 streams need to specify how many components they utilize, and assign
 component IDs to them, starting at 1 for the most important component
 ID. Specifications for new transport protocols must define how, if at
@@ -3074,7 +3072,7 @@ all, various steps in the ICE processing differ from UDP.
 <t>
 During the ICE gathering phase (<xref target="sec-gathering"/>) and
 while ICE is performing connectivity checks (<xref target="sec-connectivity_check"/>),
-an agent triggers STUN and TURN transactions. These transactions are paced at
+an ICE agent triggers STUN and TURN transactions. These transactions are paced at
 a rate indicated by Ta, and the retransmission interval for each transaction
 is calculated based on the the retransmission timer for the STUN transactions
 (RTO) <xref target="RFC5389"/>.
@@ -3088,7 +3086,7 @@ gathering phase and while ICE is performing connectivity checks.
 <t>
 NOTE: Previously, in RFC 5245, different formulas were defined for
 computing Ta and RTO, depending on whether ICE was used for a real-time
-media stream (e.g. RTP) or not.
+data stream (e.g., RTP) or not.
 </t>
 
 <t>
@@ -3113,11 +3111,11 @@ should utilize the timer values described here.
 
 <t>
 ICE agents SHOULD use the default Ta value, 50 ms, but MAY use another
-value based on the characteristics of the associated media.
+value based on the characteristics of the associated data.
 </t>
 
 <t>
-If an ICE agent wants to use another Ta value than the default value, the
+If an agent wants to use another Ta value than the default value, the
 agent MUST indicate the proposed value to its peer during the establishment
 of the ICE session. Both agents MUST use the higher value of the proposed values.
 If an agent does not propose a value, the default value is used for that
@@ -3125,11 +3123,11 @@ agent when comparing which value is higher.
 </t>
 
 <t>
-Regardless of the Ta value chosen for each ICE agent, the combination
-of all transactions from all ICE agents (if a given implementation
-runs several concurrent ICE agents) MUST NOT be sent more often than
+Regardless of the Ta value chosen for each agent, the combination
+of all transactions from all agents (if a given implementation
+runs several concurrent agents) MUST NOT be sent more often than
 once every 5ms (as though there were one global Ta value for pacing
-all ICE agents).
+all agents).
 </t>
 
 <t>
@@ -3153,7 +3151,7 @@ based on the following reasoning.
   </list>
   </t>
   <t>
-    Observe that ICE agents typically do not know the RTT for ICE
+    Observe that agents typically do not know the RTT for ICE
     transactions (connectivity checks in particular), meaning that HTO
     will almost always be 500ms.
   </t>
@@ -3165,7 +3163,7 @@ based on the following reasoning.
   </t>
   <t>
     Thus, for ICE, the rule set reduces down to just the MinPacing
-    rule, which is equivalant to having a global Ta value.
+    rule, which is equivalent to having a global Ta value.
   </t>
 </list>
 </t>
@@ -3197,7 +3195,7 @@ RTO value using the following formula:
 ]]></artwork></figure>
 
 <t>
-For connectivity checks, ICE agents SHOULD calculate the RTO value
+For connectivity checks, agents SHOULD calculate the RTO value
 using the following formula:
 </t>
 
@@ -3218,8 +3216,8 @@ using the following formula:
 ]]></artwork></figure>
 
 <t>
-ICE agents MAY calculate the RTO value using other mechanisms than those
-described above. ICE agents MUST NOT use a RTO value smaller than 500 ms.
+Agents MAY calculate the RTO value using other mechanisms than those
+described above. Agents MUST NOT use a RTO value smaller than 500 ms.
 </t>
 
 </section>
@@ -3259,7 +3257,7 @@ target="fig-ex-topo"/>.
 ]]></artwork></figure>
 
 
-<t> Two agents, L and R, are using ICE. Both are full ICE
+<t> Two ICE agents, L and R, are using ICE. Both are full ICE
 implementations. Both agents have a single IPv4 address. For agent L, it
 is 10.0.1.1 in private address space <xref target="RFC1918"/>, and for
 agent R, 192.0.2.1 on the public Internet. Both are configured with
@@ -3298,7 +3296,7 @@ the presence of the USE-CANDIDATE attribute.
 
 <t>
 The call flow examples omit STUN authentication operations,
-and focus on a single media stream between two full
+and focus on a single data stream between two full
 implementations.
 </t>
 
@@ -3362,7 +3360,7 @@ implementations.
           |D=$L-PRIV-1   |              |              |
           |MA=$NAT-PUB-1 |              |              |
           |<-------------|              |              |
-          |Media flows   |              |              |
+          |Data flows    |              |              |
           |              |(14) Bind Req |              |
           |              |S=$R-PUB-1    |              |
           |              |D=$NAT-PUB-1  |              |
@@ -3381,7 +3379,7 @@ implementations.
           |              |D=$R-PUB-1    |              |
           |              |MA=$R-PUB-1   |              |
           |              |---------------------------->|
-          |              |              |              |Media flows
+          |              |              |              |Data flows
 
 ]]></artwork></figure>
 
@@ -3443,7 +3441,7 @@ connectivity check (messages 10-13). Since the check succeeds, agent L
 creates a new pair, whose local candidate is from the mapped address
 in the Binding response (NAT-PUB-1 from message 13) and whose remote
 candidate is the destination of the request (R-PUB-1 from message
-10). This is added to the valid list. Agent L can now send media if it
+10). This is added to the valid list. Agent L can now send data if it
 so chooses.
 </t>
 
@@ -3455,11 +3453,11 @@ agent L's server reflexive candidate. This check (messages 14-17) will
 succeed. Consequently, agent R constructs a new candidate pair using
 the mapped address from the response as the local candidate (R-PUB-1)
 and the destination of the request (NAT-PUB-1) as the remote
-candidate. This pair is added to the valid list for that media
+candidate. This pair is added to the valid list for that data
 stream. Since the check was generated in the reverse direction of a
 check that contained the USE-CANDIDATE attribute, the candidate pair
 is marked as selected. Consequently, processing for this stream moves
-into the Completed state, and agent R can also send media.
+into the Completed state, and agent R can also send data.
 </t>
 
 </section>
@@ -3495,7 +3493,7 @@ candidate exchange.</t>
 
 <t>
 An attacker might attempt to disrupt the STUN connectivity
-checks. Ultimately, all of these attacks fool an agent into thinking
+checks. Ultimately, all of these attacks fool an ICE agent into thinking
 something incorrect about the results of the connectivity checks. The
 possible false conclusions an attacker can try and cause are:
 </t>
@@ -3512,12 +3510,12 @@ candidates to fail.
 <t hangText="False Valid:">An attacker can fool a pair of agents into
 thinking a candidate pair is valid, when it isn't. This can cause an
 agent to proceed with a session, but then not be able to receive any
-media.
+data.
 </t>
 
 <t hangText="False Peer Reflexive Candidate:">An attacker can cause an
 agent to discover a new peer reflexive candidate, when it shouldn't
-have. This can be used to redirect media streams to a
+have. This can be used to redirect data streams to a
 Denial-of-Service (DoS) target or to the attacker, for eavesdropping
 or other purposes.
 </t>
@@ -3613,13 +3611,13 @@ network at the same time.
 
 <t>
 If the attacker itself is identified by the fake candidate, the attack
-is easier to coordinate. However, if the media path is secured (e.g.,
+is easier to coordinate. However, if the data path is secured (e.g.,
 using SRTP <xref target="RFC3711"/>), the attacker will not be able to
-play the media packets, but will only be able to discard them,
-effectively disabling the media stream for the call. However, this
+process the data packets, but will only be able to discard them,
+effectively disabling the data stream. However, this
 attack requires the agent to disrupt packets in order to block the
 connectivity check from reaching the target. In that case, if the goal
-is to disrupt the media stream, it's much easier to just disrupt it
+is to disrupt the data stream, it's much easier to just disrupt it
 with the same mechanism, rather than attack ICE.
 </t>
 
@@ -3658,13 +3656,13 @@ server reflexive candidate:
 <t>
 A false mapped address learned by these attacks will be used as a
 server reflexive candidate in the establishment of the ICE session. For this candidate to
-actually be used for media, the attacker must also attack the
+actually be used for data, the attacker must also attack the
 connectivity checks, and in particular, force a false valid on a false
 candidate. This attack is very hard to launch if the false address
 identifies a fourth party (neither the initiator, responder, nor
 attacker), since it requires attacking the checks generated by each
-agent in the session, and is prevented by SRTP if it identifies the
-attacker themself.
+ICE agent in the session, and is prevented by SRTP if it identifies the
+attacker itself.
 </t>
 
 <t>If the attacker elects not to attack the connectivity checks, the
@@ -3672,7 +3670,7 @@ worst it can do is prevent the server reflexive candidate from being
 used. However, if the peer agent has at least one candidate that is
 reachable by the agent under attack, the STUN connectivity checks
 themselves will provide a peer reflexive candidate that can be used
-for the exchange of media. Peer reflexive candidates are generally
+for the exchange of data. Peer reflexive candidates are generally
 preferred over server reflexive candidates. As such, an attack solely
 on the STUN address gathering will normally have no impact on a session
 at all.  </t>
@@ -3732,14 +3730,14 @@ Ta=20ms). However, the retransmission timers are set to a large number
 due to the large number of candidates. As a consequence, packets will
 be sent at an interval of one every Ta milliseconds, and then with
 increasing intervals after that. Thus, STUN will not send packets at a
-rate faster than media would be sent, and the STUN packets persist
+rate faster than data would be sent, and the STUN packets persist
 only briefly, until ICE fails for the session. Nonetheless, this is an
 amplification mechanism.
 </t>
 
 <t>
 It is impossible to eliminate the amplification, but the volume can be
-reduced through a variety of heuristics. Agents SHOULD limit the total
+reduced through a variety of heuristics. ICE agents SHOULD limit the total
 number of connectivity checks they perform to 100. Additionally,
 agents MAY limit the number of candidates they'll accept.
 </t>
@@ -3790,7 +3788,7 @@ value of 0x0024.
 <t>
 The USE-CANDIDATE attribute indicates that the candidate pair
 resulting from this check should be used for transmission of
-media. The attribute has no content (the Length field of the attribute
+data. The attribute has no content (the Length field of the attribute
 is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
 
@@ -3801,7 +3799,7 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The ICE agent MAY change
+for all streams, within an ICE session. The agent MAY change
 the number when an ICE restart occurs.
 </t>
 
@@ -3811,8 +3809,8 @@ indicates that the client believes it is currently in the controlling
 role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
-value. An ICE agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The ICE agent MAY change
+value. An agent MUST use the same number for all Binding requests,
+for all streams, within an ICE session. The agent MAY change
 the number when an ICE restart occurs.
 </t>
 
@@ -3878,7 +3876,7 @@ capacity that operators should take into consideration.
 First and foremost, ICE makes use of TURN and STUN servers, which
 would typically be located in the network operator's data centers. The
 STUN servers require relatively little bandwidth. For each component
-of each media stream, there will be one or more STUN transactions from
+of each data stream, there will be one or more STUN transactions from
 each client to the STUN server. In a basic voice-only IPv4 VoIP
 deployment, there will be four transactions per call (one for RTP and
 one for RTCP, for both caller and callee). Each transaction
@@ -3893,8 +3891,8 @@ speaking).
 TURN traffic is more substantial. The TURN server will see traffic
 volume equal to the STUN volume (indeed, if TURN servers are deployed,
 there is no need for a separate STUN server), in addition to the
-traffic for the actual media. The amount of calls requiring
-TURN for media relay is highly dependent on network topologies, and
+traffic for the actual data. The amount of calls requiring
+TURN for data relay is highly dependent on network topologies, and
 can and will vary over time. In a network with 100% behave-compliant
 NAT, it is exactly zero. At time of writing, large-scale consumer
 deployments were seeing between 5 and 10 percent of calls requiring
@@ -3913,10 +3911,10 @@ The process of gathering of candidates and performing of connectivity
 checks can be bandwidth intensive. ICE has been designed to pace both
 of these processes. The gathering phase and the connectivity check
 phase are meant to generate traffic at roughly the same bandwidth as
-the media traffic itself. This was done to ensure that, if a network
+the data traffic itself. This was done to ensure that, if a network
 is designed to support communication traffic of a certain type (voice,
 video, or just text), it will have sufficient capacity to support the
-ICE checks for that media. Of course, the ICE checks will cause a
+ICE checks for that data. Of course, the ICE checks will cause a
 marginal increase in the total utilization; however, this will
 typically be an extremely small increase.
 </t>
@@ -3937,8 +3935,8 @@ ICE network friendly and easier to deploy.
 
 <t>
 STUN keepalives (in the form of STUN Binding Indications) are sent in
-the middle of a media session. However, they are sent only in the
-absence of actual media traffic. In deployments that are not utilizing
+the middle of a data session. However, they are sent only in the
+absence of actual data traffic. In deployments that are not utilizing
 Voice Activity Detection (VAD), the keepalives are never used and
 there is no increase in bandwidth usage. When VAD is being used,
 keepalives will be sent during silence periods. This involves a single
@@ -4102,7 +4100,7 @@ ICE Option name:
 
 <t>
 The IAB has studied the problem of "Unilateral Self-Address Fixing",
-which is the general process by which a agent attempts to determine
+which is the general process by which an ICE agent attempts to determine
 its address in another realm on the other side of a NAT through a
 collaborative protocol reflection mechanism <xref target="RFC3424"/>.
 ICE is an example of a protocol that performs this type of
@@ -4203,7 +4201,7 @@ debugging challenges, and make it harder to transition.
 <t> ICE actually removes brittleness from existing UNSAF
 mechanisms. In particular, classic STUN (as described in RFC 3489
 <xref target="RFC3489"/>) has several points of brittleness. One of
-them is the discovery process that requires an agent to try to
+them is the discovery process that requires an ICE agent to try to
 classify the type of NAT it is behind. This process is
 error-prone. With ICE, that discovery process is simply not
 used. Rather than unilaterally assessing the validity of the address,
@@ -4339,8 +4337,9 @@ specification, RFC 5245. The authors would like to thank everyone who
 has contributed to that document. For additional contributions to this
 revision of the specification we would like to thank Emil Ivov, Paul
 Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
-Stach, Peter Thatcher, Martin Thomson, Justin Uberti, and Suhas
-Nandakumar. </t>
+Stach, Peter Thatcher, Martin Thomson, Justin Uberti, Suhas
+Nandakumar, Taylor Brandstetter, Peter Saint-Andre, Harald Alvestrand
+and Roman Shpount. </t>
 
 </section>
 
@@ -4432,7 +4431,7 @@ RFC 6724, which is recommended by this specification. However, static
 mechanisms for address selection are always prone to error, since they
 cannot ever reflect the actual topology and can never provide actual
 guarantees on connectivity. They are always heuristics. Consequently,
-if an agent is implementing ICE just to select between its IPv4 and
+if an ICE agent is implementing ICE just to select between its IPv4 and
 IPv6 addresses, and none of its IP addresses are behind NAT, usage
 of full ICE is still RECOMMENDED in order to provide the most robust
 form of address selection possible.
@@ -4486,7 +4485,7 @@ on the rate at which they will create new bindings. Experiments have
 shown that once every 5 ms is well supported.
 This is why Ta has a lower bound of 5 ms. Furthermore,
 transmission of these packets on the network makes use of bandwidth
-and needs to be rate limited by the agent. Deployments based on
+and needs to be rate limited by the ICE agent. Deployments based on
 earlier draft versions of <xref target="RFC5245"/> tended to overload
 rate-constrained access links and perform poorly overall, in addition
 to negatively impacting the network. As a consequence, the pacing
@@ -4496,10 +4495,10 @@ is kept at a reasonable rate.
 
 <t>
 The definition of a "reasonable" rate is that STUN should not use more
-bandwidth than the RTP itself will use, once media starts flowing. The
+bandwidth than the RTP itself will use, once data starts flowing. The
 formula for Ta is designed so that, if a STUN packet were sent every
 Ta seconds, it would consume the same amount of bandwidth as RTP
-packets, summed across all media streams. Of course, STUN has
+packets, summed across all data streams. Of course, STUN has
 retransmits, and the desire is to pace those as well. For this reason,
 RTO is set such that the first retransmit on the first transaction
 happens just as the first STUN request on the last transaction
@@ -4548,7 +4547,7 @@ its retransmissions.
 <t><xref target="sec-el-red"/> talks about eliminating candidates that
 have the same transport address and base. However, candidates with the
 same transport addresses but different bases are not redundant. When
-can an agent have two candidates that have the same IP address and
+can an ICE agent have two candidates that have the same IP address and
 port, but different bases? Consider the topology of <xref
 target="fig-horror-net"/>:
 </t>
@@ -4635,7 +4634,7 @@ present?
 <t>
 There are two motivations for its inclusion. The first is
 diagnostic. It is very useful to know the relationship between the
-different types of candidates. By including it, an agent can know
+different types of candidates. By including it, an ICE agent can know
 which relayed candidate is associated with which reflexive candidate,
 which in turn is associated with a specific host candidate. When
 checks for one candidate succeed and not for others, this provides
@@ -4646,13 +4645,13 @@ useful diagnostics on what is going on in the network.
 The second reason has to do with off-path Quality of Service (QoS)
 mechanisms. When ICE is used in environments such as PacketCable 2.0,
 proxies will, in addition to performing normal SIP operations, inspect
-the SDP in SIP messages, and extract the IP address and port for media
+the SDP in SIP messages, and extract the IP address and port for data
 traffic. They can then interact, through policy servers, with access
-routers in the network, to establish guaranteed QoS for the media
+routers in the network, to establish guaranteed QoS for the data
 flows. This QoS is provided by classifying the RTP traffic based on
 5-tuple, and then providing it a guaranteed rate, or marking its
 Diffserv codepoints appropriately. When a residential NAT is present,
-and a relayed candidate gets selected for media, this relayed
+and a relayed candidate gets selected for data, this relayed
 candidate will be a transport address on an actual TURN server. That
 address says nothing about the actual transport address in the access
 router that would be used to classify packets for QoS
@@ -4673,7 +4672,7 @@ exchange. The need for this mechanism goes beyond just security; it is
 actually required for correct operation of ICE in the first place.
 </t>
 
-<t> Consider agents L, R, and Z. L and R are within private enterprise
+<t> Consider ICE agents L, R, and Z. L and R are within private enterprise
 1, which is using 10.0.0.0/8. Z is within private enterprise 2, which
 is also using 10.0.0.0/8. As it turns out, R and Z both have IP
 address 10.0.1.1. L sends candidates to Z. Z, in responds L with its
@@ -4739,7 +4738,7 @@ priority is used as the tie-breaker in the last part of the
 expression. The factor of 2*32 is used since the priority of a single
 candidate is always less than 2*32, resulting in the pair priority
 being a "concatenation" of the two component priorities.  This creates
-the MAX/MIN sorting. MAX/MIN ensures that, for a particular agent, a
+the MAX/MIN sorting. MAX/MIN ensures that, for a particular ICE agent, a
 lower-priority candidate is never used until all higher-priority
 candidates have been tried.
 </t>
@@ -4751,16 +4750,16 @@ candidates have been tried.
 <section title="Why Are Keepalives Needed?">
 
 <t>
-Once media begins flowing on a candidate pair, it is still necessary
+Once data begins flowing on a candidate pair, it is still necessary
 to keep the bindings alive at intermediate NATs for the duration of
-the session. Normally, the media stream packets themselves (e.g., RTP)
+the session. Normally, the data stream packets themselves (e.g., RTP)
 meet this objective. However, several cases merit further
-discussion. Firstly, in some RTP usages, such as SIP, the media
+discussion. Firstly, in some RTP usages, such as SIP, the data
 streams can be "put on hold". This is accomplished by using the SDP
 "sendonly" or "inactive" attributes, as defined in RFC 3264 <xref
 target="RFC3264"/>. RFC 3264 directs implementations to cease
-transmission of media in these cases. However, doing so may cause NAT
-bindings to timeout, and media won't be able to come off hold.
+transmission of data in these cases. However, doing so may cause NAT
+bindings to timeout, and data won't be able to come off hold.
 </t>
 
 <t>
@@ -4772,12 +4771,12 @@ timeouts.
 
 <t>
 Thirdly, if silence suppression is in use, long periods of silence may
-cause media transmission to cease sufficiently long for NAT bindings
+cause data transmission to cease sufficiently long for NAT bindings
 to time out.
 </t>
 
 <t>
-For these reasons, the media packets themselves cannot be relied
+For these reasons, the data packets themselves cannot be relied
 upon. ICE defines a simple periodic keepalive utilizing STUN Binding
 indications.  This makes its bandwidth requirements highly
 predictable, and thus amenable to QoS reservations.
@@ -4794,7 +4793,7 @@ preferences. That section requires that the type preference for peer
 reflexive candidates always be higher than server reflexive. Why is
 that? The reason has to do with the security considerations in <xref
 target="sec-security"/>. It is much easier for an attacker to cause an
-agent to use a false server reflexive candidate than it is for an
+ICE agent to use a false server reflexive candidate than it is for an
 attacker to cause an agent to use a false peer reflexive
 candidate. Consequently, attacks against address gathering with
 Binding requests are thwarted by ICE by preferring the peer reflexive
@@ -4806,7 +4805,7 @@ candidates.
 <section title="Why Are Binding Indications Used for Keepalives?">
 
 <t>
-Media keepalives are described in <xref
+Data keepalives are described in <xref
 target="sec-keepalives"/>. These keepalives make use of STUN when both
 endpoints are ICE capable. However, rather than using a Binding
 request transaction (which generates a response), the keepalives use
@@ -4814,16 +4813,16 @@ an Indication. Why is that?
 </t>
 
 <t>
-The primary reason has to do with network QoS mechanisms. Once media
-begins flowing, network elements will assume that the media stream has
+The primary reason has to do with network QoS mechanisms. Once data
+begins flowing, network elements will assume that the data stream has
 a fairly regular structure, making use of periodic packets at fixed
-intervals, with the possibility of jitter. If an agent is sending
-media packets, and then receives a Binding request, it would need to
-generate a response packet along with its media packets. This will
+intervals, with the possibility of jitter. If an ICE agent is sending
+data packets, and then receives a Binding request, it would need to
+generate a response packet along with its data packets. This will
 increase the actual bandwidth requirements for the 5-tuple carrying
-the media packets, and introduce jitter in the delivery of those
+the data packets, and introduce jitter in the delivery of those
 packets. Analysis has shown that this is a concern in certain layer 2
-access networks that use fairly tight packet schedulers for media.
+access networks that use fairly tight packet schedulers for data.
 </t>
 
 <t>
@@ -4837,17 +4836,17 @@ large-scale endpoints, such as PSTN gateways and SBCs.
 <section anchor="sec-candidate-type-preference" title="Selecting Candidate Type Preference">
 
 <t>One criterion for selection of the type and local preference values
-is the use of a media intermediary, such as a TURN server, a tunnel
-service such as VPN server, or NAT.  With a media intermediary, if
-media is sent to that candidate, it will first transit the media
+is the use of a data intermediary, such as a TURN server, a tunnel
+service such as VPN server, or NAT.  With a data intermediary, if
+data is sent to that candidate, it will first transit the data
 intermediary before being received.  Relayed candidates are one type
-of candidate that involves a media intermediary.  Another are host
-candidates obtained from a VPN interface.  When media is transited
-through a media intermediary, it can have a positive or negative
+of candidate that involves a data intermediary.  Another are host
+candidates obtained from a VPN interface.  When data is transited
+through a data intermediary, it can have a positive or negative
 effect on the latency between transmission and reception.  It may or
 may not increase the packet losses, because of the additional router
 hops that may be taken.  It may increase the cost of providing
-service, since media will be routed in and right back out of a media
+service, since data will be routed in and right back out of a data
 intermediary run by a provider.  If these concerns are important, the
 type preference for relayed candidates must be carefully chosen.</t>
 
@@ -4861,7 +4860,7 @@ in the connectivity check phase if broken paths exist.</t>
 
 <t>Another criterion for selecting preferences is topological
 awareness. This is most useful for candidates that make use of
-intermediaries. In those cases, if an agent has preconfigured or
+intermediaries. In those cases, if an ICE agent has preconfigured or
 dynamically discovered knowledge of the topological proximity of the
 intermediaries to itself, it can use that to assign higher local
 preferences to candidates obtained from closer intermediaries.</t>
