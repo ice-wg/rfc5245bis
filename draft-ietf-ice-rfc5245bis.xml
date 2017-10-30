@@ -1431,11 +1431,6 @@ failed, which means the check list has failed.
 </t>
 
 </list></t>
-<t>Additionally, a check list with at least one pair in the Waiting
-state is called "active", while a check list with all pairs in the
-frozen state is called "Frozen".
-</t>
-
 </section>
 
 <section title="Forming Candidate Pairs">
