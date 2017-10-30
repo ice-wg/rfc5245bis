@@ -550,9 +550,9 @@ responding agent, the peer is the initiating agent. </t>
 transport protocol (such as UDP or TCP) port.</t>
 
 <t hangText="Data, Data Stream, Data Session:"> When ICE is used to
-setup multimedia sessions, the data is transported using some protocol.
-Media data is usually transported over RTP, and a media data stream 
-composes of a stream of RTP packets. Data session refers to data packets
+setup data sessions, the data is transported using some protocol.
+Media is usually transported over RTP, 
+composed of a stream of RTP packets. Data session refers to data packets
 that are exchanged between the peer on the path created and tested with ICE.</t>
 
 <t hangText="Candidate, Candidate Information:"> A transport address
@@ -563,9 +563,9 @@ host), priority, foundation, and base.
 
 <t hangText="Component:"> A component is a piece of a data stream.
 A data stream may require multiple components, each of which has to
-work in order for the data stream as a while for work. For media data streams 
-based on RTP, unless RTP and RTCP are multiplexed in the same port, there 
-are two components per media data stream -- one for RTP, and one for RTCP.
+work in order for the data stream as a whole to work. For RTP/RTCP data streams,
+unless RTP and RTCP are multiplexed in the same port, there 
+are two components per data stream -- one for RTP, and one for RTCP.
 A component has a candidate pair, which cannot be used by other components</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
@@ -796,7 +796,7 @@ address. A host candidate (and indeed every candidate) is always
 associated with a specific component for which it is a candidate. </t>
 
 <t> Each component has an ID assigned to it, called the component ID.
-For RTP-based media data streams, unless both RTP and RTCP are multiplexed
+For RTP/RTCP data streams, unless both RTP and RTCP are multiplexed
 in the same UDP port (RTP/RTCP multiplexing), the RTP itself has a
 component ID of 1, and RTCP a component ID of 2. In case of RTP/RTCP
 multiplexing, a component ID of 1 is used for both RTP and RTCP.</t>
@@ -822,7 +822,7 @@ RTCP. However, absence of a component ID 2 as such does not imply use
 of RTCP/RTP multiplexing, as it could also mean that RTCP is not
 used. </t>
 
-<t> For other than RTP-based streams, use of multiple components is
+<t> For other than RTP/RTCP streams, use of multiple components is
 discouraged since using them increases the complexity of ICE
 processing. If multiple components are needed, the component IDs
 SHOULD start with 1 and increase by 1 for each component.
@@ -924,7 +924,7 @@ retransmit timer, RTO.
 Allocate response will provide the agent with a server reflexive
 candidate (obtained from the mapped address) and a relayed candidate
 in the XOR-RELAYED-ADDRESS attribute. If the Allocate request is
-rejected because the server lacks resources to fulfil it, the agent
+rejected because the server lacks resources to fulfill it, the agent
 SHOULD instead send a Binding request to obtain a server reflexive
 candidate. A Binding response will provide the agent with only a
 server reflexive candidate (also obtained from the mapped
@@ -1130,7 +1130,7 @@ the other.
 </t>
 
 <t>Each component has an ID assigned to it, called the component ID.
-For RTP-based media data streams, unless RTCP is multiplexed in the same
+For RTP/RTCP data streams, unless RTCP is multiplexed in the same
 port with RTP, the RTP itself has a component ID of 1, and RTCP a
 component ID of 2. If an agent is using RTCP without multiplexing, it
 MUST obtain candidates for it.  However, absence of a component ID 2
@@ -2419,7 +2419,7 @@ the ICE agent does not pair this candidate with any local candidates.
 <section anchor="sec-triggered" title="Triggered Checks">
 
 <t>
-Next, the agent constructs a pair whose local candidate is equal to
+Next, the agent constructs a pair whose local candidate has
 the transport address (as seen by the agent) on which the STUN request was received, and a
 remote candidate equal to the source transport address where the
 request came from (which may be the peer reflexive remote candidate
@@ -2532,7 +2532,7 @@ the ICE processing for that component. See <xref target="sec-conclude"/>.
 
 <t>If the controlled agent receives a Binding request with the USE-CANDIDATE
 attribute set, and if the ICE agent accepts the request, the agent 
-constructs a candidate pair whose local candidate is equal to the 
+constructs a candidate pair whose local candidate has the 
 transport address on which the request was received, and whose remote 
 candidate is equal to the source transport address of the request that 
 was received. This candidate pair is assigned an arbitrary priority, and 
@@ -2578,7 +2578,7 @@ the USE-CANDIDATE attribute <xref target="sec-up-fav"/>.
 </t>
 <t>Eventually, if the nominations succeed, both the controlling and controlled agents
 will have a single nominated pair in the valid list for each component of the data stream. 
-Once an ICE agent sets the state of the check list is set to Completed (when there is a nominated pair 
+Once an ICE agent sets the state of the check list to Completed (when there is a nominated pair 
 for each component of the data stream), that pair becomes the selected pair for that agent, and 
 is used for sending and receiving data for that component of the data stream.
 </t>
@@ -2994,7 +2994,7 @@ until selected pairs have been produced for a data stream.
 
 <t>It is
 RECOMMENDED that, when an agent receives an RTP packet with a new
-source or destination IP address for a particular media data stream, that
+source or destination IP address for a particular RTP/RTCP data stream, that
 the agent re-adjust its jitter buffers.
 </t>
 
@@ -3003,8 +3003,8 @@ RFC 3550 <xref target="RFC3550"/> describes an algorithm in Section
 8.2 for detecting synchronization source (SSRC) collisions and
 loops. These algorithms are based, in part, on seeing different source
 transport addresses with the same SSRC. However, when ICE is used,
-such changes will sometimes occur as the media data streams switch between
-candidates. An agent will be able to determine that a media data stream is
+such changes will sometimes occur as the data streams switch between
+candidates. An agent will be able to determine that a data stream is
 from the same peer as a consequence of the STUN exchange that proceeds
 media data transmission. Thus, if there is a change in source transport
 address, but the media data packets come from the same peer agent, this
