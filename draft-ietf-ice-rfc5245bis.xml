@@ -1583,21 +1583,21 @@ pairs, called the check list for that data stream.
 <section title="Removing lower-priority Pairs">
 
 <t>
-In order to limit the attacks described in <xref
-target="sec-ice-hammer"/>, an ICE agent MUST limit the total number of
-connectivity checks the agent performs across all check lists in the check list set 
-to a specific value. The default limit value of connectivity checks for the check 
-list set is 100, but the value MUST be configurable. The limit is enforced by, 
-within in each check list, discarding lower-priority candidate pairs until 
-the number of candidate pairs in the check list set is smaller than the limit value.
-The discarding SHOULD be done evenly so that the number of remaining number of 
-connection checks in each check list are equal. 
+In order to limit the attacks described in <xreftarget="sec-ice-hammer"/>, an ICE agent 
+MUST limit the total number of connectivity checks the agent performs across all 
+check lists in the check list set. This is done by limiting the total number of candidate pairs
+in the check list set. The default limit of candidate pairs for the check list set is 100, 
+but the value MUST be configurable. The limit is enforced by, within in each check list, 
+discarding lower-priority candidate pairs until the total number of candidate pairs in the 
+check list set is smaller than the limit value. The discarding SHOULD be done evenly so 
+that the number of candidate pairs in each check list is reduced the same amount.
 </t>
 <t>
 It is RECOMMENDED that a lower limit value than the default is picked when possible, 
-set to the maximum number of plausible connectivity checks that might be seen in an actual
-deployment configuration. The requirement for configuration is meant to provide a tool for 
-fixing this value in the field if, once deployed, it is found to be problematic.
+and that the value is set to the maximum number of plausible candidate pairs that 
+might be created in an actual deployment configuration. The requirement for configuration 
+is meant to provide a tool for fixing this value in the field if, once deployed, it is 
+found to be problematic.
 </t>
 
 </section>
@@ -4307,10 +4307,10 @@ better still.
 
 <section title="Changes from RFC 5245">
 
-<t> The purpose of this specification is to:
-<list>
+<t> The purpose of this updated ICE specification is to:
+<list style="symbols">
 <t>Clarify procedures in RFC 5245.</t>
-<t>Make technical changes, due to bugs in RFC 5245 and based
+<t>Make technical changes, due to discovered flows in RFC 5245 and based
 on feedback from the community that has implemented and
 deployed ICE applications based on RFC 5245.</t>
 <t>Make the procedures signaling protocol independent, by
@@ -4326,7 +4326,6 @@ the ICE usage with SIP and SDP.</t>
 <t>Aggressive nomination removed.</t>
 <t>The procedures for calculating candidate pair states
 and scheduling connectivity checks modified.</t>
-<t>Check list set definition added.</t>
 <t>ICE session definition added.</t>
 <t>Procedures for calculation of Ta and RTO modified.</t>
 <t>Timer Tc removed.</t>
