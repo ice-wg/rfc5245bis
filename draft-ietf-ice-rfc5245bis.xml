@@ -4327,7 +4327,7 @@ the ICE usage with SIP and SDP.</t>
 <t>The procedures for calculating candidate pair states
 and scheduling connectivity checks modified.</t>
 <t>Procedures for calculation of Ta and RTO modified.</t>
-<t>active check list and frozen check list definitions removed.</t>
+<t>Active check list and frozen check list definitions removed.</t>
 <t>'ice2' ice option added.</t>
 <t>IPv6 considerations modified.</t>
 <t>Usage with no-op for keepalives, and keepalives with non-ICE
