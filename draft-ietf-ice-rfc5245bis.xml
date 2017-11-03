@@ -1583,7 +1583,7 @@ pairs, called the check list for that data stream.
 <section title="Removing lower-priority Pairs">
 
 <t>
-In order to limit the attacks described in <xreftarget="sec-ice-hammer"/>, an ICE agent 
+In order to limit the attacks described in <xref target="sec-ice-hammer"/>, an ICE agent 
 MUST limit the total number of connectivity checks the agent performs across all 
 check lists in the check list set. This is done by limiting the total number of candidate pairs
 in the check list set. The default limit of candidate pairs for the check list set is 100, 
