@@ -52,7 +52,7 @@
       </address>
     </author>
 
-        <date year="2017" />
+        <date year="2018" />
 
         <area>ART</area>
         <workgroup>ICE</workgroup>
@@ -106,15 +106,11 @@ solution that is flexible enough to work well in all situations.  </t>
 such as TCP <xref target="RFC6544"/>). ICE works by exchanging a
 multiplicity of IP addresses and ports which are then tested for
 connectivity by peer-to-peer connectivity checks. The IP addresses and
-ports are exchanged via mechanisms (for example, including in a
+ports are exchanged exchanged using ICE usage-specific mechanisms (for example, including in a
 offer/answer exchange) and the connectivity checks are performed using
 Session Traversal Utilities for NAT (STUN) specification <xref
 target="RFC5389"/>. ICE also makes use of Traversal Using Relays
 around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
-Because ICE exchanges a multiplicity of IP addresses and ports for
-each data stream, it also allows for address selection for multihomed
-and dual-stack hosts, and for this reason it deprecates <xref
-target="RFC4091"/> and <xref target="RFC4092"/>.
 </t>
 
 </section>
@@ -210,7 +206,7 @@ candidates. A candidate has a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
 specified here). There are different types of candidates, some
 derived from physical or logical network interfaces, others
-discoverable via STUN and TURN. Naturally, one viable candidate has a
+discoverable via STUN and TURN. At least one viable candidate has a
 transport address obtained directly from a local interface. Such a
 candidate is called a host candidate. The local interface could be
 Ethernet or WiFi, or it could be one that is obtained through a tunnel
@@ -380,14 +376,16 @@ list of sorted candidate pairs is called the check list.
 <t>
 The agent works through the check list by sending a STUN request for
 the next candidate pair on the list periodically. These are called
-ordinary checks.
+ordinary checks. When a STUN transaction succeeds, one or more
+candidate pairs will become so called valid pairs, and will be added
+to a candidate pair list called the valid list.
 </t>
 
 <t>
-As an optimization, as soon as R gets L's check message, R schedules a
-connectivity check message to be sent to L on the same candidate
-pair. This accelerates the process of finding a valid candidate, and
-is called a triggered check.
+As an optimization, as soon as R gets L's check message, R schedules
+a connectivity check message to be sent to L on the same candidate
+pair. This is called a triggered check, and accelerates the process
+of finding valid pairs.
 </t>
 
 <t>
@@ -398,9 +396,9 @@ send (and receive) messages end-to-end in both directions.
 <t>
 In general, the priority algorithm is designed so that candidates of
 similar type get similar priorities and so that more direct routes
-(that is, through fewer data relays and through fewer NATs) are
-preferred over indirect ones (ones with more data relays and more
-NATs).  Within those guidelines, however, agents have a fair amount of
+(that is, routes without data relays or NATs) are preferred over
+indirect routes (routes with data relays or NATs).
+Within those guidelines, however, agents have a fair amount of
 discretion about how to tune their algorithms.
 </t>
 
@@ -415,10 +413,9 @@ stream that require their own set of candidates, e.g., RTP and RTCP).
 <section title="Nominating Candidate Pairs And Concluding ICE">
 <t>
 ICE assigns one of the ICE agents in the role of the
-controlling agent, and the other of the controlled agent. For each
-component of a data stream, the controlling agent nominates a candidate 
-pair from the valid candidate pairs to be used for data. The exact timing
-of the nomination is based on local policy.
+controlling agent, and the other of the controlled agent. For each 
+component of a data stream, the controlling agent nominates
+a valid pair (from the valid list) to be used for data.
 </t>
 <t>
 When nominating, the controlling agent lets the checks continue
@@ -440,7 +437,7 @@ STUN request ->             \  L's
            <- STUN request  \  R's
 STUN response ->            /  check
 
-STUN request + flag ->      \  L's
+STUN request + attribute -> \  L's
           <- STUN response  /  check
 
 ]]></artwork></figure>
@@ -502,8 +499,8 @@ and "OPTIONAL" in this document are to be interpreted as described in
 <xref target="RFC2119">RFC 2119</xref>.  </t>
 
 <t>
-Readers should be familiar with the terminology defined in the STUN <xref
-target="RFC5389"/>, and NAT Behavioral requirements
+Readers should be familiar with the terminology defined in 
+<xref target="RFC5389"/>, and NAT Behavioral requirements
 for UDP <xref target="RFC4787"/>.
 </t>
 
@@ -640,6 +637,12 @@ it to send a check.
 consequence of the receipt of a connectivity check from the peer.
 </t>
 
+<t hangText="Valid Pair, Valid Candidate Pair:"> A candidate pair whose 
+local candidate equals the mapped address of a successful connectivity 
+check response, and whose remote candidate equals the destination address to 
+which the connectivity check request was sent.
+</t>
+ 
 <t hangText="Valid List:"> An ordered set of candidate pairs for a
 data stream that have been validated by a successful STUN
 transaction.
@@ -746,12 +749,7 @@ candidates   |                               |
 <t>
 As shown, the agents involved in the candidate exchange perform (1)
 candidate gathering, (2) candidate prioritization, (3) redundant 
-candidate elimination, (4) (possibly) default candidate selection, and
-(5) sending of the candidates to the peer. All
-but the last of these five steps differ for full and lite
-implementations.
-</t>
-<t>
+candidate elimination, and (4) sending of the candidates to the peer.
 </t>
 
 <section anchor="sec-full-impl-reqs" title="Full Implementation">
@@ -777,8 +775,7 @@ The process for gathering candidates at the responding agent is
 identical to the process for the initiating agent. It is RECOMMENDED
 that the responding agent begins this process immediately on receipt
 of the candidate information, prior to alerting the user of the
-application associated with the ICE session. Such gathering MAY begin 
-when an agent starts.
+application associated with the ICE session.
 </t>
 
 <section title="Host Candidates">
@@ -873,9 +870,8 @@ preferred over permanent addresses.</t>
 <section title="Server Reflexive and Relayed Candidates">
 
 <t>
-An ICE agent SHOULD gather server reflexive and relayed candidates.  These
-requirements are at SHOULD strength to allow for provider variation.
-Use of STUN and TURN servers may be unnecessary in certain networks
+An ICE agent SHOULD gather server reflexive and relayed candidates.
+However, use of STUN and TURN servers may be unnecessary in certain networks
 and use of TURN servers may be expensive, so some deployments may
 elect not to use them. If an agent does not gather server reflexive
 or relayed candidates, it is RECOMMENDED that the functionality be
@@ -951,7 +947,7 @@ candidates are prioritized like IPv4 server reflexive candidates.
 <section anchor="sec-computing-foundations" title="Computing Foundations">
 
 <t>
-The ICE agent assigns each candidate a foundation. Two candidates MUST
+The ICE agent assigns each candidate a foundation. Two candidates
 have the same foundation when all of the following are true:
 </t>
 
@@ -972,7 +968,7 @@ to obtain them have the same IP address.
 
 </list></t>
 
-<t> Similarly, two candidates MUST have different foundations if their
+<t> Similarly, two candidates have different foundations if their
 types are different, their bases have different IP addresses, the STUN
 or TURN servers used to obtain them have different IP addresses, or
 their transport protocols are different.
@@ -1030,7 +1026,7 @@ initiating and the responding agent.
 
 <t>The recommended formula combines a preference for the candidate
 type (server reflexive, peer reflexive, relayed, and host), a
-preference for IP address for which the candidate was obtained, and
+preference for the IP address for which the candidate was obtained, and
 component ID using the following formula:
 </t>
 
@@ -1401,7 +1397,7 @@ of this specification.
 
 <t>
 There is one check list for each data stream. To form a check list,
-an ICE agent (initiating and responding) forms candidate pairs, computes
+initiating and responding ICE agents form candidate pairs, computes
 pair priorities, orders pairs by priority, prunes pairs, removes
 lower-priority pairs, and sets check list states. If candidates are
 added to a check list (e.g, due to detection of peer reflexive
@@ -2060,7 +2056,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     <section title="Non-Symmetric Transport Addresses">
     <t>The ICE agent MUST check that the source and destination transport addresses
     in the Binding request and response are symmetric. I.e., the source IP address
-    and port of the response MUST be equal the destination IP address and port to which the
+    and port of the response MUST be equal to the destination IP address and port to which the
     Binding request was sent, and that the destination IP address and port of the response
     MUST be equal to the source IP address and port from which the Binding request was sent.
     If the addresses are not symmetric, the agent MUST set the candidate pair state
@@ -2075,7 +2071,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     </t>
     </section>
     <section title="Timeout">
-    <t>If the Binding request times out, the ICE agent SHOULD set
+    <t>If the Binding request times out, the ICE agent MUST set
     the candidate pair state to Failed.
     </t>
     </section>
@@ -2941,8 +2937,6 @@ associated with a data stream, the agent MUST NOT continue
 sending data for any component associated with that data stream.
 </t>
 
-</section>
-
 <section title="Procedures for Lite Implementations">
 
 <t>
@@ -2959,24 +2953,6 @@ in <xref target="RFC5766"/>.
 </t>
 
 </section>
-
-<section title="Procedures for All Implementations">
-
-<t> ICE has interactions with jitter buffer adaptation mechanisms. An
-RTP stream can begin using one candidate, and switch to another one,
-though this happens rarely with ICE. The newer candidate may result in
-RTP packets taking a different path through the network -- one with
-different delay characteristics. As discussed below, ICE agents are
-encouraged to re-adjust jitter buffers when there are changes in
-source or destination address of data packets. Furthermore, many
-audio codecs use the marker bit to signal the beginning of a
-talkspurt, for the purposes of jitter buffer adaptation. For such
-codecs, it is RECOMMENDED that the sender set the marker bit <xref
-target="RFC3550"/> when an agent switches transmission of data from
-one candidate pair to another.  </t>
-
-</section>
-
 </section>
 
 <section anchor="sec-recv-media" title="Receiving Data">
@@ -3010,7 +2986,7 @@ address, but the media data packets come from the same peer agent, this
 MUST NOT be treated as an SSRC collision.
 </t>
 
-
+</section>
 </section>
 
 <section anchor="sec-futureproof" title="Extensibility Considerations">
@@ -3461,313 +3437,6 @@ into the Completed state, and agent R can also send data.
 
 </section>
 
-<section anchor="sec-security" title="Security Considerations">
-
-<t>
-The process of probing for candidates reveals the source addresses of
-the client and its peer to any on-network listening attacker, and the
-process of exchanging candidates reveals the addresses to any attacker
-that is able to see the negotiation. Some addresses, such as the server
-reflexive addresses gathered through the local interface of VPN users,
-may be sensitive information. If these potential attacks can not be
-mitigated, the implementation may want to institute controls for which
-addresses are revealed to the negotiation and/or probing process. Such
-controls need to be specified as part of the ICE usage.
-</t>
-<t>
-There are several types of attacks possible in an ICE system. This
-section considers these attacks and their countermeasures. These
-countermeasures include:
-<list style="symbols">
-<t>Using ICE in conjunction with secure signaling techniques, such as
-SIPS.</t>
-<t>Limiting the total number of connectivity checks to 100, and
-optionally limiting the number of candidates they'll accept in an
-candidate exchange.</t>
-</list>
-</t>
-
-
-<section title="Attacks on Connectivity Checks">
-
-<t>
-An attacker might attempt to disrupt the STUN connectivity
-checks. Ultimately, all of these attacks fool an ICE agent into thinking
-something incorrect about the results of the connectivity checks. The
-possible false conclusions an attacker can try and cause are:
-</t>
-
-<t><list style="hanging">
-
-<t hangText="False Invalid:">An attacker can fool a pair of agents
-into thinking a candidate pair is invalid, when it isn't. This can be
-used to cause an agent to prefer a different candidate (such as one
-injected by the attacker) or to disrupt a call by forcing all
-candidates to fail.
-</t>
-
-<t hangText="False Valid:">An attacker can fool a pair of agents into
-thinking a candidate pair is valid, when it isn't. This can cause an
-agent to proceed with a session, but then not be able to receive any
-data.
-</t>
-
-<t hangText="False Peer Reflexive Candidate:">An attacker can cause an
-agent to discover a new peer reflexive candidate, when it shouldn't
-have. This can be used to redirect data streams to a
-Denial-of-Service (DoS) target or to the attacker, for eavesdropping
-or other purposes.
-</t>
-
-<t hangText="False Valid on False Candidate:">An attacker has already
-convinced an agent that there is a candidate with an address that
-doesn't actually route to that agent (for example, by injecting a
-false peer reflexive candidate or false server reflexive
-candidate). It must then launch an attack that forces the agents to
-believe that this candidate is valid.
-</t>
-
-<t>
-If an attacker can cause a false peer reflexive candidate or false
-valid on a false candidate, it can launch any of the attacks described
-in <xref target="RFC5389"/>.
-</t>
-
-</list></t>
-
-<t> To force the false invalid result, the attacker has to wait for
-the connectivity check from one of the agents to be sent. When it is,
-the attacker needs to inject a fake response with an unrecoverable
-error response, such as a 400. However, since the candidate is, in
-fact, valid, the original request may reach the peer agent, and result
-in a success response. The attacker needs to force this packet or its
-response to be dropped, through a DoS attack, layer 2 network
-disruption, or other technique. If it doesn't do this, the success
-response will also reach the originator, alerting it to a possible
-attack. Fortunately, this attack is mitigated completely through the
-STUN short-term credential mechanism. The attacker needs to inject a
-fake response, and in order for this response to be processed, the
-attacker needs the password. If the candidate exchange signaling is
-secured, the attacker will not have the password and its response will
-be discarded.
-</t>
-
-<t> Forcing the fake valid result works in a similar way. The agent
-needs to wait for the Binding request from each agent, and inject a
-fake success response. The attacker won't need to worry about
-disrupting the actual response since, if the candidate is not valid,
-it presumably wouldn't be received anyway. However, like the fake
-invalid attack, this attack is mitigated by the STUN short-term
-credential mechanism in conjunction with a secure candidate exchange.
-</t>
-
-<t>Forcing the false peer reflexive candidate result can be done
-either with fake requests or responses, or with replays. We consider
-the fake requests and responses case first. It requires the attacker
-to send a Binding request to one agent with a source IP address and
-port for the false candidate. In addition, the attacker must wait for
-a Binding request from the other agent, and generate a fake response
-with a XOR-MAPPED-ADDRESS attribute containing the false
-candidate. Like the other attacks described here, this attack is
-mitigated by the STUN message integrity mechanisms and secure
-candidate exchanges.
-</t>
-
-<t>Forcing the false peer reflexive candidate result with packet
-replays is different. The attacker waits until one of the agents sends
-a check. It intercepts this request, and replays it towards the other
-agent with a faked source IP address. It must also prevent the
-original request from reaching the remote agent, either by launching a
-DoS attack to cause the packet to be dropped, or forcing it to be
-dropped using layer 2 mechanisms. The replayed packet is received at
-the other agent, and accepted, since the integrity check passes (the
-integrity check cannot and does not cover the source IP address and
-port). It is then responded to. This response will contain a
-XOR-MAPPED-ADDRESS with the false candidate, and will be sent to that
-false candidate.  The attacker must then receive it and relay it
-towards the originator.
-</t>
-
-<t>The other agent will then initiate a connectivity check towards
-that false candidate. This validation needs to succeed. This requires
-the attacker to force a false valid on a false candidate. Injecting of
-fake requests or responses to achieve this goal is prevented using the
-integrity mechanisms of STUN and the candidate exchange. Thus, this
-attack can only be launched through replays. To do that, the attacker
-must intercept the check towards this false candidate, and replay it
-towards the other agent. Then, it must intercept the response and
-replay that back as well.  </t>
-
-<t>
-This attack is very hard to launch unless the attacker is identified
-by the fake candidate. This is because it requires the attacker to
-intercept and replay packets sent by two different hosts. If both
-agents are on different networks (for example, across the public
-Internet), this attack can be hard to coordinate, since it needs to
-occur against two different endpoints on different parts of the
-network at the same time.
-</t>
-
-<t>
-If the attacker itself is identified by the fake candidate, the attack
-is easier to coordinate. However, if the data path is secured (e.g.,
-using SRTP <xref target="RFC3711"/>), the attacker will not be able to
-process the data packets, but will only be able to discard them,
-effectively disabling the data stream. However, this
-attack requires the agent to disrupt packets in order to block the
-connectivity check from reaching the target. In that case, if the goal
-is to disrupt the data stream, it's much easier to just disrupt it
-with the same mechanism, rather than attack ICE.
-</t>
-
-</section>
-
-<section title="Attacks on Server Reflexive Address Gathering">
-
-<t>
-ICE endpoints make use of STUN Binding requests for gathering server
-reflexive candidates from a STUN server. These requests are not
-authenticated in any way. As a consequence, there are numerous
-techniques an attacker can employ to provide the client with a false
-server reflexive candidate:
-
-<list style="symbols">
-<t>An attacker can compromise the DNS, causing DNS queries to return a
-  rogue STUN server address. That server can provide the client with
-  fake server reflexive candidates. This attack is mitigated by DNS
-  security, though DNS-SEC is not required to address it.
-</t>
-
-<t>
-  An attacker that can observe STUN messages (such as an attacker on a
-  shared network segment, like WiFi) can inject a fake response that
-  is valid and will be accepted by the client.
-</t>
-
-<t>
-  An attacker can compromise a STUN server by means of a virus, and
-  cause it to send responses with incorrect mapped addresses.
-</t>
-</list>
-
-</t>
-
-<t>
-A false mapped address learned by these attacks will be used as a
-server reflexive candidate in the establishment of the ICE session. For this candidate to
-actually be used for data, the attacker must also attack the
-connectivity checks, and in particular, force a false valid on a false
-candidate. This attack is very hard to launch if the false address
-identifies a fourth party (neither the initiator, responder, nor
-attacker), since it requires attacking the checks generated by each
-ICE agent in the session, and is prevented by SRTP if it identifies the
-attacker itself.
-</t>
-
-<t>If the attacker elects not to attack the connectivity checks, the
-worst it can do is prevent the server reflexive candidate from being
-used. However, if the peer agent has at least one candidate that is
-reachable by the agent under attack, the STUN connectivity checks
-themselves will provide a peer reflexive candidate that can be used
-for the exchange of data. Peer reflexive candidates are generally
-preferred over server reflexive candidates. As such, an attack solely
-on the STUN address gathering will normally have no impact on a session
-at all.  </t>
-
-</section>
-
-<section title="Attacks on Relayed Candidate Gathering">
-
-<t>
-An attacker might attempt to disrupt the gathering of relayed
-candidates, forcing the client to believe it has a false relayed
-candidate. Exchanges with the TURN server are authenticated using a
-long-term credential. Consequently, injection of fake responses or
-requests will not work. In addition, unlike Binding requests, Allocate
-requests are not susceptible to replay attacks with modified source IP
-addresses and ports, since the source IP address and port are not
-utilized to provide the client with its relayed candidate.
-</t>
-
-<t>
-However, TURN servers are susceptible to DNS attacks, or to viruses
-aimed at the TURN server, for purposes of turning it into a zombie or
-rogue server. These attacks can be mitigated by DNS-SEC and through
-good box and software security on TURN servers.
-</t>
-
-<t>
-Even if an attacker has caused the client to believe in a false
-relayed candidate, the connectivity checks cause such a candidate to
-be used only if they succeed. Thus, an attacker must launch a false
-valid on a false candidate, per above, which is a very difficult
-attack to coordinate.
-</t>
-
-</section>
-
-<section title="Insider Attacks">
-
-<t>
-In addition to attacks where the attacker is a third party trying to
-insert fake candidate information or stun messages, there are attacks
-possible with ICE when the attacker is an authenticated and valid
-participant in the ICE exchange.
-</t>
-
-<section anchor="sec-ice-hammer" title="STUN Amplification Attack">
-
-<t>
-The STUN amplification attack is similar to the voice hammer. However,
-instead of voice packets being directed to the target, STUN
-connectivity checks are directed to the target. The attacker sends an
-a large number of candidates, say, 50. The responding agent receives
-the candidate information, and starts its checks, which are directed
-at the target, and consequently, never generate a response. The
-answerer will start a new connectivity check every Ta ms (say,
-Ta=20ms). However, the retransmission timers are set to a large number
-due to the large number of candidates. As a consequence, packets will
-be sent at an interval of one every Ta milliseconds, and then with
-increasing intervals after that. Thus, STUN will not send packets at a
-rate faster than data would be sent, and the STUN packets persist
-only briefly, until ICE fails for the session. Nonetheless, this is an
-amplification mechanism.
-</t>
-
-<t>
-It is impossible to eliminate the amplification, but the volume can be
-reduced through a variety of heuristics. ICE agents SHOULD limit the total
-number of connectivity checks they perform to 100. Additionally,
-agents MAY limit the number of candidates they'll accept.
-</t>
-
-<t>
-Frequently, protocols that wish to avoid these kinds of attacks force
-the initiator to wait for a response prior to sending the next
-message. However, in the case of ICE, this is not possible. It is not
-possible to differentiate the following two cases:
-<list style="symbols">
-<t>There was no response because the initiator is being used to launch
-  a DoS attack against an unsuspecting target that will not respond.
-</t>
-<t>There was no response because the IP address and port are not
-  reachable by the initiator.
-</t>
-</list>
-In the second case, another check should be sent at the next
-opportunity, while in the former case, no further checks should be
-sent.
-</t>
-
-
-</section>
-
-</section>
-
-
-
-</section>
-
 <section title="STUN Extensions">
 
 <section anchor="sec-ice-newatts" title="New Attributes">
@@ -4012,89 +3681,6 @@ standard solutions such as the configuration framework
 
 </section>
 
-<section title="IANA Considerations">
-
-<t>
-The original ICE specification registered four new STUN attributes,
-and one new STUN error response. The STUN attributes and error
-response are reproduced here. In addition, this specification
-registers a new ICE option.
-</t>
-
-
-<section title="STUN Attributes">
-
-<t>
-IANA has registered four STUN attributes:
-</t>
-
-<figure><artwork>
-<![CDATA[
-   0x0024 PRIORITY
-   0x0025 USE-CANDIDATE
-   0x8029 ICE-CONTROLLED
-   0x802A ICE-CONTROLLING
-]]></artwork></figure>
-
-</section>
-
-<section title="STUN Error Responses">
-
-<t>
-IANA has registered following STUN error response code:
-</t>
-
-<figure><artwork>
-<![CDATA[
- 487   Role Conflict: The client asserted an ICE role (controlling or
-       controlled) that is in conflict with the role of the server.
-]]></artwork></figure>
-
-
-</section>
-
-<section title="ICE Options">
-
-<t>
-IANA is requested to register the following ICE option in the "ICE Options"
-sub-registry of the "Interactive Connectivity Establishment (ICE) registry",
-following the procedures defined in <xref target="RFC6336"/>.
-</t>
-
-<figure><artwork>
-<![CDATA[
-
-ICE Option name:
-
-     ice2
-
-  Contact:
-
-     Name:    Christer Holmberg
-     E-mail:  christer.holmberg(at)ericsson(dot)com
-     Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
-
-  Change control:
-
-     IESG
-
-  Description:
-
-     The ICE option indicates that the ICE agent using the ICE option
-     is compliant and implemented according to RFC XXXX.
-
-  Reference:
-
-     RFC XXXX
-
-]]></artwork></figure>
-
-
-</section>
-
-</section>
-
-
 <section anchor="sec-iab" title="IAB Considerations">
 
 <t>
@@ -4305,35 +3891,387 @@ better still.
 
 </section>
 
-<section title="Changes from RFC 5245">
+<section anchor="sec-security" title="Security Considerations">
 
-<t> The purpose of this updated ICE specification is to:
-<list style="symbols">
-<t>Clarify procedures in RFC 5245.</t>
-<t>Make technical changes, due to discovered flows in RFC 5245 and based
-on feedback from the community that has implemented and
-deployed ICE applications based on RFC 5245.</t>
-<t>Make the procedures signaling protocol independent, by
-removing the SIP and SDP procedures. Procedures specific
-to a signaling protocol will be defined in separate usage
-documents. <xref target="I-D.ietf-mmusic-ice-sip-sdp"/> defines
-the ICE usage with SIP and SDP.</t>
-</list>
+<t>
+The process of probing for candidates reveals the source addresses of
+the client and its peer to any on-network listening attacker, and the
+process of exchanging candidates reveals the addresses to any attacker
+that is able to see the negotiation. Some addresses, such as the server
+reflexive addresses gathered through the local interface of VPN users,
+may be sensitive information. If these potential attacks can not be 
+mitigated, ICE usages can define mechanisms for controlling which addresses 
+are revealed to the negotiation and/or probing process. Individual
+implementations may also have implementation-specific rules for
+controlling which addresses are revealed.
+</t>
+<t>
+There are several types of attacks possible in an ICE system. This
+section considers these attacks and their countermeasures.
 </t>
 
-<t> The following technical changes have been done:
-<list style="symbols">
-<t>Aggressive nomination removed.</t>
-<t>The procedures for calculating candidate pair states
-and scheduling connectivity checks modified.</t>
-<t>Procedures for calculation of Ta and RTO modified.</t>
-<t>Active check list and frozen check list definitions removed.</t>
-<t>'ice2' ice option added.</t>
-<t>IPv6 considerations modified.</t>
-<t>Usage with no-op for keepalives, and keepalives with non-ICE
-peers, removed.</t>
-</list>
+
+<section title="Attacks on Connectivity Checks">
+
+<t>
+An attacker might attempt to disrupt the STUN connectivity
+checks. Ultimately, all of these attacks fool an ICE agent into thinking
+something incorrect about the results of the connectivity checks. The
+possible false conclusions an attacker can try and cause are:
 </t>
+
+<t><list style="hanging">
+
+<t hangText="False Invalid:">An attacker can fool a pair of agents
+into thinking a candidate pair is invalid, when it isn't. This can be
+used to cause an agent to prefer a different candidate (such as one
+injected by the attacker) or to disrupt a call by forcing all
+candidates to fail.
+</t>
+
+<t hangText="False Valid:">An attacker can fool a pair of agents into
+thinking a candidate pair is valid, when it isn't. This can cause an
+agent to proceed with a session, but then not be able to receive any
+data.
+</t>
+
+<t hangText="False Peer Reflexive Candidate:">An attacker can cause an
+agent to discover a new peer reflexive candidate, when it shouldn't
+have. This can be used to redirect data streams to a
+Denial-of-Service (DoS) target or to the attacker, for eavesdropping
+or other purposes.
+</t>
+
+<t hangText="False Valid on False Candidate:">An attacker has already
+convinced an agent that there is a candidate with an address that
+doesn't actually route to that agent (for example, by injecting a
+false peer reflexive candidate or false server reflexive
+candidate). It must then launch an attack that forces the agents to
+believe that this candidate is valid.
+</t>
+
+<t>
+If an attacker can cause a false peer reflexive candidate or false
+valid on a false candidate, it can launch any of the attacks described
+in <xref target="RFC5389"/>.
+</t>
+
+</list></t>
+
+<t> To force the false invalid result, the attacker has to wait for
+the connectivity check from one of the agents to be sent. When it is,
+the attacker needs to inject a fake response with an unrecoverable
+error response, such as a 400. However, since the candidate is, in
+fact, valid, the original request may reach the peer agent, and result
+in a success response. The attacker needs to force this packet or its
+response to be dropped, through a DoS attack, layer 2 network
+disruption, or other technique. If it doesn't do this, the success
+response will also reach the originator, alerting it to a possible
+attack. Fortunately, this attack is mitigated completely through the
+STUN short-term credential mechanism. The attacker needs to inject a
+fake response, and in order for this response to be processed, the
+attacker needs the password. If the candidate exchange signaling is
+secured, the attacker will not have the password and its response will
+be discarded.
+</t>
+
+<t> Forcing the fake valid result works in a similar way. The agent
+needs to wait for the Binding request from each agent, and inject a
+fake success response. The attacker won't need to worry about
+disrupting the actual response since, if the candidate is not valid,
+it presumably wouldn't be received anyway. However, like the fake
+invalid attack, this attack is mitigated by the STUN short-term
+credential mechanism in conjunction with a secure candidate exchange.
+</t>
+
+<t>Forcing the false peer reflexive candidate result can be done
+either with fake requests or responses, or with replays. We consider
+the fake requests and responses case first. It requires the attacker
+to send a Binding request to one agent with a source IP address and
+port for the false candidate. In addition, the attacker must wait for
+a Binding request from the other agent, and generate a fake response
+with a XOR-MAPPED-ADDRESS attribute containing the false
+candidate. Like the other attacks described here, this attack is
+mitigated by the STUN message integrity mechanisms and secure
+candidate exchanges.
+</t>
+
+<t>Forcing the false peer reflexive candidate result with packet
+replays is different. The attacker waits until one of the agents sends
+a check. It intercepts this request, and replays it towards the other
+agent with a faked source IP address. It must also prevent the
+original request from reaching the remote agent, either by launching a
+DoS attack to cause the packet to be dropped, or forcing it to be
+dropped using layer 2 mechanisms. The replayed packet is received at
+the other agent, and accepted, since the integrity check passes (the
+integrity check cannot and does not cover the source IP address and
+port). It is then responded to. This response will contain a
+XOR-MAPPED-ADDRESS with the false candidate, and will be sent to that
+false candidate.  The attacker must then receive it and relay it
+towards the originator.
+</t>
+
+<t>The other agent will then initiate a connectivity check towards
+that false candidate. This validation needs to succeed. This requires
+the attacker to force a false valid on a false candidate. Injecting of
+fake requests or responses to achieve this goal is prevented using the
+integrity mechanisms of STUN and the candidate exchange. Thus, this
+attack can only be launched through replays. To do that, the attacker
+must intercept the check towards this false candidate, and replay it
+towards the other agent. Then, it must intercept the response and
+replay that back as well.  </t>
+
+<t>
+This attack is very hard to launch unless the attacker is identified
+by the fake candidate. This is because it requires the attacker to
+intercept and replay packets sent by two different hosts. If both
+agents are on different networks (for example, across the public
+Internet), this attack can be hard to coordinate, since it needs to
+occur against two different endpoints on different parts of the
+network at the same time.
+</t>
+
+<t>
+If the attacker itself is identified by the fake candidate, the attack
+is easier to coordinate. However, if the data path is secured (e.g.,
+using SRTP <xref target="RFC3711"/>), the attacker will not be able to
+process the data packets, but will only be able to discard them,
+effectively disabling the data stream. However, this
+attack requires the agent to disrupt packets in order to block the
+connectivity check from reaching the target. In that case, if the goal
+is to disrupt the data stream, it's much easier to just disrupt it
+with the same mechanism, rather than attack ICE.
+</t>
+
+</section>
+
+<section title="Attacks on Server Reflexive Address Gathering">
+
+<t>
+ICE endpoints make use of STUN Binding requests for gathering server
+reflexive candidates from a STUN server. These requests are not
+authenticated in any way. As a consequence, there are numerous
+techniques an attacker can employ to provide the client with a false
+server reflexive candidate:
+
+<list style="symbols">
+<t>An attacker can compromise the DNS, causing DNS queries to return a
+  rogue STUN server address. That server can provide the client with
+  fake server reflexive candidates. This attack is mitigated by DNS
+  security, though DNS-SEC is not required to address it.
+</t>
+
+<t>
+  An attacker that can observe STUN messages (such as an attacker on a
+  shared network segment, like WiFi) can inject a fake response that
+  is valid and will be accepted by the client.
+</t>
+
+<t>
+  An attacker can compromise a STUN server, and
+  cause it to send responses with incorrect mapped addresses.
+</t>
+</list>
+
+</t>
+
+<t>
+A false mapped address learned by these attacks will be used as a
+server reflexive candidate in the establishment of the ICE session. For this candidate to
+actually be used for data, the attacker must also attack the
+connectivity checks, and in particular, force a false valid on a false
+candidate. This attack is very hard to launch if the false address
+identifies a fourth party (neither the initiator, responder, nor
+attacker), since it requires attacking the checks generated by each
+ICE agent in the session, and is prevented by SRTP if it identifies the
+attacker itself.
+</t>
+
+<t>If the attacker elects not to attack the connectivity checks, the
+worst it can do is prevent the server reflexive candidate from being
+used. However, if the peer agent has at least one candidate that is
+reachable by the agent under attack, the STUN connectivity checks
+themselves will provide a peer reflexive candidate that can be used
+for the exchange of data. Peer reflexive candidates are generally
+preferred over server reflexive candidates. As such, an attack solely
+on the STUN address gathering will normally have no impact on a session
+at all.  </t>
+
+</section>
+
+<section title="Attacks on Relayed Candidate Gathering">
+
+<t>
+An attacker might attempt to disrupt the gathering of relayed
+candidates, forcing the client to believe it has a false relayed
+candidate. Exchanges with the TURN server are authenticated using a
+long-term credential. Consequently, injection of fake responses or
+requests will not work. In addition, unlike Binding requests, Allocate
+requests are not susceptible to replay attacks with modified source IP
+addresses and ports, since the source IP address and port are not
+utilized to provide the client with its relayed candidate.
+</t>
+
+<t>
+However, TURN servers are susceptible to DNS attacks for purposes 
+of turning it into a zombie or rogue server. These attacks can be 
+mitigated by DNS-SEC and through good box and software security on TURN servers.
+</t>
+
+<t>
+Even if an attacker has caused the client to believe in a false
+relayed candidate, the connectivity checks cause such a candidate to
+be used only if they succeed. Thus, an attacker must launch a false
+valid on a false candidate, per above, which is a very difficult
+attack to coordinate.
+</t>
+
+</section>
+
+<section title="Insider Attacks">
+
+<t>
+In addition to attacks where the attacker is a third party trying to
+insert fake candidate information or stun messages, there are attacks
+possible with ICE when the attacker is an authenticated and valid
+participant in the ICE exchange.
+</t>
+
+<section anchor="sec-ice-hammer" title="STUN Amplification Attack">
+
+<t>
+he STUN amplification attack is similar to a voice hammer attack, where
+the attacker causes other agents to direct voice packets to the
+attack target. However, instead of voice packets being directed to the target, 
+STUN connectivity checks are directed to the target. The attacker sends an
+a large number of candidates, say, 50. The responding agent receives
+the candidate information, and starts its checks, which are directed
+at the target, and consequently, never generate a response. The
+answerer will start a new connectivity check every Ta ms (say,
+Ta=20ms). However, the retransmission timers are set to a large number
+due to the large number of candidates. As a consequence, packets will
+be sent at an interval of one every Ta milliseconds, and then with
+increasing intervals after that. Thus, STUN will not send packets at a
+rate faster than data would be sent, and the STUN packets persist
+only briefly, until ICE fails for the session. Nonetheless, this is an
+amplification mechanism.
+</t>
+
+<t>
+It is impossible to eliminate the amplification, but the volume can be
+reduced through a variety of heuristics. ICE agents SHOULD limit the total
+number of connectivity checks they perform to 100. Additionally,
+agents MAY limit the number of candidates they will accept.
+</t>
+
+<t>
+Frequently, protocols that wish to avoid these kinds of attacks force
+the initiator to wait for a response prior to sending the next
+message. However, in the case of ICE, this is not possible. It is not
+possible to differentiate the following two cases:
+<list style="symbols">
+<t>There was no response because the initiator is being used to launch
+  a DoS attack against an unsuspecting target that will not respond.
+</t>
+<t>There was no response because the IP address and port are not
+  reachable by the initiator.
+</t>
+</list>
+In the second case, another check should be sent at the next
+opportunity, while in the former case, no further checks should be
+sent.
+</t>
+
+
+</section>
+
+</section>
+
+
+
+</section>
+
+
+<section title="IANA Considerations">
+
+<t>
+The original ICE specification registered four new STUN attributes,
+and one new STUN error response. The STUN attributes and error
+response are reproduced here. In addition, this specification
+registers a new ICE option.
+</t>
+
+
+<section title="STUN Attributes">
+
+<t>
+IANA has registered four STUN attributes:
+</t>
+
+<figure><artwork>
+<![CDATA[
+   0x0024 PRIORITY
+   0x0025 USE-CANDIDATE
+   0x8029 ICE-CONTROLLED
+   0x802A ICE-CONTROLLING
+]]></artwork></figure>
+
+</section>
+
+<section title="STUN Error Responses">
+
+<t>
+IANA has registered following STUN error response code:
+</t>
+
+<figure><artwork>
+<![CDATA[
+ 487   Role Conflict: The client asserted an ICE role (controlling or
+       controlled) that is in conflict with the role of the server.
+]]></artwork></figure>
+
+
+</section>
+
+<section title="ICE Options">
+
+<t>
+IANA is requested to register the following ICE option in the "ICE Options"
+sub-registry of the "Interactive Connectivity Establishment (ICE) registry",
+following the procedures defined in <xref target="RFC6336"/>.
+</t>
+
+<figure><artwork>
+<![CDATA[
+
+ICE Option name:
+
+     ice2
+
+  Contact:
+
+     Name:    Christer Holmberg
+     E-mail:  christer.holmberg(at)ericsson(dot)com
+     Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
+
+  Change control:
+
+     IESG
+
+  Description:
+
+     The ICE option indicates that the ICE agent using the ICE option
+     is compliant and implemented according to RFC XXXX.
+
+  Reference:
+
+     RFC XXXX
+
+]]></artwork></figure>
+
+
+</section>
+
 </section>
 
 <section title="Acknowledgements">
@@ -4375,8 +4313,6 @@ and Roman Shpount. </t>
 <?rfc include="reference.RFC.3711"?>
 <?rfc include="reference.RFC.3879"?>
 <?rfc include="reference.RFC.4038"?>
-<?rfc include="reference.RFC.4091"?>
-<?rfc include="reference.RFC.4092"?>
 <?rfc include="reference.RFC.4291"?>
 <?rfc include="reference.RFC.4566"?>
 <?rfc include="reference.RFC.2475"?>
@@ -4396,6 +4332,37 @@ and Roman Shpount. </t>
 <?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
 
 </references>
+
+<section title="Changes from RFC 5245">
+
+<t> The purpose of this updated ICE specification is to:
+<list style="symbols">
+<t>Clarify procedures in RFC 5245.</t>
+<t>Make technical changes, due to discovered flows in RFC 5245 and based
+on feedback from the community that has implemented and
+deployed ICE applications based on RFC 5245.</t>
+<t>Make the procedures signaling protocol independent, by
+removing the SIP and SDP procedures. Procedures specific
+to a signaling protocol will be defined in separate usage
+documents. <xref target="I-D.ietf-mmusic-ice-sip-sdp"/> defines
+the ICE usage with SIP and SDP.</t>
+</list>
+</t>
+
+<t> The following technical changes have been done:
+<list style="symbols">
+<t>Aggressive nomination removed.</t>
+<t>The procedures for calculating candidate pair states
+and scheduling connectivity checks modified.</t>
+<t>Procedures for calculation of Ta and RTO modified.</t>
+<t>Active check list and frozen check list definitions removed.</t>
+<t>'ice2' ice option added.</t>
+<t>IPv6 considerations modified.</t>
+<t>Usage with no-op for keepalives, and keepalives with non-ICE
+peers, removed.</t>
+</list>
+</t>
+</section>
 
 <section anchor="sec-liteandfull" title="Lite and Full Implementations">
 
@@ -4449,10 +4416,8 @@ specification to provide a stepping stone to full implementation. Even
 for devices that are always connected to the public Internet with just
 a single IPv4 address, a full implementation is preferable if
 achievable. Full implementations also obtain
-the security benefits of ICE unrelated to NAT traversal; in
-particular, the voice hammer attack described in <xref
-target="sec-security"/> is prevented only for full implementations,
-not lite. Finally, it is often the case that a device that finds
+the security benefits of ICE unrelated to NAT traversal.
+Finally, it is often the case that a device that finds
 itself with a public address today will be placed in a network
 tomorrow where it will be behind a NAT. It is difficult to
 definitively know, over the lifetime of a device or product, that it
