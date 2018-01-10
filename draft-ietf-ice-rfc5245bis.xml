@@ -420,6 +420,7 @@ ICE assigns one of the ICE agents in the role of the
 controlling agent, and the other of the controlled agent. For each 
 component of a data stream, the controlling agent nominates
 a valid pair (from the valid list) to be used for data.
+The exact timing of the nomination is based on local policy.
 </t>
 <t>
 When nominating, the controlling agent lets the checks continue
@@ -503,7 +504,7 @@ and "OPTIONAL" in this document are to be interpreted as described in
 <xref target="RFC2119">RFC 2119</xref>.  </t>
 
 <t>
-Readers needs to be familiar with the terminology defined in 
+Readers need to be familiar with the terminology defined in 
 <xref target="RFC5389"/>, and NAT Behavioral requirements
 for UDP <xref target="RFC4787"/>.
 </t>
@@ -680,7 +681,7 @@ controlling agent to nominate a candidate pair.
 
 <t hangText="Nomination, Regular Nomination:"> The process of the
 controlling agent indicating to the controlled agent which candidate
-pair the ICE agents shall use for sending and receiving data.
+pair the ICE agents will use for sending and receiving data.
 </t>
 
 <t hangText="Nominated, Nominated Flag:"> Once the nomination of a 
@@ -2967,7 +2968,7 @@ candidate pairs (and, once selected pairs have been produced, only
 on the selected pairs) ICE implementations SHOULD by default be prepared
 to receive data on any of the candidates provided in the most recent
 candidate exchange with the peer. ICE usages MAY define rules
-that differs from this, e.g., by defining that data shall not be sent
+that differs from this, e.g., by defining that data will not be sent
 until selected pairs have been produced for a data stream.
 </t>
 
@@ -3458,7 +3459,7 @@ value of 0x0024.
 
 <t>
 The USE-CANDIDATE attribute indicates that the candidate pair
-resulting from this check shall be used for transmission of
+resulting from this check will be used for transmission of
 data. The attribute has no content (the Length field of the attribute
 is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
@@ -3704,15 +3705,15 @@ considerations. This section meets those requirements.
 <section title="Problem Definition">
 
 <t>
-From RFC 3424, any UNSAF proposal shall provide:
+From RFC 3424, any UNSAF proposal needs to provide:
 </t>
 
 <t><list style="hanging">
 <t>
 Precise definition of a specific, limited-scope problem that is to be
-solved with the UNSAF proposal.  A short-term fix shall not be
-generalized to solve other problems; this is why "short-term fixes
-usually aren't".
+solved with the UNSAF proposal. A short-term fix will not be
+generalized in order to solve other problems; this is why "short-term 
+fixes usually aren't".
 </t>
 </list></t>
 
@@ -3739,7 +3740,7 @@ reachable by another peer with which it wishes to communicate.
 <section title="Exit Strategy">
 
 <t>
-From RFC 3424, any UNSAF proposal shall provide:
+From RFC 3424, any UNSAF proposal needs to provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3776,7 +3777,7 @@ address to use when communicating with a peer.
 <section title="Brittleness Introduced by ICE">
 
 <t>
-From RFC 3424, any UNSAF proposal shall provide:
+From RFC 3424, any UNSAF proposal needs to provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3841,7 +3842,7 @@ establishment times.
 
 <section title="Requirements for a Long-Term Solution">
 
-<t>From RFC 3424, any UNSAF proposal shall provide:
+<t>From RFC 3424, any UNSAF proposal needs to provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3861,7 +3862,7 @@ solution.
 
 <section title="Issues with Existing NAPT Boxes">
 
-<t>From RFC 3424, any UNSAF proposal shall provide:
+<t>From RFC 3424, any UNSAF proposal needs to provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -4470,7 +4471,7 @@ is kept at a reasonable rate.
 </t>
 
 <t>
-The definition of a "reasonable" rate is that STUN shall not use more
+The definition of a "reasonable" rate is that STUN MUST NOT use more
 bandwidth than the RTP itself will use, once data starts flowing. The
 formula for Ta is designed so that, if a STUN packet were sent every
 Ta seconds, it would consume the same amount of bandwidth as RTP
