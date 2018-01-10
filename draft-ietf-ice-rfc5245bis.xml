@@ -111,6 +111,10 @@ offer/answer exchange) and the connectivity checks are performed using
 Session Traversal Utilities for NAT (STUN) specification <xref
 target="RFC5389"/>. ICE also makes use of Traversal Using Relays
 around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
+Because ICE exchanges a multiplicity of IP addresses and ports for each media
+stream, it also allows for address selection for multihomed and dual-
+stack hosts. For this reason RFC 5245 <xref target="RFC5245"/> deprecated 
+RFC 4091 <xref target="RFC4091"/> and RFC 4092 <xref target="RFC4092"/>.
 </t>
 
 </section>
@@ -419,9 +423,9 @@ a valid pair (from the valid list) to be used for data.
 </t>
 <t>
 When nominating, the controlling agent lets the checks continue
-until at least one valid candidate pair for each component of a 
-data stream is found and then picks a candidate pair from the valid 
-candidate pairs and sends a STUN request on the pair, using an attribute 
+until at least one valid pair for each component of a 
+data stream is found and then picks a valid pair and sends a 
+STUN request on the valid pair, using an attribute 
 to indicate to the controlled peer that it has nominated the pair.
 This is shown in <xref target="fig-regular-select"/>.
 </t>
@@ -499,7 +503,7 @@ and "OPTIONAL" in this document are to be interpreted as described in
 <xref target="RFC2119">RFC 2119</xref>.  </t>
 
 <t>
-Readers should be familiar with the terminology defined in 
+Readers needs to be familiar with the terminology defined in 
 <xref target="RFC5389"/>, and NAT Behavioral requirements
 for UDP <xref target="RFC4787"/>.
 </t>
@@ -637,7 +641,7 @@ it to send a check.
 consequence of the receipt of a connectivity check from the peer.
 </t>
 
-<t hangText="Valid Pair, Valid Candidate Pair:"> A candidate pair whose 
+<t hangText="Valid Pair:"> A candidate pair whose 
 local candidate equals the mapped address of a successful connectivity 
 check response, and whose remote candidate equals the destination address to 
 which the connectivity check request was sent.
@@ -676,7 +680,7 @@ controlling agent to nominate a candidate pair.
 
 <t hangText="Nomination, Regular Nomination:"> The process of the
 controlling agent indicating to the controlled agent which candidate
-pair the ICE agents should use for sending and receiving data.
+pair the ICE agents shall use for sending and receiving data.
 </t>
 
 <t hangText="Nominated, Nominated Flag:"> Once the nomination of a 
@@ -687,7 +691,7 @@ and the value of its nominated flag is set to true.
 <t hangText="Selected Pair, Selected Candidate Pair:"> The candidate
 pair used for sending and receiving data for a component of a data stream is
 referred to as the selected pair. Before selected pairs have been produced for a data stream, 
-any valid candidate pair associated with a component of a data stream
+any valid pair associated with a component of a data stream
 can be used for sending and receiving data for the component.
 Once there are nominated pairs for each component of a data
 stream, the nominated pairs become the selected pairs for the data stream. 
@@ -1057,7 +1061,7 @@ address, this value SHOULD be set to 65535.  If there
 are multiple candidates for a particular component for a particular
 data stream that have the same type, the local preference MUST be
 unique for each one. If an ICE agent is dual-stack, the local preference
-should be set according to the current best practice described in <xref
+SHOULD be set according to the current best practice described in <xref
 target="I-D.ietf-ice-dualstack-fairness"/>.</t>
 
 
@@ -1212,8 +1216,8 @@ candidate:
     values if the agent does not want to reveal them, e.g., for
     privacy reasons.</t>
 
-    <t hangText="Extensibility Parameters:"> The using protocol should
-    define some means for adding new per-candidate ICE parameters in
+    <t hangText="Extensibility Parameters:"> The using protocol might
+    define means for adding new per-candidate ICE parameters in
     the future.</t>
   </list>
 </t>
@@ -1418,8 +1422,8 @@ Failed yet. Check lists are initially set to the Running state.
 for each component of the data stream.
 </t>
 
-<t hangText="Failed:">The check list does not have a valid candidate
-pair for each component of the data stream and all of the candidate
+<t hangText="Failed:">The check list does not have a valid pair
+for each component of the data stream and all of the candidate
 pairs in the check list are in either the Failed or Succeeded state.
 In other words, at least one component of the check list has candidate
 pairs that are all in the Failed state, which means the component has 
@@ -1706,7 +1710,7 @@ list set order) that has that foundation.
 
 </list></t>
 
-<t>NOTE: The procedures above are different from RFC5245, where only
+<t>NOTE: The procedures above are different from RFC 5245, where only
 candidate pairs in the first check list of were initially placed in
 the Waiting state.  Now it applies to candidate pairs in the the first
 check list which have that foundation, even if the first check list to
@@ -2118,7 +2122,7 @@ candidates for the data stream. The username fragment and password
 are the same as for all other local candidates for that data stream.
 </t>
 <t>The ICE agent does not need to pair the peer reflexive
-candidate with remote candidates, as a valid candidate pair will be
+candidate with remote candidates, as a valid pair will be
 created due to the procedures in <xref target="sec-valid-cons"/>.
 If an agent wishes to pair the peer reflexive candidate with
 remote candidates other than the one in the valid pair that will
@@ -2164,7 +2168,7 @@ exchange. If the type is peer reflexive, it is equal to the PRIORITY
 attribute the agent placed in the Binding request that just
 completed. The priority of the remote candidate is taken from the
 candidate information of the peer. If the candidate does not appear
-there, then the check must have been a triggered check to a new remote
+there, then the check has been a triggered check to a new remote
 candidate. In that case, the priority is taken as the value of the
 PRIORITY attribute in the Binding request that triggered the check
 that just completed. The pair is then added to the valid list.
@@ -2594,7 +2598,7 @@ MUST produce the selected pairs using the pairs with the highest priority.</t>
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
 'ice2' ice option <xref target="sec-ice-option"/> by endpoints supporting this 
-specification should prevent such controlling agents from using aggressive nomination.
+specification is supposed to prevent such controlling agents from using aggressive nomination.
 </t>
 
 </section>
@@ -2813,7 +2817,7 @@ This section defines a new ICE option, 'ice2'. The ICE option
 indicates that the ICE agent that includes it in a candidate exchange
 is compliant to this specification. For example, the
 agent will not use the aggressive nomination procedure
-defined in <xref target="RFC5245"/>.
+defined in RFC 5245.
 </t>
 <t>
 An agent compliant to this specification MUST inform the peer
@@ -2889,7 +2893,7 @@ ICE extensions MAY specify usage/extension-specific keepalives.
 <section anchor="sec-send-media" title="Sending Data">
 
 <t>
-An ICE agent MAY send data on any valid candidate pair before 
+An ICE agent MAY send data on any valid pair before 
 selected pairs have been produced for the data stream.
 </t>
 
@@ -2963,7 +2967,7 @@ candidate pairs (and, once selected pairs have been produced, only
 on the selected pairs) ICE implementations SHOULD by default be prepared
 to receive data on any of the candidates provided in the most recent
 candidate exchange with the peer. ICE usages MAY define rules
-that differs from this, e.g., by defining that data must not be sent
+that differs from this, e.g., by defining that data shall not be sent
 until selected pairs have been produced for a data stream.
 </t>
 
@@ -3034,7 +3038,7 @@ ICE is also extensible to other data streams beyond RTP, and for
 transport protocols beyond UDP. Extensions to ICE for non-RTP data
 streams need to specify how many components they utilize, and assign
 component IDs to them, starting at 1 for the most important component
-ID. Specifications for new transport protocols must define how, if at
+ID. Specifications for new transport protocols MUST define how, if at
 all, various steps in the ICE processing differ from UDP.
 </t>
 
@@ -3076,8 +3080,7 @@ to cause that pair to take a long time to be validated, and instead, a
 lower-priority check (but one for which there was no packet loss) is
 much more likely to complete first. This results in ICE performing
 sub-optimally, choosing lower-priority pairs over higher-priority
-pairs. Implementors should be aware of this consequence, but still
-should utilize the timer values described here.
+pairs.
 </t>
 
 </section>
@@ -3448,14 +3451,14 @@ USE-CANDIDATE, ICE-CONTROLLED, and ICE-CONTROLLING.
 
 <t>
 The PRIORITY attribute indicates the priority that is to be
-associated with a peer reflexive candidate, should one be discovered
+associated with a peer reflexive candidate, if one will be discovered
 by this check. It is a 32-bit unsigned integer, and has an attribute
 value of 0x0024.
 </t>
 
 <t>
 The USE-CANDIDATE attribute indicates that the candidate pair
-resulting from this check should be used for transmission of
+resulting from this check shall be used for transmission of
 data. The attribute has no content (the Length field of the attribute
 is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
@@ -3535,7 +3538,7 @@ reducing the bandwidth demands on the network operator.
 
 <t>
 Deployment of ICE can have several interactions with available network
-capacity that operators should take into consideration.
+capacity that operators need to take into consideration.
 </t>
 
 <section title="STUN and TURN Server Capacity Planning">
@@ -3592,7 +3595,7 @@ Congestion due to the gathering and check phases has proven to be a
 problem in deployments that did not utilize pacing. Typically, access
 links became congested as the endpoints flooded the network with
 checks as fast as they can send them. Consequently, network operators
-should make sure that their ICE implementations support the pacing
+need to ensure that their ICE implementations support the pacing
 feature. Though this pacing does increase call setup times, it makes
 ICE network friendly and easier to deploy.
 </t>
@@ -3701,13 +3704,13 @@ considerations. This section meets those requirements.
 <section title="Problem Definition">
 
 <t>
-From RFC 3424, any UNSAF proposal must provide:
+From RFC 3424, any UNSAF proposal shall provide:
 </t>
 
 <t><list style="hanging">
 <t>
 Precise definition of a specific, limited-scope problem that is to be
-solved with the UNSAF proposal.  A short-term fix should not be
+solved with the UNSAF proposal.  A short-term fix shall not be
 generalized to solve other problems; this is why "short-term fixes
 usually aren't".
 </t>
@@ -3736,7 +3739,7 @@ reachable by another peer with which it wishes to communicate.
 <section title="Exit Strategy">
 
 <t>
-From RFC 3424, any UNSAF proposal must provide:
+From RFC 3424, any UNSAF proposal shall provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3773,7 +3776,7 @@ address to use when communicating with a peer.
 <section title="Brittleness Introduced by ICE">
 
 <t>
-From RFC 3424, any UNSAF proposal must provide:
+From RFC 3424, any UNSAF proposal shall provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3838,7 +3841,7 @@ establishment times.
 
 <section title="Requirements for a Long-Term Solution">
 
-<t>From RFC 3424, any UNSAF proposal must provide:
+<t>From RFC 3424, any UNSAF proposal shall provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3858,7 +3861,7 @@ solution.
 
 <section title="Issues with Existing NAPT Boxes">
 
-<t>From RFC 3424, any UNSAF proposal must provide:
+<t>From RFC 3424, any UNSAF proposal shall provide:
 </t>
 
 <t><list style="hanging"><t>
@@ -3936,17 +3939,17 @@ data.
 </t>
 
 <t hangText="False Peer Reflexive Candidate:">An attacker can cause an
-agent to discover a new peer reflexive candidate, when it shouldn't
-have. This can be used to redirect data streams to a
+agent to discover a new peer reflexive candidate when it is not expected
+to. This can be used to redirect data streams to a
 Denial-of-Service (DoS) target or to the attacker, for eavesdropping
 or other purposes.
 </t>
 
 <t hangText="False Valid on False Candidate:">An attacker has already
 convinced an agent that there is a candidate with an address that
-doesn't actually route to that agent (for example, by injecting a
+does not actually route to that agent (for example, by injecting a
 false peer reflexive candidate or false server reflexive
-candidate). It must then launch an attack that forces the agents to
+candidate). The attacker then launches an attack that forces the agents to
 believe that this candidate is valid.
 </t>
 
@@ -3988,7 +3991,7 @@ credential mechanism in conjunction with a secure candidate exchange.
 either with fake requests or responses, or with replays. We consider
 the fake requests and responses case first. It requires the attacker
 to send a Binding request to one agent with a source IP address and
-port for the false candidate. In addition, the attacker must wait for
+port for the false candidate. In addition, the attacker needs to wait for
 a Binding request from the other agent, and generate a fake response
 with a XOR-MAPPED-ADDRESS attribute containing the false
 candidate. Like the other attacks described here, this attack is
@@ -3999,7 +4002,7 @@ candidate exchanges.
 <t>Forcing the false peer reflexive candidate result with packet
 replays is different. The attacker waits until one of the agents sends
 a check. It intercepts this request, and replays it towards the other
-agent with a faked source IP address. It must also prevent the
+agent with a faked source IP address. It also needs to prevent the
 original request from reaching the remote agent, either by launching a
 DoS attack to cause the packet to be dropped, or forcing it to be
 dropped using layer 2 mechanisms. The replayed packet is received at
@@ -4007,7 +4010,7 @@ the other agent, and accepted, since the integrity check passes (the
 integrity check cannot and does not cover the source IP address and
 port). It is then responded to. This response will contain a
 XOR-MAPPED-ADDRESS with the false candidate, and will be sent to that
-false candidate.  The attacker must then receive it and relay it
+false candidate.  The attacker then needs to receive it and relay it
 towards the originator.
 </t>
 
@@ -4017,8 +4020,8 @@ the attacker to force a false valid on a false candidate. Injecting of
 fake requests or responses to achieve this goal is prevented using the
 integrity mechanisms of STUN and the candidate exchange. Thus, this
 attack can only be launched through replays. To do that, the attacker
-must intercept the check towards this false candidate, and replay it
-towards the other agent. Then, it must intercept the response and
+needs to intercept the check towards this false candidate, and replay it
+towards the other agent. Then, it needs to intercept the response and
 replay that back as well.  </t>
 
 <t>
@@ -4078,7 +4081,7 @@ server reflexive candidate:
 <t>
 A false mapped address learned by these attacks will be used as a
 server reflexive candidate in the establishment of the ICE session. For this candidate to
-actually be used for data, the attacker must also attack the
+actually be used for data, the attacker also needs to attack the
 connectivity checks, and in particular, force a false valid on a false
 candidate. This attack is very hard to launch if the false address
 identifies a fourth party (neither the initiator, responder, nor
@@ -4121,7 +4124,7 @@ mitigated by DNS-SEC and through good box and software security on TURN servers.
 <t>
 Even if an attacker has caused the client to believe in a false
 relayed candidate, the connectivity checks cause such a candidate to
-be used only if they succeed. Thus, an attacker must launch a false
+be used only if they succeed. Thus, an attacker needs to launch a false
 valid on a false candidate, per above, which is a very difficult
 attack to coordinate.
 </t>
@@ -4140,7 +4143,7 @@ participant in the ICE exchange.
 <section anchor="sec-ice-hammer" title="STUN Amplification Attack">
 
 <t>
-he STUN amplification attack is similar to a voice hammer attack, where
+he STUN amplification attack is similar to a "voice hammer" attack, where
 the attacker causes other agents to direct voice packets to the
 attack target. However, instead of voice packets being directed to the target, 
 STUN connectivity checks are directed to the target. The attacker sends an
@@ -4177,8 +4180,8 @@ possible to differentiate the following two cases:
   reachable by the initiator.
 </t>
 </list>
-In the second case, another check should be sent at the next
-opportunity, while in the former case, no further checks should be
+In the second case, another check will be sent at the next
+opportunity, while in the former case, no further checks will be
 sent.
 </t>
 
@@ -4274,6 +4277,37 @@ ICE Option name:
 
 </section>
 
+<section title="Changes from RFC 5245">
+
+<t> The purpose of this updated ICE specification is to:
+<list style="symbols">
+<t>Clarify procedures in RFC 5245.</t>
+<t>Make technical changes, due to discovered flows in RFC 5245 and based
+on feedback from the community that has implemented and
+deployed ICE applications based on RFC 5245.</t>
+<t>Make the procedures signaling protocol independent, by
+removing the SIP and SDP procedures. Procedures specific
+to a signaling protocol will be defined in separate usage
+documents. <xref target="I-D.ietf-mmusic-ice-sip-sdp"/> defines
+the ICE usage with SIP and SDP.</t>
+</list>
+</t>
+
+<t> The following technical changes have been done:
+<list style="symbols">
+<t>Aggressive nomination removed.</t>
+<t>The procedures for calculating candidate pair states
+and scheduling connectivity checks modified.</t>
+<t>Procedures for calculation of Ta and RTO modified.</t>
+<t>Active check list and frozen check list definitions removed.</t>
+<t>'ice2' ice option added.</t>
+<t>IPv6 considerations modified.</t>
+<t>Usage with no-op for keepalives, and keepalives with non-ICE
+peers, removed.</t>
+</list>
+</t>
+</section>
+
 <section title="Acknowledgements">
 
 <t> Most of the text in this document comes from the original ICE
@@ -4320,6 +4354,8 @@ and Roman Shpount. </t>
 <?rfc include="reference.RFC.4787"?>
 <?rfc include="reference.RFC.5761"?>
 <?rfc include="reference.RFC.4103"?>
+<?rfc include="reference.RFC.4091"?>
+<?rfc include="reference.RFC.4092"?>
 <?rfc include="reference.RFC.5245"?>
 <?rfc include="reference.RFC.5382"?>
 <?rfc include="reference.RFC.6080"?>
@@ -4332,37 +4368,6 @@ and Roman Shpount. </t>
 <?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
 
 </references>
-
-<section title="Changes from RFC 5245">
-
-<t> The purpose of this updated ICE specification is to:
-<list style="symbols">
-<t>Clarify procedures in RFC 5245.</t>
-<t>Make technical changes, due to discovered flows in RFC 5245 and based
-on feedback from the community that has implemented and
-deployed ICE applications based on RFC 5245.</t>
-<t>Make the procedures signaling protocol independent, by
-removing the SIP and SDP procedures. Procedures specific
-to a signaling protocol will be defined in separate usage
-documents. <xref target="I-D.ietf-mmusic-ice-sip-sdp"/> defines
-the ICE usage with SIP and SDP.</t>
-</list>
-</t>
-
-<t> The following technical changes have been done:
-<list style="symbols">
-<t>Aggressive nomination removed.</t>
-<t>The procedures for calculating candidate pair states
-and scheduling connectivity checks modified.</t>
-<t>Procedures for calculation of Ta and RTO modified.</t>
-<t>Active check list and frozen check list definitions removed.</t>
-<t>'ice2' ice option added.</t>
-<t>IPv6 considerations modified.</t>
-<t>Usage with no-op for keepalives, and keepalives with non-ICE
-peers, removed.</t>
-</list>
-</t>
-</section>
 
 <section anchor="sec-liteandfull" title="Lite and Full Implementations">
 
@@ -4465,7 +4470,7 @@ is kept at a reasonable rate.
 </t>
 
 <t>
-The definition of a "reasonable" rate is that STUN should not use more
+The definition of a "reasonable" rate is that STUN shall not use more
 bandwidth than the RTP itself will use, once data starts flowing. The
 formula for Ta is designed so that, if a STUN packet were sent every
 Ta seconds, it would consume the same amount of bandwidth as RTP
@@ -4677,7 +4682,7 @@ registered range, the odds are good that the port is not used to run a
 server on host R, but rather is the agent side of some protocol. This
 decreases the probability of hitting an allocated port, due to the
 transient nature of port usage in this range. However, the possibility
-of a problem does exist, and network deployers should be prepared for
+of a problem does exist, and network deployers need to be prepared for
 it. Note that this is not a problem specific to ICE; stray packets can
 arrive at a port at any time for any type of protocol, especially ones
 on the public Internet. As such, this requirement is just restating a
@@ -4808,24 +4813,24 @@ large-scale endpoints, such as PSTN gateways and SBCs.
 
 <t>One criterion for selection of the type and local preference values
 is the use of a data intermediary, such as a TURN server, a tunnel
-service such as VPN server, or NAT.  With a data intermediary, if
+service such as VPN server, or NAT. With a data intermediary, if
 data is sent to that candidate, it will first transit the data
-intermediary before being received.  Relayed candidates are one type
-of candidate that involves a data intermediary.  Another are host
-candidates obtained from a VPN interface.  When data is transited
+intermediary before being received. Relayed candidates are one type
+of candidate that involves a data intermediary. Another are host
+candidates obtained from a VPN interface. When data is transited
 through a data intermediary, it can have a positive or negative
-effect on the latency between transmission and reception.  It may or
+effect on the latency between transmission and reception. It may or
 may not increase the packet losses, because of the additional router
-hops that may be taken.  It may increase the cost of providing
+hops that may be taken. It may increase the cost of providing
 service, since data will be routed in and right back out of a data
-intermediary run by a provider.  If these concerns are important, the
-type preference for relayed candidates must be carefully chosen.</t>
+intermediary run by a provider. If these concerns are important, the
+type preference for relayed candidates needs to be carefully chosen.</t>
 
 <t>Another criterion for selection of preferences is IP address
-family.  ICE works with both IPv4 and IPv6.  It provides a transition
+family. ICE works with both IPv4 and IPv6. It provides a transition
 mechanism that allows dual-stack hosts to prefer connectivity over
 IPv6, but to fall back to IPv4 in case the v6 networks are
-disconnected. Implementation should follow the guidelines from <xref
+disconnected. Implementation SHOULD follow the guidelines from <xref
 target= "I-D.ietf-ice-dualstack-fairness"/> to avoid excessive delays
 in the connectivity check phase if broken paths exist.</t>
 
@@ -4837,12 +4842,12 @@ intermediaries to itself, it can use that to assign higher local
 preferences to candidates obtained from closer intermediaries.</t>
 
 <t>Another criterion for selecting preferences might be security or
-privacy.  If a user is a telecommuter, and therefore connected to a
+privacy. If a user is a telecommuter, and therefore connected to a
 corporate network and a local home network, the user may prefer their
 voice traffic to be routed over the VPN or similar tunnel in order to
 keep it on the corporate network when communicating within the
 enterprise, but use the local network when communicating with users
-outside of the enterprise.  In such a case, a VPN address would have a
+outside of the enterprise. In such a case, a VPN address would have a
 higher local preference than any other address.</t>
 
 </section>
