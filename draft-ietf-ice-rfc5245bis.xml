@@ -117,6 +117,10 @@ stack hosts. For this reason RFC 5245 <xref target="RFC5245"/> deprecated
 RFC 4091 <xref target="RFC4091"/> and RFC 4092 <xref target="RFC4092"/>.
 </t>
 
+<t> <xref target="sec-designmotivations"/> provides background information and 
+motivations regarding the design decisions that were made when designing ICE.
+</t>
+
 </section>
 
 <section title="Overview of ICE">
@@ -704,6 +708,12 @@ for NAT traversal. A usage specification defines the protocol-specific
 details on how the procedures defined here are applied to that
 protocol. </t>
 
+<t hangText="Timer Ta:"> The timer for generating new STUN or TURN transactions.</t>
+
+<t hangText="Timer RTO:"> The retransmission timer for a given STUN or TURN transaction.</t>
+
+<t hangText="Timer HTO:"> The timeout timer for a given STUN or TURN transaction.</t>
+
 </list></t>
 
 </section>
@@ -1173,7 +1183,7 @@ IPv6 address. For dual-stack hosts, the IPv4 address is RECOMMENDED.
 </t>
 
 <t>
-The procedures in this section is common across the initiating and
+The procedures in this section are common across the initiating and
 responding agents.
 </t>
 
@@ -1378,7 +1388,7 @@ re-determined due to the role conflict procedures in <xref target="sec-role-conf
 </t>
 
 <t>
-NOTE: There are certain 3PCC scenarios where an ICE restart might cause
+NOTE: There are certain 3PCC (third party call control) scenarios where an ICE restart might cause
 a role conflict.
 </t>
 
@@ -2293,7 +2303,7 @@ request.
 
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
-In certain usages of ICE (such as third party call control), both
+In certain usages of ICE (such as 3PCC), both
 ICE agents may end up choosing the same role, resulting in a role
 conflict.  The section describes a mechanism for detecting and
 repairing role conflicts.  The usage document MUST specify whether
@@ -3465,7 +3475,7 @@ is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
 
 <t>
-The ICE-CONTROLLED attribute is present in a Binding request and
+The ICE-CONTROLLED attribute is present in a Binding request. The attribute
 indicates that the client believes it is currently in the controlled
 role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
@@ -3476,14 +3486,13 @@ the number when an ICE restart occurs.
 </t>
 
 <t>
-The ICE-CONTROLLING attribute is present in a Binding request and
+The ICE-CONTROLLING attribute is present in a Binding request. The attribute
 indicates that the client believes it is currently in the controlling
 role. The content of the attribute is a 64-bit unsigned integer in
-network byte order, which contains a random number. The number is used
-for solving role conflicts, when it is referred to as the tie-breaker
-value. An agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The agent MAY change
-the number when an ICE restart occurs.
+network byte order, which contains a random number. As for the
+ICE-CONTROLLED attribute, the number is used for solving role conflicts. 
+An agent MUST use the same number for all Binding requests, for all streams, 
+within an ICE session. The agent MAY change the number when an ICE restart occurs.
 </t>
 
 </section>
@@ -3496,7 +3505,7 @@ the number when an ICE restart occurs.
 
 <t hangText="487 (Role Conflict):"> The Binding request contained
 either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating an
-ICE role that conflicted with the server. The server compared the
+ICE role that conflicted with the server. The remote server compared the
 tie-breaker values of the client and the server and determined that
 the client needs to switch roles.  </t>
 
@@ -3509,8 +3518,8 @@ the client needs to switch roles.  </t>
 <section title="Operational Considerations">
 
 <t>
-This section discusses issues relevant to network operators looking to
-deploy ICE.
+This section discusses issues relevant to operators operating networks where 
+ICE will be used by endpoints.
 </t>
 
 <section title="NAT and Firewall Types">
@@ -3581,14 +3590,15 @@ assuming a 10% usage of TURN servers.
 <t>
 The process of gathering of candidates and performing of connectivity
 checks can be bandwidth intensive. ICE has been designed to pace both
-of these processes. The gathering phase and the connectivity check
-phase are meant to generate traffic at roughly the same bandwidth as
-the data traffic itself. This was done to ensure that, if a network
-is designed to support communication traffic of a certain type (voice,
-video, or just text), it will have sufficient capacity to support the
-ICE checks for that data. Of course, the ICE checks will cause a
-marginal increase in the total utilization; however, this will
-typically be an extremely small increase.
+of these processes. The gathering phase and the connectivity check phase 
+are meant to generate traffic at roughly the same bandwidth as the data 
+traffic itself will consume once the ICE process conclude. This was done 
+to ensure that, if a network is designed to support communication traffic 
+of a certain type (voice, video, or just text), it will have sufficient 
+capacity to support the ICE checks for that data. Once ICE has concluded, 
+the subsequent ICE keep-alives will later cause a marginal increase in the 
+total bandwidth utilization; however, this will typically be an extremely 
+small increase.
 </t>
 
 <t>
@@ -3625,8 +3635,7 @@ real impact on capacity planning.
 
 <t>
 Deployments utilizing a mix of ICE and ICE-lite interoperate
-perfectly. They have been explicitly designed to do so, without loss
-of function.
+perfectly. They have been explicitly designed to do so.
 </t>
 
 <t>
@@ -4062,7 +4071,7 @@ server reflexive candidate:
 <t>An attacker can compromise the DNS, causing DNS queries to return a
   rogue STUN server address. That server can provide the client with
   fake server reflexive candidates. This attack is mitigated by DNS
-  security, though DNS-SEC is not required to address it.
+  security, though DNSSEC is not required to address it.
 </t>
 
 <t>
@@ -4144,7 +4153,7 @@ participant in the ICE exchange.
 <section anchor="sec-ice-hammer" title="STUN Amplification Attack">
 
 <t>
-he STUN amplification attack is similar to a "voice hammer" attack, where
+The STUN amplification attack is similar to a "voice hammer" attack, where
 the attacker causes other agents to direct voice packets to the
 attack target. However, instead of voice packets being directed to the target, 
 STUN connectivity checks are directed to the target. The attacker sends an
@@ -4318,7 +4327,9 @@ revision of the specification we would like to thank Emil Ivov, Paul
 Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
 Stach, Peter Thatcher, Martin Thomson, Justin Uberti, Suhas
 Nandakumar, Taylor Brandstetter, Peter Saint-Andre, Harald Alvestrand
-and Roman Shpount. </t>
+and Roman Shpount. Ben Campbill did the AD review. Stephen Farrell did 
+the sec-dir review. Stewart Bryant did the gen-art review. Qin We did 
+the ops-dir review.</t>
 
 </section>
 
@@ -4377,7 +4388,7 @@ ICE allows for two types of implementations. A full implementation
 supports the controlling and controlled roles in a session, and can
 also perform address gathering. In contrast, a lite implementation is
 a minimalist implementation that does little but respond to STUN
-checks.
+checks, and only supports the controlled role in a session.
 </t>
 
 <t>
@@ -4433,7 +4444,7 @@ provides assurance that communications will always work.
 
 </section>
 
-<section title="Design Motivations">
+<section anchor="sec-designmotivations" title="Design Motivations">
 
 <t>
 ICE contains a number of normative behaviors that may themselves be
