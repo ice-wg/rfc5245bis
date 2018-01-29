@@ -1955,7 +1955,7 @@ request. The controlled agent MUST include the ICE-CONTROLLED attribute in
 a Binding request.
 </t>
 <t>The content of either attribute are used as tie-breaker values
-when an ICE role conflict occurs <xref target="sec-role-conflict"/>.
+when an ICE role conflict occurs (<xref target="sec-role-conflict"/>).
 </t>
 </section>
 </section>
@@ -2214,19 +2214,19 @@ typically have different component ID values.
 <t>If the controlling agent sends a Binding request with the USE-CANDIDATE
 attribute set, and if the ICE agent receives a successful response to the request, 
 the agent sets the nominated flag of the pair to true. If the request fails
-<xref target="sec-client-failure"/>, the agent MUST remove the candidate pair 
+(<xref target="sec-client-failure"/>), the agent MUST remove the candidate pair 
 from the valid list, set the candidate pair state to Failed and set the check list 
 state to Failed.
 </t>
 <t>If the controlled agent receives a successful response to a Binding request
 sent by the agent, and that Binding request was triggered by a received Binding
-request with the USE-CANDIDATE attribute set <xref target="sec-triggered"/>, the
+request with the USE-CANDIDATE attribute set (<xref target="sec-triggered"/>), the
 agent sets the nominated flag of the pair to true. If the triggered request
 fails, the agent MUST remove the candidate pair from the valid list, set the 
 candidate pair state to Failed and set the check list state to Failed.
 </t>
 <t>Once the nominated flag is set for a component of a data stream, it concludes
-the ICE processing for that component. See <xref target="sec-conclude"/>.
+the ICE processing for that component (<xref target="sec-conclude"/>).
 </t>
 </section>
 
@@ -2520,7 +2520,7 @@ the nominated flag value of the valid pair to true.
 triggered check queue (<xref target="sec-triggered"/>), once the check is
 sent and if it generates a successful response, and generates a valid pair, the 
 agent sets the nominated flag of the pair to true. If the request fails 
-<xref target="sec-client-failure"/>, the agent MUST remove the candidate pair 
+(<xref target="sec-client-failure"/>), the agent MUST remove the candidate pair 
 from the valid list, set the candidate pair state to Failed and set the check list 
 state to Failed.
 </t>
