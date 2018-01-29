@@ -2514,7 +2514,7 @@ is based on the state of the pair computed in <xref target="sec-triggered"/>:
 <t>If the state of this pair is Succeeded, it means that the check
 previously sent by this pair produced a successful response, and
 generated a valid pair (<xref target="sec-valid-cons"/>). The agent sets
-the nominated flag value of the pair to true. 
+the nominated flag value of the valid pair to true. 
 </t>
 <t>If the received Binding request triggered a new check to be enqued in the
 triggered check queue (<xref target="sec-triggered"/>), once the check is
