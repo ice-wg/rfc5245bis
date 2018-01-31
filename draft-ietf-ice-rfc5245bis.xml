@@ -1240,9 +1240,10 @@ agent.</t>
 connectivity checks that the agent wishes to use. This MAY be omitted if
 the agent wishes to use a defined default value.</t>
 
-<t hangText="Username Fragment and Password:"> Values used to perform
-connectivity checks. The username fragment MUST contain at least 24 bits 
-of randomness, and the password MUST contain at least 128 bits of randomness.</t>
+<t hangText="Username Fragment and Password:"> Values used to perform connectivity
+checks. The values MUST be unguessable, with at least 128 bits of random
+number generator output used to generate the password, and at least 24
+bits output to generate the username fragment.</t>
 
 <t hangText="Extensions:"> New media-stream or session-level 
 attributes (ice-options).
@@ -1943,7 +1944,7 @@ candidate type preference of peer reflexive candidates.
 
 <section title="USE-CANDIDATE">
 <t>The controlling agent MUST include the USE-CANDIDATE attribute in
-order to nominate a candidate pair <xref target="sec-choose-favor"/>.
+order to nominate a candidate pair (<xref target="sec-choose-favor"/>).
 The controlled agent MUST NOT include the USE-CANDIDATE attribute
 in a Binding request.
 </t>
@@ -2608,7 +2609,7 @@ MUST produce the selected pairs using the pairs with the highest priority.</t>
 <t>NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
-'ice2' ice option <xref target="sec-ice-option"/> by endpoints supporting this 
+'ice2' ice option (<xref target="sec-ice-option"/>) by endpoints supporting this 
 specification is supposed to prevent such controlling agents from using aggressive nomination.
 </t>
 
@@ -2806,9 +2807,13 @@ The following actions can be accomplished only using an ICE restart
 
 <t>
 To restart ICE, an agent MUST change both the password and the
-username fragment for the data stream(s) being restarted.  The new
-candidate set MAY include some, none, or all of the previous
-candidates.
+username fragment for the data stream(s) being restarted. The agent
+MUST verify that it has not used the new values in recent ICE sessions,
+as packets from those sessions might still be present in the network. 
+</t>
+<t>
+When the ICE is restarted, the candidate set for the new ICE session 
+might include some, none, or all of the candidates used in the current ICE session.
 </t>
 
 <t>
@@ -3914,16 +3919,25 @@ that is able to see the negotiation. Some addresses, such as the server
 reflexive addresses gathered through the local interface of VPN users,
 may be sensitive information. If these potential attacks can not be 
 mitigated, ICE usages can define mechanisms for controlling which addresses 
-are revealed to the negotiation and/or probing process. Individual
-implementations may also have implementation-specific rules for
-controlling which addresses are revealed.
+are revealed to the negotiation and/or probing process. Individual implementations
+may also have implementation-specific rules for controlling which addresses 
+are revealed. For example, <xref target="I-D.ietf-rtcweb-ip-handling"/> provides 
+additional information about the privacy aspects of revealing IP addresses
+via ICE for WebRTC applications. ICE implementations where such issues can arise 
+are RECOMMENDED to provide a programmatic or user interface that provides control 
+over which network interfaces are used to generate candidates.
 </t>
 <t>
-There are several types of attacks possible in an ICE system. This
-section considers these attacks and their countermeasures.
+Based on the types of candidates provided by the peer, and the
+results of the connectivity tests performed against those candidates,
+the peer might be able to determine characteristics of the local
+network, e.g. if different timings are apparent to the peer. In
+the limit the peer might be able to probe the local network.
 </t>
-
-
+<t>
+There are several types of attacks possible in an ICE system. The
+subsections consider these attacks and their countermeasures.
+</t>
 <section title="Attacks on Connectivity Checks">
 
 <t>
@@ -4378,7 +4392,7 @@ the ops-dir review.</t>
 <?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.RFC.7721"?>
 <?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
-
+<?rfc include="reference.I-D.ietf-rtcweb-ip-handling"?>
 </references>
 
 <section anchor="sec-liteandfull" title="Lite and Full Implementations">
