@@ -209,19 +209,21 @@ until it finds one or more that work.
 
 <section title="Gathering Candidates">
 <t>
-In order to execute ICE, an ICE agent has to identify all of its address
-candidates. A candidate has a transport address -- a combination of IP
+In order to execute ICE, an ICE agent identifies and gathers one or more
+address candidates. A candidate has a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
 specified here). There are different types of candidates, some
 derived from physical or logical network interfaces, others
-discoverable via STUN and TURN. At least one viable candidate has a
-transport address obtained directly from a local interface. Such a
-candidate is called a host candidate. The local interface could be
-Ethernet or WiFi, or it could be one that is obtained through a tunnel
-mechanism, such as a Virtual Private Network (VPN) or Mobile IP
-(MIP). In all cases, such a network interface appears to the agent as
-a local interface from which ports (and thus candidates) can be
-allocated.
+discoverable via STUN and TURN. 
+</t>
+<t>
+At least one viable candidate has a transport address obtained directly 
+from a local interface. Such a candidate is called a host candidate. 
+The local interface could be Ethernet or WiFi, or it could be one that 
+is obtained through a tunnel mechanism, such as a Virtual Private Network 
+(VPN) or Mobile IP (MIP). In all cases, such a network interface appears 
+to the agent as a local interface from which ports (and thus candidates) 
+can be allocated.
 </t>
 
 <t> Next, the agent uses STUN or TURN to obtain additional
@@ -497,6 +499,10 @@ usage documents.
 One mechanism for agents to exchange the candidate information by using
 <xref target="RFC3264"/> based Offer/Answer semantics as part of the SIP
 <xref target="RFC3261"/> protocol <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
+</t>
+<t>
+<xref target="RFC7825"/> defines an ICE usage for the Real-Time Streaming 
+Protocol (RTSP). Note, however, that the ICE usage is based on RFC 5245.
 </t>
 </section>
 
@@ -1004,10 +1010,11 @@ target="RFC5766"/>. The Refresh requests will also refresh the server
 reflexive candidate.
 </t>
 <t>
-Host candidates do not time out, but the candidate addresses may change or
-disappear for a number of reasons. An ICE agent SHOULD monitor the interfaces
-it uses, invalidate candidates whose base has gone away, and acquire new 
-candidates as appropriate when new interfaces appear.
+Host candidates do not time out, but the candidate addresses may
+change or disappear for a number of reasons. An ICE agent SHOULD
+monitor the interfaces it uses, invalidate candidates whose base has
+gone away, and acquire new candidates as appropriate when new
+IP addresses (on new or currently used interfaces) appear.
 </t>
 
 </section>
@@ -1022,6 +1029,7 @@ each candidate. Each candidate for a data stream MUST have a unique
 priority that MUST be a positive integer between 1 and (2**31 - 1).
 This priority will be used by ICE to determine the order of the
 connectivity checks and the relative preference for candidates.
+Higher priority values give more priority over lower values.
 </t>
 
 <t>
@@ -2037,7 +2045,8 @@ a role conflict, a failure, or a success, according to the procedures below.
 </t>
 <section title="Role Conflict">
     <t>If the Binding request generates a 487 (Role Conflict) error
-    response, and if the ICE agent included an ICE-CONTROLLED attribute
+    response (<xref target="sec-role-conflict"/>), and if the ICE agent 
+    included an ICE-CONTROLLED attribute
     in the request, the agent MUST switch to the controlling role. If
     the agent included an ICE-CONTROLLING attribute in the request,
     the agent MUST switch to the controlled role.
@@ -2087,7 +2096,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     </t>
     </section>
     <section title="Timeout">
-    <t>If the Binding request times out, the ICE agent MUST set
+    <t>If the Binding request transaction times out, the ICE agent MUST set
     the candidate pair state to Failed.
     </t>
     </section>
@@ -2737,10 +2746,7 @@ complete.
 <section title="Full Implementation Procedures">
 
 <t>
-The procedures in <xref target="sec-conclude"/> require that an
-ICE agent continue to listen for STUN requests and continue to generate
-triggered checks for a data stream, even once processing for that
-stream completes. The rules in this section describe when it is safe
+The rules in this section describe when it is safe
 for an agent to cease sending or receiving checks on a candidate that
 did not become a selected candidate (is not associated with a selected pair), 
 and then free the candidate.
@@ -3180,11 +3186,10 @@ RTO value using the following formula:
 <figure><artwork>
 
 <![CDATA[
-  RTO = MAX (500ms, Ta * (Num-Of-Pairs))
+  RTO = MAX (500ms, Ta * (Num-Of-Cands))
 
 
-  Num-Of-Pairs: the number of pairs of candidates
-  with STUN or TURN servers.
+  Num-Of-Cands: the number of server-reflexive and relay candidates
 
 ]]></artwork></figure>
 
@@ -3199,10 +3204,11 @@ using the following formula:
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
 
 
-  Num-Waiting: the number of checks in the check list in the
+  Num-Waiting: the number of checks in the check list set in the
   Waiting state.
 
-  Num-In-Progress: the number of checks in the In-Progress state.
+  Num-In-Progress: the number of checks in the check list set in the 
+  In-Progress state.
 
   Note that the RTO will be different for each transaction as the
   number of checks in the Waiting and In-Progress states change.
@@ -3560,7 +3566,7 @@ capacity that operators need to take into consideration.
 
 <t>
 First and foremost, ICE makes use of TURN and STUN servers, which
-would typically be located in the network operator's data centers. The
+would typically be located in the data centers. The
 STUN servers require relatively little bandwidth. For each component
 of each data stream, there will be one or more STUN transactions from
 each client to the STUN server. In a basic voice-only IPv4 VoIP
@@ -3770,8 +3776,8 @@ connectivity, for example. ICE also helps prevent certain security
 attacks that have nothing to do with NAT. However, what ICE does is
 help phase out other UNSAF mechanisms. ICE effectively picks amongst
 those mechanisms, prioritizing ones that are better, and
-deprioritizing ones that are worse. Local IPv6 addresses can be
-preferred. As NATs begin to dissipate as IPv6 is introduced, server
+deprioritizing ones that are worse. IPv6 address from the local host 
+can be preferred. As NATs begin to dissipate as IPv6 is introduced, server
 reflexive and relayed candidates (both forms of UNSAF addresses)
 simply never get used, because higher-priority connectivity exists to
 the native host candidates. Therefore, the servers get used less and
@@ -4389,8 +4395,9 @@ the ops-dir review.</t>
 <?rfc include="reference.RFC.6147"?>
 <?rfc include="reference.RFC.6544"?>
 <?rfc include="reference.RFC.7050"?>
-<?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.RFC.7721"?>
+<?rfc include="reference.RFC.7825"?>
+<?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
 <?rfc include="reference.I-D.ietf-rtcweb-ip-handling"?>
 </references>
