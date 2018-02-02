@@ -117,6 +117,10 @@ stack hosts. For this reason RFC 5245 <xref target="RFC5245"/> deprecated
 RFC 4091 <xref target="RFC4091"/> and RFC 4092 <xref target="RFC4092"/>.
 </t>
 
+<t> <xref target="sec-designmotivations"/> provides background information and 
+motivations regarding the design decisions that were made when designing ICE.
+</t>
+
 </section>
 
 <section title="Overview of ICE">
@@ -205,19 +209,21 @@ until it finds one or more that work.
 
 <section title="Gathering Candidates">
 <t>
-In order to execute ICE, an ICE agent has to identify all of its address
-candidates. A candidate has a transport address -- a combination of IP
+In order to execute ICE, an ICE agent identifies and gathers one or more
+address candidates. A candidate has a transport address -- a combination of IP
 address and port for a particular transport protocol (with only UDP
 specified here). There are different types of candidates, some
 derived from physical or logical network interfaces, others
-discoverable via STUN and TURN. At least one viable candidate has a
-transport address obtained directly from a local interface. Such a
-candidate is called a host candidate. The local interface could be
-Ethernet or WiFi, or it could be one that is obtained through a tunnel
-mechanism, such as a Virtual Private Network (VPN) or Mobile IP
-(MIP). In all cases, such a network interface appears to the agent as
-a local interface from which ports (and thus candidates) can be
-allocated.
+discoverable via STUN and TURN. 
+</t>
+<t>
+At least one viable candidate has a transport address obtained directly 
+from a local interface. Such a candidate is called a host candidate. 
+The local interface could be Ethernet or WiFi, or it could be one that 
+is obtained through a tunnel mechanism, such as a Virtual Private Network 
+(VPN) or Mobile IP (MIP). In all cases, such a network interface appears 
+to the agent as a local interface from which ports (and thus candidates) 
+can be allocated.
 </t>
 
 <t> Next, the agent uses STUN or TURN to obtain additional
@@ -494,6 +500,10 @@ One mechanism for agents to exchange the candidate information by using
 <xref target="RFC3264"/> based Offer/Answer semantics as part of the SIP
 <xref target="RFC3261"/> protocol <xref target="I-D.ietf-mmusic-ice-sip-sdp"/>.
 </t>
+<t>
+<xref target="RFC7825"/> defines an ICE usage for the Real-Time Streaming 
+Protocol (RTSP). Note, however, that the ICE usage is based on RFC 5245.
+</t>
 </section>
 
 <section title="Terminology">
@@ -703,6 +713,12 @@ The candidates associated with the selected pairs are referred to as selected ca
 for NAT traversal. A usage specification defines the protocol-specific
 details on how the procedures defined here are applied to that
 protocol. </t>
+
+<t hangText="Timer Ta:"> The timer for generating new STUN or TURN transactions.</t>
+
+<t hangText="Timer RTO:"> The retransmission timer for a given STUN or TURN transaction.</t>
+
+<t hangText="Timer HTO:"> The timeout timer for a given STUN or TURN transaction.</t>
 
 </list></t>
 
@@ -994,10 +1010,11 @@ target="RFC5766"/>. The Refresh requests will also refresh the server
 reflexive candidate.
 </t>
 <t>
-Host candidates do not time out, but the candidate addresses may change or
-disappear for a number of reasons. An ICE agent SHOULD monitor the interfaces
-it uses, invalidate candidates whose base has gone away, and acquire new 
-candidates as appropriate when new interfaces appear.
+Host candidates do not time out, but the candidate addresses may
+change or disappear for a number of reasons. An ICE agent SHOULD
+monitor the interfaces it uses, invalidate candidates whose base has
+gone away, and acquire new candidates as appropriate when new
+IP addresses (on new or currently used interfaces) appear.
 </t>
 
 </section>
@@ -1012,6 +1029,7 @@ each candidate. Each candidate for a data stream MUST have a unique
 priority that MUST be a positive integer between 1 and (2**31 - 1).
 This priority will be used by ICE to determine the order of the
 connectivity checks and the relative preference for candidates.
+Higher priority values give more priority over lower values.
 </t>
 
 <t>
@@ -1115,19 +1133,13 @@ eliminate the redundant candidate with the lower priority.
 <section anchor="sec-offer-lite" title="Lite Implementation Procedures">
 
 <t>
-Lite implementations only utilize host candidates. A lite
-implementation MUST, for each component of each data stream, allocate
-zero or one IPv4 candidates. It MAY allocate zero or more IPv6
-candidates, but no more than one per each IPv6 address utilized by the
-host. Since there can be no more than one IPv4 candidate per component
-of each data stream, if an ICE agent has multiple IPv4 addresses, it MUST
-choose one for allocating the candidate. If a host is dual-stack, it
-is RECOMMENDED that it allocate one IPv4 candidate and one global IPv6
-address. With the lite implementation, ICE cannot be used to
-dynamically choose amongst candidates. Therefore, including more than
-one candidate from a particular scope is NOT RECOMMENDED, since only a
-connectivity check can truly determine whether to use one address or
-the other.
+Lite implementations only utilize host candidates. For each IP address, independent
+of IP address family, there MUST be zero or one candidate. With the lite implementation, 
+ICE cannot be used to dynamically choose amongst candidates. Therefore, including more 
+than one candidate from a particular IP address family is NOT RECOMMENDED, since only 
+a connectivity check can truly determine whether to use one address or the other. Instead 
+agents that have multiple public IP addresses are RECOMMENDED to run full ICE implementations 
+to ensure the best usage of its addresses.
 </t>
 
 <t>Each component has an ID assigned to it, called the component ID.
@@ -1173,7 +1185,7 @@ IPv6 address. For dual-stack hosts, the IPv4 address is RECOMMENDED.
 </t>
 
 <t>
-The procedures in this section is common across the initiating and
+The procedures in this section are common across the initiating and
 responding agents.
 </t>
 
@@ -1230,9 +1242,10 @@ agent.</t>
 connectivity checks that the agent wishes to use. This MAY be omitted if
 the agent wishes to use a defined default value.</t>
 
-<t hangText="Username Fragment and Password:"> Values used to perform
-connectivity checks. The username fragment MUST contain at least 24 bits 
-of randomness, and the password MUST contain at least 128 bits of randomness.</t>
+<t hangText="Username Fragment and Password:"> Values used to perform connectivity
+checks. The values MUST be unguessable, with at least 128 bits of random
+number generator output used to generate the password, and at least 24
+bits output to generate the username fragment.</t>
 
 <t hangText="Extensions:"> New media-stream or session-level 
 attributes (ice-options).
@@ -1378,7 +1391,7 @@ re-determined due to the role conflict procedures in <xref target="sec-role-conf
 </t>
 
 <t>
-NOTE: There are certain 3PCC scenarios where an ICE restart might cause
+NOTE: There are certain 3PCC (third party call control) scenarios where an ICE restart might cause
 a role conflict.
 </t>
 
@@ -1389,10 +1402,9 @@ signalling protocol specific, and outside the scope of the document.
 </t>
 
 <t>
-An agent MUST be prepared that the peer might re-determine the roles
-as part of any ICE restart, even if the criteria for doing so are not
-fulfilled. This can happen if the peer is compliant with an older version
-of this specification.
+An agent MUST accept if the peer initiates a re-determination of the roles
+even if the criteria for doing so are not fulfilled. This can happen if the
+peer is compliant with RFC 5245.
 </t>
 
 </section>
@@ -1933,7 +1945,7 @@ candidate type preference of peer reflexive candidates.
 
 <section title="USE-CANDIDATE">
 <t>The controlling agent MUST include the USE-CANDIDATE attribute in
-order to nominate a candidate pair <xref target="sec-choose-favor"/>.
+order to nominate a candidate pair (<xref target="sec-choose-favor"/>).
 The controlled agent MUST NOT include the USE-CANDIDATE attribute
 in a Binding request.
 </t>
@@ -1945,7 +1957,7 @@ request. The controlled agent MUST include the ICE-CONTROLLED attribute in
 a Binding request.
 </t>
 <t>The content of either attribute are used as tie-breaker values
-when an ICE role conflict occurs <xref target="sec-role-conflict"/>.
+when an ICE role conflict occurs (<xref target="sec-role-conflict"/>).
 </t>
 </section>
 </section>
@@ -1993,9 +2005,10 @@ response).
 </section>
 
 <section title="DiffServ Treatment">
-<t>If an ICE agent is using Diffserv Codepoint markings <xref
-target="RFC2475"/> in its data packets, the agent SHOULD apply
-those same markings to its connectivity checks.
+<t>
+If the agent is using Diffserv Codepoint markings <xref target="RFC2475"/> 
+in data packets that it will send, the agent SHOULD apply the same markings to
+Binding responses that it will send.
 </t>
 <t>If multiple DSCP markings are used on the data packets, the
 agent SHOULD choose one of them for use with the connectivity check.
@@ -2026,7 +2039,8 @@ a role conflict, a failure, or a success, according to the procedures below.
 </t>
 <section title="Role Conflict">
     <t>If the Binding request generates a 487 (Role Conflict) error
-    response, and if the ICE agent included an ICE-CONTROLLED attribute
+    response (<xref target="sec-role-conflict"/>), and if the ICE agent 
+    included an ICE-CONTROLLED attribute
     in the request, the agent MUST switch to the controlling role. If
     the agent included an ICE-CONTROLLING attribute in the request,
     the agent MUST switch to the controlled role.
@@ -2069,14 +2083,17 @@ a role conflict, a failure, or a success, according to the procedures below.
     </t>
     </section>
     <section title="ICMP Error">
-    <t>An ICE agent MAY support processing of ICMP errors for connectivity
-    checks. If the agent supports processing of ICMP errors, and if a Binging
-    request generates an ICMP error, the agent SHOULD set the state of the candidate
-    pair to Failed.
+    <t>
+    An ICE agent MAY support processing of ICMP errors for connectivity
+    checks. If the agent supports processing of ICMP errors, and if a
+    Binging request generates a hard ICMP error, the agent SHOULD set the
+    state of the candidate pair to Failed. Implementers need to be aware
+    that ICMP errors can be used as a method for denial of service attacks
+    when making a decision on how and if to process ICMP errors.
     </t>
     </section>
     <section title="Timeout">
-    <t>If the Binding request times out, the ICE agent MUST set
+    <t>If the Binding request transaction times out, the ICE agent MUST set
     the candidate pair state to Failed.
     </t>
     </section>
@@ -2204,19 +2221,19 @@ typically have different component ID values.
 <t>If the controlling agent sends a Binding request with the USE-CANDIDATE
 attribute set, and if the ICE agent receives a successful response to the request, 
 the agent sets the nominated flag of the pair to true. If the request fails
-<xref target="sec-client-failure"/>, the agent MUST remove the candidate pair 
+(<xref target="sec-client-failure"/>), the agent MUST remove the candidate pair 
 from the valid list, set the candidate pair state to Failed and set the check list 
 state to Failed.
 </t>
 <t>If the controlled agent receives a successful response to a Binding request
 sent by the agent, and that Binding request was triggered by a received Binding
-request with the USE-CANDIDATE attribute set <xref target="sec-triggered"/>, the
+request with the USE-CANDIDATE attribute set (<xref target="sec-triggered"/>), the
 agent sets the nominated flag of the pair to true. If the triggered request
 fails, the agent MUST remove the candidate pair from the valid list, set the 
 candidate pair state to Failed and set the check list state to Failed.
 </t>
 <t>Once the nominated flag is set for a component of a data stream, it concludes
-the ICE processing for that component. See <xref target="sec-conclude"/>.
+the ICE processing for that component (<xref target="sec-conclude"/>).
 </t>
 </section>
 
@@ -2293,7 +2310,7 @@ request.
 
 <section anchor="sec-role-conflict" title="Detecting and Repairing Role Conflicts">
 <t>
-In certain usages of ICE (such as third party call control), both
+In certain usages of ICE (such as 3PCC), both
 ICE agents may end up choosing the same role, resulting in a role
 conflict.  The section describes a mechanism for detecting and
 repairing role conflicts.  The usage document MUST specify whether
@@ -2454,7 +2471,9 @@ outcomes:
       <t> If the state of the pair is Failed, it is changed to Waiting
       and the agent MUST create a new connectivity check for that pair
       (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the triggered check queue.
+      enqueueing the pair in the triggered check queue. Note that the
+      change of the state pair might also trigger a change of the 
+      check list state, if the current check list state is Failed.
       </t>
 
       <t>If the state of that pair is Succeeded, nothing further is
@@ -2504,13 +2523,13 @@ is based on the state of the pair computed in <xref target="sec-triggered"/>:
 <t>If the state of this pair is Succeeded, it means that the check
 previously sent by this pair produced a successful response, and
 generated a valid pair (<xref target="sec-valid-cons"/>). The agent sets
-the nominated flag value of the pair to true. 
+the nominated flag value of the valid pair to true. 
 </t>
 <t>If the received Binding request triggered a new check to be enqued in the
 triggered check queue (<xref target="sec-triggered"/>), once the check is
 sent and if it generates a successful response, and generates a valid pair, the 
 agent sets the nominated flag of the pair to true. If the request fails 
-<xref target="sec-client-failure"/>, the agent MUST remove the candidate pair 
+(<xref target="sec-client-failure"/>), the agent MUST remove the candidate pair 
 from the valid list, set the candidate pair state to Failed and set the check list 
 state to Failed.
 </t>
@@ -2598,7 +2617,7 @@ MUST produce the selected pairs using the pairs with the highest priority.</t>
 <t>NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
 This was referred to as aggressive nomination in RFC 5245. The usage of the
-'ice2' ice option <xref target="sec-ice-option"/> by endpoints supporting this 
+'ice2' ice option (<xref target="sec-ice-option"/>) by endpoints supporting this 
 specification is supposed to prevent such controlling agents from using aggressive nomination.
 </t>
 
@@ -2726,10 +2745,7 @@ complete.
 <section title="Full Implementation Procedures">
 
 <t>
-The procedures in <xref target="sec-conclude"/> require that an
-ICE agent continue to listen for STUN requests and continue to generate
-triggered checks for a data stream, even once processing for that
-stream completes. The rules in this section describe when it is safe
+The rules in this section describe when it is safe
 for an agent to cease sending or receiving checks on a candidate that
 did not become a selected candidate (is not associated with a selected pair), 
 and then free the candidate.
@@ -2796,9 +2812,13 @@ The following actions can be accomplished only using an ICE restart
 
 <t>
 To restart ICE, an agent MUST change both the password and the
-username fragment for the data stream(s) being restarted.  The new
-candidate set MAY include some, none, or all of the previous
-candidates.
+username fragment for the data stream(s) being restarted. The agent
+MUST verify that it has not used the new values in recent ICE sessions,
+as packets from those sessions might still be present in the network. 
+</t>
+<t>
+When the ICE is restarted, the candidate set for the new ICE session 
+might include some, none, or all of the candidates used in the current ICE session.
 </t>
 
 <t>
@@ -3165,11 +3185,10 @@ RTO value using the following formula:
 <figure><artwork>
 
 <![CDATA[
-  RTO = MAX (500ms, Ta * (Num-Of-Pairs))
+  RTO = MAX (500ms, Ta * (Num-Of-Cands))
 
 
-  Num-Of-Pairs: the number of pairs of candidates
-  with STUN or TURN servers.
+  Num-Of-Cands: the number of server-reflexive and relay candidates
 
 ]]></artwork></figure>
 
@@ -3184,10 +3203,11 @@ using the following formula:
   RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
 
 
-  Num-Waiting: the number of checks in the check list in the
+  Num-Waiting: the number of checks in the check list set in the
   Waiting state.
 
-  Num-In-Progress: the number of checks in the In-Progress state.
+  Num-In-Progress: the number of checks in the check list set in the 
+  In-Progress state.
 
   Note that the RTO will be different for each transaction as the
   number of checks in the Waiting and In-Progress states change.
@@ -3394,17 +3414,17 @@ Since neither side indicated that it is lite, the initiating agent
 that began ICE processing (agent L) becomes the controlling agent.
 </t>
 
-<t>Agents L and R both pair up the candidates. They both initially
-have two pairs. However, agent L will prune the pair containing its
+<t>
+Agents L and R both pair up the candidates. They both initially have
+two pairs. However, agent L will prune the pair containing its
 server reflexive candidate, resulting in just one. At agent L, this
 pair has a local candidate of $L_PRIV_1 and remote candidate of
-$R_PUB_1, and has a candidate pair priority of 4.57566E+18 (note that
-an implementation would represent this as a 64-bit integer so as not
-to lose precision). At agent R, there are two pairs. The highest
-priority has a local candidate of $R_PUB_1 and remote candidate of
-$L_PRIV_1 and has a priority of 4.57566E+18, and the second has a
-local candidate of $R_PUB_1 and remote candidate of $NAT_PUB_1 and
-priority 3.63891E+18.
+$R_PUB_1, and has a candidate pair priority of 9151314442783293438.
+At agent R, there are two pairs. The highest priority has a local 
+candidate of $R_PUB_1 and remote candidate of $L_PRIV_1 and has a 
+priority of 9151314442783293438, and the second has a local candidate 
+of $R_PUB_1 and remote candidate of $NAT_PUB_1 and priority 
+7277816997797167102.
 </t>
 
 <t> Agent R begins its connectivity check (message 9) for the first
@@ -3465,7 +3485,7 @@ is zero); it serves as a flag. It has an attribute value of 0x0025.
 </t>
 
 <t>
-The ICE-CONTROLLED attribute is present in a Binding request and
+The ICE-CONTROLLED attribute is present in a Binding request. The attribute
 indicates that the client believes it is currently in the controlled
 role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
@@ -3476,14 +3496,13 @@ the number when an ICE restart occurs.
 </t>
 
 <t>
-The ICE-CONTROLLING attribute is present in a Binding request and
+The ICE-CONTROLLING attribute is present in a Binding request. The attribute
 indicates that the client believes it is currently in the controlling
 role. The content of the attribute is a 64-bit unsigned integer in
-network byte order, which contains a random number. The number is used
-for solving role conflicts, when it is referred to as the tie-breaker
-value. An agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The agent MAY change
-the number when an ICE restart occurs.
+network byte order, which contains a random number. As for the
+ICE-CONTROLLED attribute, the number is used for solving role conflicts. 
+An agent MUST use the same number for all Binding requests, for all streams, 
+within an ICE session. The agent MAY change the number when an ICE restart occurs.
 </t>
 
 </section>
@@ -3496,7 +3515,7 @@ the number when an ICE restart occurs.
 
 <t hangText="487 (Role Conflict):"> The Binding request contained
 either the ICE-CONTROLLING or ICE-CONTROLLED attribute, indicating an
-ICE role that conflicted with the server. The server compared the
+ICE role that conflicted with the server. The remote server compared the
 tie-breaker values of the client and the server and determined that
 the client needs to switch roles.  </t>
 
@@ -3509,8 +3528,8 @@ the client needs to switch roles.  </t>
 <section title="Operational Considerations">
 
 <t>
-This section discusses issues relevant to network operators looking to
-deploy ICE.
+This section discusses issues relevant to operators operating networks where 
+ICE will be used by endpoints.
 </t>
 
 <section title="NAT and Firewall Types">
@@ -3546,7 +3565,7 @@ capacity that operators need to take into consideration.
 
 <t>
 First and foremost, ICE makes use of TURN and STUN servers, which
-would typically be located in the network operator's data centers. The
+would typically be located in the data centers. The
 STUN servers require relatively little bandwidth. For each component
 of each data stream, there will be one or more STUN transactions from
 each client to the STUN server. In a basic voice-only IPv4 VoIP
@@ -3581,14 +3600,15 @@ assuming a 10% usage of TURN servers.
 <t>
 The process of gathering of candidates and performing of connectivity
 checks can be bandwidth intensive. ICE has been designed to pace both
-of these processes. The gathering phase and the connectivity check
-phase are meant to generate traffic at roughly the same bandwidth as
-the data traffic itself. This was done to ensure that, if a network
-is designed to support communication traffic of a certain type (voice,
-video, or just text), it will have sufficient capacity to support the
-ICE checks for that data. Of course, the ICE checks will cause a
-marginal increase in the total utilization; however, this will
-typically be an extremely small increase.
+of these processes. The gathering phase and the connectivity check phase 
+are meant to generate traffic at roughly the same bandwidth as the data 
+traffic itself will consume once the ICE process conclude. This was done 
+to ensure that, if a network is designed to support communication traffic 
+of a certain type (voice, video, or just text), it will have sufficient 
+capacity to support the ICE checks for that data. Once ICE has concluded, 
+the subsequent ICE keep-alives will later cause a marginal increase in the 
+total bandwidth utilization; however, this will typically be an extremely 
+small increase.
 </t>
 
 <t>
@@ -3608,13 +3628,14 @@ ICE network friendly and easier to deploy.
 <t>
 STUN keepalives (in the form of STUN Binding Indications) are sent in
 the middle of a data session. However, they are sent only in the
-absence of actual data traffic. In deployments that are not utilizing
-Voice Activity Detection (VAD), the keepalives are never used and
-there is no increase in bandwidth usage. When VAD is being used,
-keepalives will be sent during silence periods. This involves a single
-packet every 15-20 seconds, far less than the packet every 20-30 ms
-that is sent when there is voice. Therefore, keepalives don't have any
-real impact on capacity planning.
+absence of actual data traffic. In deployments with continuous media 
+and without utilizing Voice Activity Detection (VAD), or deployments where 
+VAD is utilized together with short interval (max 1 second) comfort noise,
+the keepalives are never used and there is no increase in bandwidth usage.
+When VAD is being used without comfort noise, keepalives will be sent during 
+silence periods. This involves a single packet every 15-20 seconds, far less 
+than the packet every 20-30 ms that is sent when there is voice. Therefore, 
+keepalives do not have any real impact on capacity planning.
 </t>
 
 </section>
@@ -3625,8 +3646,7 @@ real impact on capacity planning.
 
 <t>
 Deployments utilizing a mix of ICE and ICE-lite interoperate
-perfectly. They have been explicitly designed to do so, without loss
-of function.
+perfectly. They have been explicitly designed to do so.
 </t>
 
 <t>
@@ -3756,8 +3776,8 @@ connectivity, for example. ICE also helps prevent certain security
 attacks that have nothing to do with NAT. However, what ICE does is
 help phase out other UNSAF mechanisms. ICE effectively picks amongst
 those mechanisms, prioritizing ones that are better, and
-deprioritizing ones that are worse. Local IPv6 addresses can be
-preferred. As NATs begin to dissipate as IPv6 is introduced, server
+deprioritizing ones that are worse. IPv6 address from the local host 
+can be preferred. As NATs begin to dissipate as IPv6 is introduced, server
 reflexive and relayed candidates (both forms of UNSAF addresses)
 simply never get used, because higher-priority connectivity exists to
 the native host candidates. Therefore, the servers get used less and
@@ -3905,16 +3925,25 @@ that is able to see the negotiation. Some addresses, such as the server
 reflexive addresses gathered through the local interface of VPN users,
 may be sensitive information. If these potential attacks can not be 
 mitigated, ICE usages can define mechanisms for controlling which addresses 
-are revealed to the negotiation and/or probing process. Individual
-implementations may also have implementation-specific rules for
-controlling which addresses are revealed.
+are revealed to the negotiation and/or probing process. Individual implementations
+may also have implementation-specific rules for controlling which addresses 
+are revealed. For example, <xref target="I-D.ietf-rtcweb-ip-handling"/> provides 
+additional information about the privacy aspects of revealing IP addresses
+via ICE for WebRTC applications. ICE implementations where such issues can arise 
+are RECOMMENDED to provide a programmatic or user interface that provides control 
+over which network interfaces are used to generate candidates.
 </t>
 <t>
-There are several types of attacks possible in an ICE system. This
-section considers these attacks and their countermeasures.
+Based on the types of candidates provided by the peer, and the
+results of the connectivity tests performed against those candidates,
+the peer might be able to determine characteristics of the local
+network, e.g. if different timings are apparent to the peer. In
+the limit the peer might be able to probe the local network.
 </t>
-
-
+<t>
+There are several types of attacks possible in an ICE system. The
+subsections consider these attacks and their countermeasures.
+</t>
 <section title="Attacks on Connectivity Checks">
 
 <t>
@@ -3977,6 +4006,28 @@ fake response, and in order for this response to be processed, the
 attacker needs the password. If the candidate exchange signaling is
 secured, the attacker will not have the password and its response will
 be discarded.
+</t>
+
+<t>
+Spoofed ICMP Hard Errors (Type 3, codes 2-4) can also be used to
+create false invalid results. If an ICE agent implements a response
+to these ICMP errors, and the attacker is capable of generating an
+ICMP message that is delivered to the agent sending the connectivity
+check. The validation of the ICMP error message by the agent is its
+only defence. For Type 3 code=4 the outer IP header provides no
+validation, unless the connectivity check was sent with DF=0.
+For code 2 or 3, which are originated by the host, the
+address is expected to be any of the remote agents host, reflexive,
+or relay candidates IP addresses. The ICMP message include the IP header and UDP
+header of the message triggering the error. These fields also needs to
+be validated. The IP destination and UDP destination port needs to match
+either the targeted candidate address and port, or the candidates base
+address. The source IP address and port can be any candidate for the
+same base address of the agent sending the connectivity check. Thus any
+attacker having access to the exchange of the candidates will have the necessary
+information. Thus the validation is a weak defence, and the sending of
+spoofed ICMP attacks is possible also for off-path attackers from a node
+in a network without source address validation.
 </t>
 
 <t> Forcing the fake valid result works in a similar way. The agent
@@ -4062,7 +4113,7 @@ server reflexive candidate:
 <t>An attacker can compromise the DNS, causing DNS queries to return a
   rogue STUN server address. That server can provide the client with
   fake server reflexive candidates. This attack is mitigated by DNS
-  security, though DNS-SEC is not required to address it.
+  security, though DNSSEC is not required to address it.
 </t>
 
 <t>
@@ -4144,7 +4195,7 @@ participant in the ICE exchange.
 <section anchor="sec-ice-hammer" title="STUN Amplification Attack">
 
 <t>
-he STUN amplification attack is similar to a "voice hammer" attack, where
+The STUN amplification attack is similar to a "voice hammer" attack, where
 the attacker causes other agents to direct voice packets to the
 attack target. However, instead of voice packets being directed to the target, 
 STUN connectivity checks are directed to the target. The attacker sends an
@@ -4318,7 +4369,9 @@ revision of the specification we would like to thank Emil Ivov, Paul
 Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
 Stach, Peter Thatcher, Martin Thomson, Justin Uberti, Suhas
 Nandakumar, Taylor Brandstetter, Peter Saint-Andre, Harald Alvestrand
-and Roman Shpount. </t>
+and Roman Shpount. Ben Campbill did the AD review. Stephen Farrell did 
+the sec-dir review. Stewart Bryant did the gen-art review. Qin We did 
+the ops-dir review.</t>
 
 </section>
 
@@ -4364,10 +4417,11 @@ and Roman Shpount. </t>
 <?rfc include="reference.RFC.6147"?>
 <?rfc include="reference.RFC.6544"?>
 <?rfc include="reference.RFC.7050"?>
-<?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.RFC.7721"?>
+<?rfc include="reference.RFC.7825"?>
+<?rfc include="reference.I-D.ietf-mmusic-ice-sip-sdp"?>
 <?rfc include="reference.I-D.ietf-ice-dualstack-fairness"?>
-
+<?rfc include="reference.I-D.ietf-rtcweb-ip-handling"?>
 </references>
 
 <section anchor="sec-liteandfull" title="Lite and Full Implementations">
@@ -4377,7 +4431,7 @@ ICE allows for two types of implementations. A full implementation
 supports the controlling and controlled roles in a session, and can
 also perform address gathering. In contrast, a lite implementation is
 a minimalist implementation that does little but respond to STUN
-checks.
+checks, and only supports the controlled role in a session.
 </t>
 
 <t>
@@ -4433,7 +4487,7 @@ provides assurance that communications will always work.
 
 </section>
 
-<section title="Design Motivations">
+<section anchor="sec-designmotivations" title="Design Motivations">
 
 <t>
 ICE contains a number of normative behaviors that may themselves be
