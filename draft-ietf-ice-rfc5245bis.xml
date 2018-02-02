@@ -1133,19 +1133,13 @@ eliminate the redundant candidate with the lower priority.
 <section anchor="sec-offer-lite" title="Lite Implementation Procedures">
 
 <t>
-Lite implementations only utilize host candidates. A lite
-implementation MUST, for each component of each data stream, allocate
-zero or one IPv4 candidates. It MAY allocate zero or more IPv6
-candidates, but no more than one per each IPv6 address utilized by the
-host. Since there can be no more than one IPv4 candidate per component
-of each data stream, if an ICE agent has multiple IPv4 addresses, it MUST
-choose one for allocating the candidate. If a host is dual-stack, it
-is RECOMMENDED that it allocate one IPv4 candidate and one global IPv6
-address. With the lite implementation, ICE cannot be used to
-dynamically choose amongst candidates. Therefore, including more than
-one candidate from a particular scope is NOT RECOMMENDED, since only a
-connectivity check can truly determine whether to use one address or
-the other.
+Lite implementations only utilize host candidates. For each IP address, independent
+of IP address family, there MUST be zero or one candidate. With the lite implementation, 
+ICE cannot be used to dynamically choose amongst candidates. Therefore, including more 
+than one candidate from a particular IP address family is NOT RECOMMENDED, since only 
+a connectivity check can truly determine whether to use one address or the other. Instead 
+agents that have multiple public IP addresses are RECOMMENDED to run full ICE implementations 
+to ensure the best usage of its addresses.
 </t>
 
 <t>Each component has an ID assigned to it, called the component ID.
@@ -1408,10 +1402,9 @@ signalling protocol specific, and outside the scope of the document.
 </t>
 
 <t>
-An agent MUST be prepared that the peer might re-determine the roles
-as part of any ICE restart, even if the criteria for doing so are not
-fulfilled. This can happen if the peer is compliant with an older version
-of this specification.
+An agent MUST accept if the peer initiates a re-determination of the roles
+even if the criteria for doing so are not fulfilled. This can happen if the
+peer is compliant with RFC 5245.
 </t>
 
 </section>
@@ -2012,9 +2005,10 @@ response).
 </section>
 
 <section title="DiffServ Treatment">
-<t>If an ICE agent is using Diffserv Codepoint markings <xref
-target="RFC2475"/> in its data packets, the agent SHOULD apply
-those same markings to its connectivity checks.
+<t>
+If the agent is using Diffserv Codepoint markings <xref target="RFC2475"/> 
+in data packets that it will send, the agent SHOULD apply the same markings to
+Binding responses that it will send.
 </t>
 <t>If multiple DSCP markings are used on the data packets, the
 agent SHOULD choose one of them for use with the connectivity check.
@@ -2089,10 +2083,13 @@ a role conflict, a failure, or a success, according to the procedures below.
     </t>
     </section>
     <section title="ICMP Error">
-    <t>An ICE agent MAY support processing of ICMP errors for connectivity
-    checks. If the agent supports processing of ICMP errors, and if a Binging
-    request generates an ICMP error, the agent SHOULD set the state of the candidate
-    pair to Failed.
+    <t>
+    An ICE agent MAY support processing of ICMP errors for connectivity
+    checks. If the agent supports processing of ICMP errors, and if a
+    Binging request generates a hard ICMP error, the agent SHOULD set the
+    state of the candidate pair to Failed. Implementers need to be aware
+    that ICMP errors can be used as a method for denial of service attacks
+    when making a decision on how and if to process ICMP errors.
     </t>
     </section>
     <section title="Timeout">
@@ -2474,7 +2471,9 @@ outcomes:
       <t> If the state of the pair is Failed, it is changed to Waiting
       and the agent MUST create a new connectivity check for that pair
       (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the triggered check queue.
+      enqueueing the pair in the triggered check queue. Note that the
+      change of the state pair might also trigger a change of the 
+      check list state, if the current check list state is Failed.
       </t>
 
       <t>If the state of that pair is Succeeded, nothing further is
@@ -3415,17 +3414,17 @@ Since neither side indicated that it is lite, the initiating agent
 that began ICE processing (agent L) becomes the controlling agent.
 </t>
 
-<t>Agents L and R both pair up the candidates. They both initially
-have two pairs. However, agent L will prune the pair containing its
+<t>
+Agents L and R both pair up the candidates. They both initially have
+two pairs. However, agent L will prune the pair containing its
 server reflexive candidate, resulting in just one. At agent L, this
 pair has a local candidate of $L_PRIV_1 and remote candidate of
-$R_PUB_1, and has a candidate pair priority of 4.57566E+18 (note that
-an implementation would represent this as a 64-bit integer so as not
-to lose precision). At agent R, there are two pairs. The highest
-priority has a local candidate of $R_PUB_1 and remote candidate of
-$L_PRIV_1 and has a priority of 4.57566E+18, and the second has a
-local candidate of $R_PUB_1 and remote candidate of $NAT_PUB_1 and
-priority 3.63891E+18.
+$R_PUB_1, and has a candidate pair priority of 9151314442783293438.
+At agent R, there are two pairs. The highest priority has a local 
+candidate of $R_PUB_1 and remote candidate of $L_PRIV_1 and has a 
+priority of 9151314442783293438, and the second has a local candidate 
+of $R_PUB_1 and remote candidate of $NAT_PUB_1 and priority 
+7277816997797167102.
 </t>
 
 <t> Agent R begins its connectivity check (message 9) for the first
@@ -3629,13 +3628,14 @@ ICE network friendly and easier to deploy.
 <t>
 STUN keepalives (in the form of STUN Binding Indications) are sent in
 the middle of a data session. However, they are sent only in the
-absence of actual data traffic. In deployments that are not utilizing
-Voice Activity Detection (VAD), the keepalives are never used and
-there is no increase in bandwidth usage. When VAD is being used,
-keepalives will be sent during silence periods. This involves a single
-packet every 15-20 seconds, far less than the packet every 20-30 ms
-that is sent when there is voice. Therefore, keepalives don't have any
-real impact on capacity planning.
+absence of actual data traffic. In deployments with continuous media 
+and without utilizing Voice Activity Detection (VAD), or deployments where 
+VAD is utilized together with short interval (max 1 second) comfort noise,
+the keepalives are never used and there is no increase in bandwidth usage.
+When VAD is being used without comfort noise, keepalives will be sent during 
+silence periods. This involves a single packet every 15-20 seconds, far less 
+than the packet every 20-30 ms that is sent when there is voice. Therefore, 
+keepalives do not have any real impact on capacity planning.
 </t>
 
 </section>
