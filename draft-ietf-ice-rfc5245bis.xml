@@ -4008,6 +4008,28 @@ secured, the attacker will not have the password and its response will
 be discarded.
 </t>
 
+<t>
+Spoofed ICMP Hard Errors (Type 3, codes 2-4) can also be used to
+create false invalid results. If an ICE agent implements a response
+to these ICMP errors, and the attacker is capable of generating an
+ICMP message that is delivered to the agent sending the connectivity
+check. The validation of the ICMP error message by the agent is its
+only defence. For Type 3 code=4 the outer IP header provides no
+validation, unless the connectivity check was sent with DF=0.
+For code 2 or 3, which are originated by the host, the
+address is expected to be any of the remote agents host, reflexive,
+or relay candidates IP addresses. The ICMP message include the IP header and UDP
+header of the message triggering the error. These fields also needs to
+be validated. The IP destination and UDP destination port needs to match
+either the targeted candidate address and port, or the candidates base
+address. The source IP address and port can be any candidate for the
+same base address of the agent sending the connectivity check. Thus any
+attacker having access to the exchange of the candidates will have the necessary
+information. Thus the validation is a weak defence, and the sending of
+spoofed ICMP attacks is possible also for off-path attackers from a node
+in a network without source address validation.
+</t>
+
 <t> Forcing the fake valid result works in a similar way. The agent
 needs to wait for the Binding request from each agent, and inject a
 fake success response. The attacker won't need to worry about
