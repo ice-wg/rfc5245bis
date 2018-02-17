@@ -3140,13 +3140,13 @@ based on the following reasoning.
   <list style="numbers">
     <t>Let MaxBytes be the maximum number of bytes allowed to be
     outstanding in the network at start-up, which SHOULD be 14600
-    bytes per RFC 6928.</t>
+    bytes per <xref target="RFC6928"/>.</t>
     <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
     RTT is known and 500ms otherwise.  This is based on the RTO for
-    STUN messages from RFC 5389 and the the TCP initial RTO, which is
-    1 sec  in RFC 6298.</t>
+    STUN messages from <xref target="RFC5389"/> and the the TCP initial RTO, which is
+    1 sec in <xref target="RFC6298"/>.</t>
     <t>Let MinPacing be the minimum pacing interval between
-    transactions, which SHOULD be 5ms.</t>
+    transactions, which is 5ms (see above).</t>
   </list>
   </t>
   <t>
@@ -4203,7 +4203,7 @@ a large number of candidates, say, 50. The responding agent receives
 the candidate information, and starts its checks, which are directed
 at the target, and consequently, never generate a response. The
 answerer will start a new connectivity check every Ta ms (say,
-Ta=20ms). However, the retransmission timers are set to a large number
+Ta=50ms). However, the retransmission timers are set to a large number
 due to the large number of candidates. As a consequence, packets will
 be sent at an interval of one every Ta milliseconds, and then with
 increasing intervals after that. Thus, STUN will not send packets at a
@@ -4371,7 +4371,7 @@ Stach, Peter Thatcher, Martin Thomson, Justin Uberti, Suhas
 Nandakumar, Taylor Brandstetter, Peter Saint-Andre, Harald Alvestrand
 and Roman Shpount. Ben Campbill did the AD review. Stephen Farrell did 
 the sec-dir review. Stewart Bryant did the gen-art review. Qin We did 
-the ops-dir review.</t>
+the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 
 </section>
 
@@ -4412,10 +4412,13 @@ the ops-dir review.</t>
 <?rfc include="reference.RFC.4092"?>
 <?rfc include="reference.RFC.5245"?>
 <?rfc include="reference.RFC.5382"?>
+<?rfc include="reference.RFC.5389"?>
 <?rfc include="reference.RFC.6080"?>
 <?rfc include="reference.RFC.6146"?>
 <?rfc include="reference.RFC.6147"?>
+<?rfc include="reference.RFC.6298"?>
 <?rfc include="reference.RFC.6544"?>
+<?rfc include="reference.RFC.6928"?>
 <?rfc include="reference.RFC.7050"?>
 <?rfc include="reference.RFC.7721"?>
 <?rfc include="reference.RFC.7825"?>
