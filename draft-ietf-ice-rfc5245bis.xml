@@ -3327,11 +3327,11 @@ implementations.
           |              |              |------------->|
           |(8) R's Candidate Information|              |
           |<-------------------------------------------|
-          |              |(9) Bind Req  |              |Begin
-          |              |S=$R-PUB-1    |              |Connectivity
-          |              |D=L-PRIV-1    |              |Checks
-          |              |<----------------------------|
-          |              |Dropped       |              |
+          |              |         (9) Bind Req        |Begin
+          |              |         S=$R-PUB-1          |Connectivity
+          |              |         D=$L-PRIV-1         |Checks
+          |              |         <-------------------|
+          |              |         Dropped             |
           |(10) Bind Req |              |              |
           |S=$L-PRIV-1   |              |              |
           |D=$R-PUB-1    |              |              |
@@ -3350,7 +3350,7 @@ implementations.
           |D=$L-PRIV-1   |              |              |
           |MA=$NAT-PUB-1 |              |              |
           |<-------------|              |              |
-          |Data flows    |              |              |
+          |              |              |              |
           |              |(14) Bind Req |              |
           |              |S=$R-PUB-1    |              |
           |              |D=$NAT-PUB-1  |              |
@@ -3369,8 +3369,32 @@ implementations.
           |              |D=$R-PUB-1    |              |
           |              |MA=$R-PUB-1   |              |
           |              |---------------------------->|
-          |              |              |              |Data flows
-
+          |              |              |              |
+                             .......                  
+          |              |              |              |
+          |(18) Bind Req |              |              |
+          |S=$L-PRIV-1   |              |              |
+          |D=$R-PUB-1    |              |              |
+          |USE-CAND      |              |              |
+          |------------->|              |              |
+          |              |(19) Bind Req |              |
+          |              |S=$NAT-PUB-1  |              |
+          |              |D=$R-PUB-1    |              |
+          |              |USE-CAND      |              |
+          |              |---------------------------->|
+          |              |(20) Bind Res |              |
+          |              |S=$R-PUB-1    |              |
+          |              |D=$NAT-PUB-1  |              |
+          |              |MA=$NAT-PUB-1 |              |
+          |              |<----------------------------|
+          |(21) Bind Res |              |              |
+          |S=$R-PUB-1    |              |              |
+          |D=$L-PRIV-1   |              |              |
+          |MA=$NAT-PUB-1 |              |              |
+          |<-------------|              |              |
+          |              |              |              |
+          
+          
 ]]></artwork></figure>
 
 <t> First, agent L obtains a host candidate from its local IP address
@@ -3419,11 +3443,10 @@ of $R_PUB_1 and remote candidate of $NAT_PUB_1 and priority
 </t>
 
 <t> Agent R begins its connectivity check (message 9) for the first
-pair (between the two host candidates). Since R is the controlled
-agent for this session, the check omits the USE-CANDIDATE
-attribute. The host candidate from agent L is private and behind a
-NAT, and thus this check won't be successful, because the packet
-cannot be routed from R to L.
+pair (between the two host candidates). The host candidate from agent
+L is private and behind a NAT, and thus this check won't be successful,
+because the packet cannot be routed from R to L, and will be dropped
+by the network.
 </t>
 
 <t> When agent L gets the R's candidates, it performs its one and only
@@ -3444,10 +3467,17 @@ succeed. Consequently, agent R constructs a new candidate pair using
 the mapped address from the response as the local candidate (R-PUB-1)
 and the destination of the request (NAT-PUB-1) as the remote
 candidate. This pair is added to the valid list for that data
-stream. Since the check was generated in the reverse direction of a
-check that contained the USE-CANDIDATE attribute, the candidate pair
-is marked as selected. Consequently, processing for this stream moves
-into the Completed state, and agent R can also send data.
+stream.
+</t>
+<t>
+At some point, the controlling agent (agent L) decides to nominate a
+pair on the valid list. It performs a connectivity check 
+(messages 18-21) using a valid pair, and includes the USE-CANDIDATE 
+attribute. As agent R has previously checked the pair, the check
+from agent L will not trigger a triggered check. As the check
+succeeds, the pair becomes the selected pair. Consequently, processing 
+for this stream moves into the Completed state. As there is only one
+check list, the ICE process also moves into the Completed state.
 </t>
 
 </section>
