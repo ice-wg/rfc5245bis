@@ -1181,7 +1181,7 @@ candidate is the default. If a host is IPv6 or dual-stack, the
 selection of default is a matter of local policy. This default SHOULD
 be chosen such that it is the candidate most likely to be used with
 a peer. For IPv6-only hosts, this would typically be a globally scoped
-IPv6 address. For dual-stack hosts, the IPv4 address is RECOMMENDED.
+IPv6 address.
 </t>
 
 <t>
@@ -1472,12 +1472,6 @@ perform such multiplexing, it would include just a single component
 for each candidate -- for the combined RTP/RTCP mux. ICE would end up
 acting as if there was just a single component for this candidate.
 </t>
-
-<t> With IPv6 it is common for a host to have multiple host candidates
-for each interface. To keep the amount of resulting candidate pairs
-reasonable and to avoid candidate pairs that are highly unlikely to
-work, IPv6 link-local addresses <xref target="RFC4291"/> MUST NOT be
-paired with other than link-local addresses. </t>
 
 <t>
 The candidate pairs whose local and remote candidates are both the
@@ -3050,8 +3044,7 @@ regular nomination algorithm. When regular nomination is used, ICE
 will converge perfectly even when both agents use different pair
 prioritization algorithms. One of the keys to such convergence is
 triggered checks, which ensure that the nominated pair is validated by
-both agents. Consequently, any future ICE enhancements MUST preserve
-triggered checks.
+both agents.
 </t>
 
 <t>
@@ -3142,7 +3135,7 @@ based on the following reasoning.
     outstanding in the network at start-up, which SHOULD be 14600
     bytes per <xref target="RFC6928"/>.</t>
     <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
-    RTT is known and 500ms otherwise.  This is based on the RTO for
+    RTT is known and 500ms otherwise. This is based on the RTO for
     STUN messages from <xref target="RFC5389"/> and the the TCP initial RTO, which is
     1 sec in <xref target="RFC6298"/>.</t>
     <t>Let MinPacing be the minimum pacing interval between
@@ -3200,9 +3193,10 @@ using the following formula:
 <figure><artwork>
 
 <![CDATA[
-  RTO = MAX (500ms, Ta*N * (Num-Waiting + Num-In-Progress))
+  RTO = MAX (500ms, Ta * N * (Num-Waiting + Num-In-Progress))
 
-
+  N: the total number of connectivity checks to be performed.
+  
   Num-Waiting: the number of checks in the check list set in the
   Waiting state.
 
@@ -3593,6 +3587,13 @@ N*3.2 kbps. For a population of one million users, this is 3.2 Gbps,
 assuming a 10% usage of TURN servers.
 </t>
 
+<t>
+The planning considerations above become more significant in multi-media
+scenarios (e.g., audio and video conferences), and when the numbers of
+participants in a session grow.
+</t>
+
+
 </section>
 
 <section title="Gathering and Connectivity Checks">
@@ -3781,7 +3782,7 @@ can be preferred. As NATs begin to dissipate as IPv6 is introduced, server
 reflexive and relayed candidates (both forms of UNSAF addresses)
 simply never get used, because higher-priority connectivity exists to
 the native host candidates. Therefore, the servers get used less and
-less, and can eventually be remove when their usage goes to zero.
+less, and can eventually be removed when their usage goes to zero.
 </t>
 
 <t>
@@ -4168,12 +4169,6 @@ utilized to provide the client with its relayed candidate.
 </t>
 
 <t>
-However, TURN servers are susceptible to DNS attacks for purposes 
-of turning it into a zombie or rogue server. These attacks can be 
-mitigated by DNS-SEC and through good box and software security on TURN servers.
-</t>
-
-<t>
 Even if an attacker has caused the client to believe in a false
 relayed candidate, the connectivity checks cause such a candidate to
 be used only if they succeed. Thus, an attacker needs to launch a false
@@ -4187,7 +4182,7 @@ attack to coordinate.
 
 <t>
 In addition to attacks where the attacker is a third party trying to
-insert fake candidate information or stun messages, there are attacks
+insert fake candidate information or STUN messages, there are attacks
 possible with ICE when the attacker is an authenticated and valid
 participant in the ICE exchange.
 </t>
@@ -4334,7 +4329,7 @@ ICE Option name:
 <t> The purpose of this updated ICE specification is to:
 <list style="symbols">
 <t>Clarify procedures in RFC 5245.</t>
-<t>Make technical changes, due to discovered flows in RFC 5245 and based
+<t>Make technical changes, due to discovered flaws in RFC 5245 and based
 on feedback from the community that has implemented and
 deployed ICE applications based on RFC 5245.</t>
 <t>Make the procedures signaling protocol independent, by
