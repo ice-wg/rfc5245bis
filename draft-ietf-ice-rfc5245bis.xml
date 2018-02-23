@@ -3021,13 +3021,10 @@ between the two agents in a session is critical.
 </t>
 
 <t>
-First, ICE provides the ice-options attribute. Each extension or
-change to ICE is associated with a token. When an agent supporting
-such an extension or change triggers candidate exchange, it MUST
-include the token for that extension in this attribute. This allows
-each side to know what the other side is doing. This attribute MUST
-NOT be present if the agent doesn't support any ICE extensions or
-changes.
+First, ICE provides the ICE option concept. Each extension or
+change to ICE is associated with an ICE option. When an agent supports
+such an extension or change, it provides the ICE option to the peer agent
+as part of the candidate exchange.
 </t>
 
 <t>
