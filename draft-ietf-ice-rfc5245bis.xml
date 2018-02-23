@@ -2002,7 +2002,7 @@ response).
 <t>
 If the agent is using Diffserv Codepoint markings <xref target="RFC2475"/> 
 in data packets that it will send, the agent SHOULD apply the same markings to
-Binding responses that it will send.
+Binding requests and responses that it will send.
 </t>
 <t>If multiple DSCP markings are used on the data packets, the
 agent SHOULD choose one of them for use with the connectivity check.
