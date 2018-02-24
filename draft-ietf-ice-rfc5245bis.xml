@@ -1148,7 +1148,7 @@ precedence value for IP addresses described in RFC 6724 <xref target="RFC6724"/>
 Next, an agent chooses a default candidate for each component of each
 data stream. If a host is IPv4-only, there would only be one
 candidate for each component of each data stream, and therefore that
-candidate is the default. If a host is IPv6-only hosts, the default candidate 
+candidate is the default. If a host is IPv6-only, the default candidate 
 would typically be a globally scoped IPv6 address. Dual-stack hosts SHOULD 
 allow configuration of whether IPv4 or IPv6 is used for the default candidate, 
 and the configuration needs to be based on which one its administrator believes 
@@ -1831,7 +1831,7 @@ to perform connectivity checks for, abort these steps.
 </list></t>
 
 <t>Once the agent has picked a candidate pair for which a connectivity check is to
-be performed, the agent starts a check, and sends the Binding request from the base 
+be performed, the agent starts a check and sends the Binding request from the base 
 associated with the local candidate of the pair to the remote candidate of the pair, 
 as described in <xref target="sec-send-check"/>.
 </t>
@@ -1997,7 +1997,7 @@ associates the response with the candidate pair for which the Binding request
 was sent. After that, the response is processed according to the procedures for
 a role conflict, a failure, or a success, according to the procedures below.
 </t>
-<section title="Role Conflict">
+<section anchor="sec-recv-response-conf" title="Role Conflict">
     <t>If the Binding request generates a 487 (Role Conflict) error
     response (<xref target="sec-role-conflict"/>), and if the ICE agent 
     included an ICE-CONTROLLED attribute
