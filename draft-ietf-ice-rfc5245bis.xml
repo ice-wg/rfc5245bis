@@ -741,14 +741,11 @@ protocol. </t>
 
 <t>
 As part of ICE processing, both the initiating and responding agents
-exchange encoded candidate information as defined by the Usage
-Protocol (ICE Usage). The agents perform candidate gathering, 
-candidate prioritization, redundant candidate elimination, and then
-sends the candidates to the peer agent.
-</t>
-<t>
-Specifics of the encoding mechanism and the semantics of candidate information 
-exchange is out of scope of this specification.
+gather candidates, prioritize and eliminate redundant candidates,  
+and exchange candidate information with the peer as defined by the 
+Usage Protocol (ICE Usage). Specifics of the candidate encoding 
+mechanism and the semantics of candidate information exchange is out 
+of scope of this specification.
 </t>
 
 <section anchor="sec-full-impl-reqs" title="Full Implementation">
@@ -1834,9 +1831,9 @@ to perform connectivity checks for, abort these steps.
 </list></t>
 
 <t>Once the agent has picked a candidate pair for which a connectivity check is to
-be performed, the agent performs the check by triggering a STUN transaction, and sends the 
-Binding request from the base associated with the local candidate of the pair to the remote 
-candidate of the pair, as described in <xref target="sec-send-check"/>.
+be performed, the agent starts a check, and sends the Binding request from the base 
+associated with the local candidate of the pair to the remote candidate of the pair, 
+as described in <xref target="sec-send-check"/>.
 </t>
 
 
