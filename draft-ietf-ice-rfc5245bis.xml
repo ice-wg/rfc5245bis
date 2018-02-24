@@ -97,8 +97,7 @@ cons that make each one optimal in some network topologies, but a
 poor choice in others. The result is that administrators and
 implementers are making assumptions about the topologies of the
 networks in which their solutions will be deployed. This introduces
-complexity and brittleness into the system. What is needed is a single
-solution that is flexible enough to work well in all situations.  </t>
+complexity and brittleness into the system.</t>
 
 <t> This specification defines Interactive Connectivity Establishment
 (ICE) as a technique for NAT traversal for UDP-based data streams
@@ -142,7 +141,7 @@ one or more paths by which they can establish a data session.
 <xref target="fig-ice-ref-arch"/> shows a typical ICE deployment. The agents are 
 labelled L and R. Both L and R are behind their own respective NATs though they may 
 not be aware of it. The type of NAT and its properties are also unknown. L and R 
-are capable of engaging in an candidate exchange process, whose purpose is to set
+are capable of engaging in a candidate exchange process, whose purpose is to set
 up a data session between L and R. Typically, this exchange will
 occur through a signaling server (e.g., SIP proxy).
 </t>
@@ -217,7 +216,7 @@ derived from physical or logical network interfaces, others
 discoverable via STUN and TURN. 
 </t>
 <t>
-At least one viable candidate has a transport address obtained directly 
+The first category of candidates are those with a transport address obtained directly 
 from a local interface. Such a candidate is called a host candidate. 
 The local interface could be Ethernet or WiFi, or it could be one that 
 is obtained through a tunnel mechanism, such as a Virtual Private Network 
@@ -272,7 +271,7 @@ figure, the notation X:x means IP address X and UDP port x.
 
 ]]></artwork></figure>
 
-<t> When the agent sends the TURN Allocate request from IP address and
+<t> When the agent sends a TURN Allocate request from IP address and
 port X:x, the NAT (assuming there is one) will create a binding
 X1':x1', mapping this server reflexive candidate to the host candidate
 X:x. Outgoing packets sent from the host candidate will be translated
@@ -386,7 +385,7 @@ list of sorted candidate pairs is called the check list.
 <t>
 The agent works through the check list by sending a STUN request for
 the next candidate pair on the list periodically. These are called
-ordinary checks. When a STUN transaction succeeds, one or more
+"ordinary checks". When a STUN transaction succeeds, one or more
 candidate pairs will become so called valid pairs, and will be added
 to a candidate pair list called the valid list.
 </t>
@@ -394,7 +393,7 @@ to a candidate pair list called the valid list.
 <t>
 As an optimization, as soon as R gets L's check message, R schedules
 a connectivity check message to be sent to L on the same candidate
-pair. This is called a triggered check, and accelerates the process
+pair. This is called a "triggered check", and accelerates the process
 of finding valid pairs.
 </t>
 
@@ -743,51 +742,16 @@ protocol. </t>
 <t>
 As part of ICE processing, both the initiating and responding agents
 exchange encoded candidate information as defined by the Usage
-Protocol (ICE Usage). Specifics of the encoding mechanism and the
-semantics of candidate information exchange is out of scope of this
-specification.
+Protocol (ICE Usage). The agents perform candidate gathering, 
+candidate prioritization, redundant candidate elimination, and then
+sends the candidates to the peer agent.
 </t>
-
 <t>
-However at a higher level, the diagram below shows how the ICE agents
-(initiator and responder) exchange their respective candidate(s) information.
-</t>
-
-<figure title="Candidate Gathering and Exchange Sequence"
-anchor="fig:basic-cand-exchange" align="left">
-<artwork>
-<![CDATA[
-          Initiating                      Responding
-            Agent                           Agent
-            (I)                             (R)
-Gather,      |                               |
-prioritize,  |                               |
-eliminate    |                               |
-redundant    |                               |
-candidates,  |                               |
-Encode       |                               |
-candidates   |                               |
-             |   I's Candidate Information   |
-             |------------------------------>|
-             |                               | Gather,
-             |                               | prioritize,
-             |                               | eliminate
-             |                               | redundant
-             |                               | candidates,
-             |                               | Encode
-             |                               | candidates
-             |   R's Candidate Information   |
-             |<------------------------------|
-             |                               |
-]]></artwork></figure>
-<t>
-As shown, the agents involved in the candidate exchange perform (1)
-candidate gathering, (2) candidate prioritization, (3) redundant 
-candidate elimination, and (4) sending of the candidates to the peer.
+Specifics of the encoding mechanism and the semantics of candidate information 
+exchange is out of scope of this specification.
 </t>
 
 <section anchor="sec-full-impl-reqs" title="Full Implementation">
-
 
 <section anchor="sec-gathering" title="Gathering Candidates">
 
@@ -833,7 +797,7 @@ component ID of 1, and RTCP a component ID of 2. In case of RTP/RTCP
 multiplexing, a component ID of 1 is used for both RTP and RTCP.</t>
 
 <t>When candidates are obtained, unless the agent knows for sure that
-RTP/RTCP multiplexing will be used (i.e. the agent knows that the
+RTP/RTCP multiplexing will be used (i.e., the agent knows that the
 other agent also supports, and is willing to use, RTP/RTCP
 multiplexing), or unless the agent only supports RTP/RTCP
 multiplexing, the agent MUST obtain a separate candidate for RTCP. If
@@ -892,8 +856,8 @@ following exceptions:
     <t>If one or more host candidates corresponding to an IPv6 
     address generated using a mechanism that prevents location 
     tracking <xref target="RFC7721"/> are gathered, host candidates 
-    corresponding to IPv6 addresses that do allow location tracking, 
-    that are configured on the same interface, and are part of the 
+    corresponding to IPv6 addresses that do allow location tracking 
+    that are configured on the same interface and are part of the 
     same network prefix MUST NOT be gathered; and host candidates 
     corresponding to IPv6 link-local addresses <xref target="RFC4291"/>
     MUST NOT be gathered.</t>
@@ -945,7 +909,7 @@ long-term credential obtained by the client through some other means.
 
 <t>
 The gathering process is controlled using a timer, Ta.
-Every time Ta expires, the agent can generate another new
+Every time Ta expires the agent can generate another new
 STUN or TURN transaction. This transaction can either be a retry of a
 previous transaction that failed with a recoverable error (such as
 authentication failure), or a transaction for a new host candidate and
@@ -1176,21 +1140,11 @@ different for two candidates allocated from different IP addresses,
 and MUST be the same otherwise. A simple integer that increments for
 each IP address will suffice. In addition, each candidate MUST be
 assigned a unique priority amongst all candidates for the same data
-stream. This priority SHOULD be equal to:
-</t>
-
-<figure><artwork>
-<![CDATA[
-priority = (2^24)*(126) +
-           (2^8)*(IP precedence) +
-           (2^0)*(256 - component ID)
-
-]]></artwork></figure>
-
-<t>
-If a host is v4-only, it SHOULD set the IP precedence to 65535. If a
-host is v6 or dual-stack, the IP precedence SHOULD be the precedence
-value for IP addresses described in RFC 6724 <xref target="RFC6724"/>.
+stream. If the formula in <xref target="sec-rec-form"/> is used to
+calculate the priority, the type preference value SHOULD be set to 126.
+If a host is v4-only, the local preference value SHOULD be set to 65535. If a
+host is v6 or dual-stack, the local preference value SHOULD be set to the 
+precedence value for IP addresses described in RFC 6724 <xref target="RFC6724"/>.
 </t>
 
 <t>
@@ -1330,16 +1284,12 @@ full implementations will form check lists, and begin performing connectivity ch
 <section anchor="sec-role" title="Determining Role">
 
 <t>
-For each session, each ICE agent (Initiating and Responding) takes on a
-role. There are two roles -- controlling and controlled. The
-controlling agent is responsible for the choice of the final candidate
-pairs used for communications. For a full agent, this means nominating
-the candidate pairs that can be used by ICE for each data stream, and
-for updating the peer with the ICE's selection, when needed. The
-controlled agent is told which candidate pairs to use for each data
-stream, and does not require updating the peer to signal this
-information. The sections below describe in detail the actual
-procedures followed by controlling and controlled nodes.
+For each session, each ICE agent (Initiating and Responding) takes on
+a role. There are two roles -- controlling and controlled. The
+controlling agent is responsible for the choice of the final
+candidate pairs used for communications. The sections below
+describe in detail the actual procedures followed by controlling and
+controlled agents.
 </t>
 
 <t>
@@ -1572,9 +1522,7 @@ pairs, and check lists.
 The ICE agent computes a priority for each candidate pair. Let G be the
 priority for the candidate provided by the controlling agent. Let D be
 the priority for the candidate provided by the controlled agent.
-The priority for a pair is computed as follows, where G>D?1:0 
-is an expression whose value is 1 if G is greater than
-D, and 0 otherwise.
+The priority for a pair is computed as follows:
 </t>
 
 <t><list style="empty">
@@ -1849,7 +1797,7 @@ the procedures in <xref target="sec-connectivity_check"/>. After that,
 whenever Ta fires the next check list in the Running state in the check list set
 is picked, and a check is performed for a candidate within that check list.
 After the last check list in the Running state in the check list set has been
-processed, the first check list is picked again. Etc.
+processed, the first check list is picked again, etc.
 </t>
 
 <t>
@@ -1886,9 +1834,9 @@ to perform connectivity checks for, abort these steps.
 </list></t>
 
 <t>Once the agent has picked a candidate pair for which a connectivity check is to
-be performed, the agent performs the check by sending a STUN request from the base associated
-with the local candidate of the pair to the remote candidate of the pair, as described in
-<xref target="sec-send-check"/>.
+be performed, the agent performs the check by triggering a STUN transaction, and sends the 
+Binding request from the base associated with the local candidate of the pair to the remote 
+candidate of the pair, as described in <xref target="sec-send-check"/>.
 </t>
 
 
@@ -1904,11 +1852,6 @@ information obtained from its peer. The local username fragment is
 known directly by the agent for its own candidate.
 </t>
 
-<t>The Initiator performs the ordinary checks on receiving the candidate
-information from the Peer (responder) and having formed the check lists.
-On the other hand the responding agent either performs the triggered or
-ordinary checks as described above.
-</t>
 </section>
 </section>
 <!-- end of full implementation -->
@@ -1927,10 +1870,8 @@ ordinary checks as described above.
  only happen if the peer ICE agent is also a lite implementation), it
  selects a candidate pair based on the ones in the candidate exchange 
  (for IPv4, there is only ever one pair), and then updating the peer 
- with the new candidate information reflecting that selection, when 
- needed (it is never needed for an IPv4-only host). The controlled 
- agent is told which candidate pairs to use for each data stream, and 
- no further candidate updates are needed to signal this information.
+ with the new candidate information reflecting that selection, if 
+ needed (it is never needed for an IPv4-only host).
  </t>
 
 </section>
@@ -2151,7 +2092,7 @@ has a type, base, priority, and foundation. They are computed as follows:
 
 <t><list style="symbols">
 <t>The type is peer reflexive.</t>
-<t>The base is local candidate of the candidate pair
+<t>The base is the local candidate of the candidate pair
 from which the Binding request was sent.</t>
 <t>The priority is the value of the PRIORITY attribute in
 the Binding request.</t>
@@ -2178,10 +2119,8 @@ mapped address of the response, and whose remote candidate equals the
 destination address to which the request was sent. This is called a
 valid pair.
 </t>
-<t>The valid pair may equal the pair that generated the connectivity check, or
-it may equal a different pair in a check list (sometimes in a different check list
-than the one to which the pair that generated the connectivity checks),
-or it may be a pair not currently in any check list.
+<t>The valid pair might equal the pair that generated the connectivity check,
+a different pair in the check list, or a pair currently not in the check list.
 </t>
 <t>The agent maintains a separate list, referred to as the valid list. There is
 a valid list for each check list in the check list set. The valid list will contain 
@@ -2344,12 +2283,6 @@ An agent MUST examine the Binding request for either the
 ICE-CONTROLLING or ICE-CONTROLLED attribute. It MUST follow these
 procedures:
 <list style="symbols">
-<t>
-If neither ICE-CONTROLLING nor ICE-CONTROLLED is present in the
-request, the peer agent may have implemented a previous version of
-this specification. There may be a conflict, but it cannot be
-detected.
-</t>
 
 <t>
 If the agent is in the controlling role, and the ICE-CONTROLLING
@@ -2474,22 +2407,11 @@ outcomes:
 <list style="symbols">
   <t>If the pair is already on the check list:
     <list style="symbols">
-      <t>If the state of that pair
-      is Waiting or Frozen, a check for that pair is enqueued into the
-      triggered check queue if not already present.
+      <t>If the state of that pair is In-Progress or Succeeded, nothing further is
+      done. </t>
+      <t>If the state of that pair is Waiting or Frozen, a check for that pair 
+      is enqueued into the triggered check queue if not already present.
       </t>
-
-      <t>If the state of that pair is In-Progress, the agent cancels
-      the in-progress transaction. Cancellation means that the agent
-      will not retransmit the request, will not treat the lack of
-      response to be a failure, but will wait the duration of the
-      transaction timeout for a response. In addition, the agent MUST
-      create a new connectivity check for that pair (representing a
-      new STUN Binding request transaction) by enqueueing the pair in
-      the triggered check queue. The state of the pair is then changed
-      to Waiting.
-      </t>
-
       <t> If the state of the pair is Failed, it is changed to Waiting
       and the agent MUST create a new connectivity check for that pair
       (representing a new STUN Binding request transaction), by
@@ -2498,8 +2420,6 @@ outcomes:
       check list state, if the current check list state is Failed.
       </t>
 
-      <t>If the state of that pair is Succeeded, nothing further is
-      done. </t>
     </list>
   </t>
 </list>
@@ -2627,7 +2547,7 @@ is used for sending and receiving data for that component of the data stream.
 actions for informing the other agent, and e.g., removing the stream. The exact actions are outside
 the scope of this specification.
 </t>
-<t>The criterion details for stopping the connectivity checks and for
+<t>The criteria for stopping the connectivity checks and for
 selecting a pair for nomination, are outside the scope of this specification.
 They are a matter of local optimization. The only requirement is that the
 agent MUST eventually pick one and only one candidate pair and generate a
@@ -2783,7 +2703,7 @@ additional three seconds, and then it can cease responding to checks or
 generating triggered checks on all local candidates other than
 the ones that became selected candidates.
 Once all ICE sessions have ceased using a given local candidate 
-(a candidate may be used by multiple ICE sessions, e.g. in forking scenarios), 
+(a candidate may be used by multiple ICE sessions, e.g., in forking scenarios), 
 the agent can free that candidate.  The three-second delay
 handles cases when aggressive nomination is used, and the selected pairs
 can quickly change after ICE has completed.
@@ -2860,9 +2780,11 @@ criteria that require the roles to be re-determined are fulfilled.
 <t>
 This section defines a new ICE option, 'ice2'. The ICE option
 indicates that the ICE agent that includes it in a candidate exchange
-is compliant to this specification. For example, the
-agent will not use the aggressive nomination procedure
-defined in RFC 5245.
+is compliant to this specification. For example, the agent will not 
+use the aggressive nomination procedure defined in RFC 5245. In addition,
+it will ensure that an RFC 5245-compliant peer does not use aggressive nomination 
+either, as required by Section 14 of RFC 5245 for peers which receive unknown ICE options.
+
 </t>
 <t>
 An agent compliant to this specification MUST inform the peer
@@ -3062,16 +2984,13 @@ One of the complications in achieving interoperability is that ICE
 relies on a distributed algorithm running on both agents to converge
 on an agreed set of candidate pairs. If the two agents run different
 algorithms, it can be difficult to guarantee convergence on the same
-candidate pairs. The nomination procedure described in <xref
-target="sec-conclude"/> eliminates some of the tight coordination by
-delegating the selection algorithm completely to the controlling
-agent. Consequently, when a controlling agent is communicating with a
-peer that supports options it doesn't know about, the agent MUST run 
-the nomination algorithm described in <xref target="sec-conclude"/>. 
-When this algorithm is used, ICE will converge perfectly even when both 
-agents use different pair prioritization algorithms. One of the keys to 
-such convergence is triggered checks, which ensure that the nominated pair 
-is validated by both agents.
+candidate pairs. The nomination procedure described in
+<xref target="sec-conclude"/> eliminates some of the need for tight 
+coordination by delegating the selection algorithm completely to the 
+controlling agent, and ICE will converge perfectly even when both agents 
+use different pair prioritization algorithms. One of the keys to such 
+convergence is triggered checks, which ensure that the nominated pair is 
+validated by both agents.
 </t>
 
 <t>
@@ -3517,7 +3436,7 @@ check list, the ICE process also moves into the Completed state.
 <section anchor="sec-ice-newatts" title="New Attributes">
 
 <t>
-This specification defines four new STUN attributes: PRIORITY,
+This specification defines four STUN attributes: PRIORITY,
 USE-CANDIDATE, ICE-CONTROLLED, and ICE-CONTROLLING.
 </t>
 
@@ -3616,7 +3535,7 @@ capacity that operators need to take into consideration.
 
 <t>
 First and foremost, ICE makes use of TURN and STUN servers, which
-would typically be located in the data centers. The
+would typically be located in data centers. The
 STUN servers require relatively little bandwidth. For each component
 of each data stream, there will be one or more STUN transactions from
 each client to the STUN server. In a basic voice-only IPv4 VoIP
@@ -3636,12 +3555,7 @@ there is no need for a separate STUN server), in addition to the
 traffic for the actual data. The amount of calls requiring
 TURN for data relay is highly dependent on network topologies, and
 can and will vary over time. In a network with 100% behave-compliant
-NATs, it is exactly zero. At time of writing, large-scale consumer
-deployments were seeing between 5 and 10 percent of calls requiring
-TURN servers. Considering a voice-only deployment using G.711 (so 80
-kbps in each direction), with .2 erlangs during the busy hour, this is
-N*3.2 kbps. For a population of one million users, this is 3.2 Gbps,
-assuming a 10% usage of TURN servers.
+NATs, it is exactly zero.
 </t>
 
 <t>
@@ -3726,7 +3640,7 @@ they know how ICE is performing?
 
 <t>
 ICE has built-in features to help deal with these problems. Signaling
-servers, typically deployed in the data centers
+servers, typically deployed in data centers
 of the network operator, will see the contents of the candidate
 exchanges that convey the ICE parameters. These parameters include the
 type of each candidate (host, server reflexive, or relayed), along
@@ -4303,7 +4217,7 @@ sent.
 <section title="IANA Considerations">
 
 <t>
-The original ICE specification registered four new STUN attributes,
+The original ICE specification registered four STUN attributes,
 and one new STUN error response. The STUN attributes and error
 response are reproduced here. In addition, this specification
 registers a new ICE option.
