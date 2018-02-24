@@ -74,7 +74,7 @@
 
 <t>Protocols establishing communication sessions between peers typically
 involve exchanging IP addresses and ports for the data sources and
-sinks. However this poses challenges when operated through Network Address
+sinks. However, this poses challenges when operated through Network Address
 Translators (NATs) <xref target="RFC3235"/>. These protocols also seek to
 create a data flow directly between participants, so that there is
 no application layer intermediary between them.  This is done to
@@ -93,9 +93,9 @@ description extensions needed to make them work, such as the Session
 Description Protocol (SDP) <xref target="RFC4566"/> attribute for the
 Real Time Control Protocol (RTCP) <xref
 target="RFC3605"/>. Unfortunately, these techniques all have pros and
-cons which, make each one optimal in some network topologies, but a
+cons that make each one optimal in some network topologies, but a
 poor choice in others. The result is that administrators and
-implementors are making assumptions about the topologies of the
+implementers are making assumptions about the topologies of the
 networks in which their solutions will be deployed. This introduces
 complexity and brittleness into the system. What is needed is a single
 solution that is flexible enough to work well in all situations.  </t>
@@ -106,15 +106,15 @@ solution that is flexible enough to work well in all situations.  </t>
 such as TCP <xref target="RFC6544"/>). ICE works by exchanging a
 multiplicity of IP addresses and ports which are then tested for
 connectivity by peer-to-peer connectivity checks. The IP addresses and
-ports are exchanged exchanged using ICE usage-specific mechanisms (for example, including in a
+ports are exchanged using ICE usage-specific mechanisms (for example, including in a
 offer/answer exchange) and the connectivity checks are performed using
-Session Traversal Utilities for NAT (STUN) specification <xref
-target="RFC5389"/>. ICE also makes use of Traversal Using Relays
+STUN <xref target="RFC5389"/>. ICE also makes use of Traversal Using Relays
 around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
 Because ICE exchanges a multiplicity of IP addresses and ports for each media
 stream, it also allows for address selection for multihomed and dual-
-stack hosts. For this reason RFC 5245 <xref target="RFC5245"/> deprecated 
-RFC 4091 <xref target="RFC4091"/> and RFC 4092 <xref target="RFC4092"/>.
+stack hosts. For this reason, RFC 5245 <xref target="RFC5245"/> deprecated 
+the solutions previously defined in RFC 4091 <xref target="RFC4091"/> and 
+RFC 4092 <xref target="RFC4092"/>.
 </t>
 
 <t> <xref target="sec-designmotivations"/> provides background information and 
@@ -148,7 +148,7 @@ occur through a signaling server (e.g., SIP proxy).
 </t>
 
 <t>
-In addition to the agents, a signaling server and NATs, ICE is
+In addition to the agents, a signaling server, and NATs, ICE is
 typically used in concert with STUN or TURN servers in the
 network. Each agent can have its own STUN or TURN server, or they can
 be the same.
@@ -467,7 +467,7 @@ pairs will be used for sending and receiving data associated with that data stre
 <section title="ICE Restart">
 <t>
 Once ICE is concluded, it can be restarted at any time for one or all
-of the data streams by either ICE agent. This is done by sending an updated
+of the data streams by either ICE agent. This is done by sending updated
 candidate information indicating a restart.
 </t>
 </section>
@@ -490,9 +490,9 @@ connectivity checks.
 
 <t>This document specifies generic use of ICE with protocols that
 provide means to exchange candidate information between the ICE agents.
-The specific details of (i.e how to encode candidate information and
+The specific details (i.e., how to encode candidate information and
 the actual candidate exchange process) for different protocols
-using ICE (referred to as using protocol) are described in separate 
+using ICE (referred to as "using protocol") are described in separate 
 usage documents. 
 </t>
 <t>
@@ -541,7 +541,7 @@ An initiating agent is an ICE agent that initiates the ICE candidate exchange
 process. </t>
 
 <t hangText="Responding Peer, Responding Agent, Responder:">
-A receiving agent is an ICE agent that receives
+A responding agent is an ICE agent that receives
 and responds to the candidate exchange process initiated by the
 initiating agent. </t>
 
@@ -578,7 +578,7 @@ A data stream may require multiple components, each of which has to
 work in order for the data stream as a whole to work. For RTP/RTCP data streams,
 unless RTP and RTCP are multiplexed in the same port, there 
 are two components per data stream -- one for RTP, and one for RTCP.
-A component has a candidate pair, which cannot be used by other components</t>
+A component has a candidate pair, which cannot be used by other components.</t>
 
 <t hangText="Host Candidate:"> A candidate obtained by binding to a
 specific port from an IP address on the host. This includes IP
@@ -605,6 +605,15 @@ for a particular candidate. For host, server reflexive and peer reflexive
 candidates the base is the same as the host candidate. For relayed
 candidates the base is the same as the relayed candidate (i.e., 
 the transport address used by the TURN server to send from).
+</t>
+
+<t hangText="Related Address and Port:"> 
+A transport address related to a candidate, useful for diagnostics and other purposes.
+If a candidate is server or peer reflexive, the related address and port is equal to the base
+for that server or peer reflexive candidate. If the candidate is relayed, the related address 
+and port is equal to the mapped address in the Allocate response that provided the client 
+with that relayed candidate. If the candidate is a host candidate, the related address and port 
+is identical to the host candidate.
 </t>
 
 <t hangText="Foundation:"> An arbitrary string used in the freezing
@@ -689,9 +698,13 @@ other is the controlled agent.
 controlling agent to nominate a candidate pair.
 </t>
 
-<t hangText="Nomination, Regular Nomination:"> The process of the
-controlling agent indicating to the controlled agent which candidate
-pair the ICE agents will use for sending and receiving data.
+<t hangText="Nomination:"> The process of the controlling agent
+indicating to the controlled agent which candidate pair the ICE
+agents will use for sending and receiving data. The nomination
+process defined in this specification was referred to "regular nomination"
+in RFC 5245. The nomination process that was referred
+to "aggressive nomination" in RFC 5245 has been deprecated in
+this specification.
 </t>
 
 <t hangText="Nominated, Nominated Flag:"> Once the nomination of a 
@@ -840,8 +853,8 @@ RTCP. However, absence of a component ID 2 as such does not imply use
 of RTCP/RTP multiplexing, as it could also mean that RTCP is not
 used. </t>
 
-<t> For other than RTP/RTCP streams, use of multiple components is
-discouraged since using them increases the complexity of ICE
+<t> For uses other than RTP/RTCP streams, use of multiple components is
+discouraged, since using them increases the complexity of ICE
 processing. If multiple components are needed, the component IDs
 SHOULD start with 1 and increase by 1 for each component.
 </t>
@@ -876,10 +889,15 @@ following exceptions:
     interface, and are part of the same network prefix MUST NOT be
     gathered.</t>
 
-    <t>Host candidates corresponding to IPv6 link-local addresses MUST NOT 
-    be gathered.</t>
+    <t>If one or more host candidates corresponding to an IPv6 
+    address generated using a mechanism that prevents location 
+    tracking <xref target="RFC7721"/> are gathered, host candidates 
+    corresponding to IPv6 addresses that do allow location tracking, 
+    that are configured on the same interface, and are part of the 
+    same network prefix MUST NOT be gathered; and host candidates 
+    corresponding to IPv6 link-local addresses <xref target="RFC4291"/>
+    MUST NOT be gathered.</t>
   </list>
-
 </t>
 
 <t>The IPv6 default address selection specification <xref target="RFC6724"/> 
@@ -981,7 +999,8 @@ server reflexive, or peer reflexive).</t>
 same IP address (the ports can be different).</t>
 
 <t>For reflexive and relayed candidates, the STUN or TURN servers used
-to obtain them have the same IP address.
+to obtain them have the same IP address (the IP address used by the
+agent to contact the STUN or TURN server).
 </t>
 
 <t>They were obtained using the same transport protocol (TCP, UDP).
@@ -991,8 +1010,9 @@ to obtain them have the same IP address.
 
 <t> Similarly, two candidates have different foundations if their
 types are different, their bases have different IP addresses, the STUN
-or TURN servers used to obtain them have different IP addresses, or
-their transport protocols are different.
+or TURN servers used to obtain them have different IP addresses
+(the IP addresses used by the agent to contact the STUN or TURN server), 
+or their transport protocols are different.
 </t>
 
 </section>
@@ -1177,12 +1197,11 @@ value for IP addresses described in RFC 6724 <xref target="RFC6724"/>.
 Next, an agent chooses a default candidate for each component of each
 data stream. If a host is IPv4-only, there would only be one
 candidate for each component of each data stream, and therefore that
-candidate is the default. If a host is IPv6 or dual-stack, the
-selection of default is a matter of local policy. This default SHOULD
-be chosen such that it is the candidate most likely to be used with
-a peer. For IPv6-only hosts, this would typically be a globally scoped
-IPv6 address.
-</t>
+candidate is the default. If a host is IPv6-only hosts, the default candidate 
+would typically be a globally scoped IPv6 address. Dual-stack hosts SHOULD 
+allow configuration of whether IPv4 or IPv6 is used for the default candidate, 
+and the configuration needs to be based on which one its administrator believes 
+has a higher chance of success in the current network environment.</t>
 
 <t>
 The procedures in this section are common across the initiating and
@@ -1261,10 +1280,11 @@ convey this information to its peer. It is a boolean flag.
 
 <t>
 The using protocol may (or may not) need to deal with backwards
-compatibility with older implementations that do not support ICE. If
-the fallback mechanism is being used, then presumably the using
-protocol provides a way of conveying the default candidate (its IP
-address and port) in addition to the ICE parameters.
+compatibility with older implementations that do not support ICE. 
+If a fallback mechanism to non-ICE is supported is being used, 
+then presumably the using protocol provides a way of conveying the 
+default candidate (its IP address and port) in addition to the 
+ICE parameters.
 </t>
 
 <t>
@@ -1280,7 +1300,8 @@ for data.
 <section anchor="sec-verify" title="ICE Mismatch">
 <t>
 Certain middleboxes, such as ALGs, can alter signaling
-information in ways that break ICE. This is referred to as ICE mismatch.
+information in ways that break ICE break ICE (for example, by rewriting 
+IP addresses in SDP). This is referred to as ICE mismatch.
 If the using protocol is vulnerable to ICE mismatch, the responding 
 agent needs to be able to detect it and inform the peer ICE agent 
 about the ICE mismatch. 
@@ -1327,7 +1348,7 @@ follows:
 </t>
 
 <t><list style="hanging">
-<t hangText="Both agents are full:"> The initiating agent which
+<t hangText="Both agents are full:"> The initiating agent that
 started the ICE processing MUST take the controlling role, and the
 other MUST take the controlled role. Both agents will form check
 lists, run the ICE state machines, and generate connectivity
@@ -1353,7 +1374,7 @@ of ICE processing for each data stream is considered to be Running,
 and the state of ICE overall is Running.
 </t>
 
-<t hangText="Both lite:"> The initiating agent which started the ICE
+<t hangText="Both lite:"> The initiating agent that started the ICE
 processing MUST take the controlling role, and the other MUST take the
 controlled role. In this case, no connectivity checks are ever
 sent. Rather, once the candidates are exchanged, each agent performs
@@ -1391,8 +1412,8 @@ re-determined due to the role conflict procedures in <xref target="sec-role-conf
 </t>
 
 <t>
-NOTE: There are certain 3PCC (third party call control) scenarios where an ICE restart might cause
-a role conflict.
+NOTE: There are certain 3PCC (third party call control)  <xref target="RFC3725"/> scenarios 
+where an ICE restart might cause a role conflict.
 </t>
 
 <t>
@@ -1414,10 +1435,10 @@ peer is compliant with RFC 5245.
 
 <t>
 There is one check list for each data stream. To form a check list,
-initiating and responding ICE agents form candidate pairs, computes
-pair priorities, orders pairs by priority, prunes pairs, removes
-lower-priority pairs, and sets check list states. If candidates are
-added to a check list (e.g, due to detection of peer reflexive
+initiating and responding ICE agents form candidate pairs, compute
+pair priorities, order pairs by priority, prune pairs, remove
+lower-priority pairs, and set check list states. If candidates are
+added to a check list (e.g., due to detection of peer reflexive
 candidates), the agent will re-perform these steps for the updated
 check list.
 </t>
@@ -1471,6 +1492,13 @@ candidates for RTP and RTCP on separate ports. If the peer agent can
 perform such multiplexing, it would include just a single component
 for each candidate -- for the combined RTP/RTCP mux. ICE would end up
 acting as if there was just a single component for this candidate.
+</t>
+
+<t>With IPv6 it is common for a host to have multiple host candidates
+for each interface. To keep the amount of resulting candidate pairs
+reasonable and to avoid candidate pairs that are highly unlikely to
+work, IPv6 link-local addresses MUST NOT be paired with other than 
+link-local addresses.
 </t>
 
 <t>
@@ -1725,10 +1753,10 @@ have that foundation is not the first check list in the check list set.
 </t>
 
 <t>
-The table in <xref target="fig-state-initial"/> illustrates an example.
+The table below illustrates an example.
 </t>
 
-<figure title="Initial Pair State" anchor="fig-state-initial" align="center"><artwork>
+<figure anchor="fig-state-initial" align="center"><artwork>
 <![CDATA[
 
 Table legend:
@@ -1857,7 +1885,7 @@ to perform connectivity checks for, abort these steps.
 
 </list></t>
 
-<t>Once the agent has picked a candidate pair, for which a connectivity check is to
+<t>Once the agent has picked a candidate pair for which a connectivity check is to
 be performed, the agent performs the check by sending a STUN request from the base associated
 with the local candidate of the pair to the remote candidate of the pair, as described in
 <xref target="sec-send-check"/>.
@@ -1889,7 +1917,7 @@ ordinary checks as described above.
 <section anchor="sec-candidate_proc_lite" title="Lite Implementation Procedures">
 
  <t>
- Lite implementations skips most of the steps in <xref
+ Lite implementations skip most of the steps in <xref
  target="sec-candidate_proc"/> except for verifying the peer's ICE
  support and determining its role in the ICE processing.
  </t>
@@ -2080,7 +2108,7 @@ a role conflict, a failure, or a success, according to the procedures below.
     <t>
     An ICE agent MAY support processing of ICMP errors for connectivity
     checks. If the agent supports processing of ICMP errors, and if a
-    Binging request generates a hard ICMP error, the agent SHOULD set the
+    Binding request generates a hard ICMP error, the agent SHOULD set the
     state of the candidate pair to Failed. Implementers need to be aware
     that ICMP errors can be used as a method for denial of service attacks
     when making a decision on how and if to process ICMP errors.
@@ -2267,7 +2295,7 @@ message integrity check. Likewise, the short-term credential mechanism
 MUST be used for the response. The agent MUST consider the username to
 be valid if it consists of two values separated by a colon, where the
 first value is equal to the username fragment generated by the agent
-in an candidate exchange for a session in-progress. It is possible
+in a candidate exchange for a session in-progress. It is possible
 (and in fact very likely) that the initiating agent will receive a
 Binding request prior to receiving the candidates from its peer. If
 this happens, the agent MUST immediately generate a response
@@ -2610,10 +2638,16 @@ the controlled agent accepts multiple nominations requests, the agents
 MUST produce the selected pairs using the pairs with the highest priority.</t>
 <t>NOTE: A controlling agent that does not support this specification (i.e. it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
-This was referred to as aggressive nomination in RFC 5245. The usage of the
+This was referred to as "aggressive nomination" in RFC 5245. The usage of the
 'ice2' ice option (<xref target="sec-ice-option"/>) by endpoints supporting this 
 specification is supposed to prevent such controlling agents from using aggressive nomination.
 </t>
+<t>NOTE: In RFC 5245, usage of "aggressive nomination" allowed agents to continuously nominate
+pairs, before a pair was eventually selected, in order to allow sending of data on those pairs.
+In this specification, data can always be sent on any valid pair, without nomination. Hence,
+there is no longer a need for aggressive nomination.
+</t>
+
 
 </section>
 
@@ -2661,8 +2695,6 @@ required by the processing of <xref target="sec-serverproc"/>.
 </t>
 <t>The agent MUST continue retransmitting any In-Progress checks for
 that check list.</t>
-<t>The agent MAY begin transmitting data for this data stream as
-described in <xref target="sec-send-media"/>.
 </t>
 </list>
 </t>
@@ -2785,7 +2817,7 @@ using those candidates.
 <t>
 An ICE agent MAY restart ICE for existing data streams. An ICE restart
 causes all previous state of the data streams, excluding the roles of
-the agents to be flushed.  The only difference between an ICE restart
+the agents, to be flushed.  The only difference between an ICE restart
 and a brand new data session is that during the restart, data can
 continue to be sent using existing data sessions, and that a new data
 session always requires the roles to be determined.
@@ -2806,9 +2838,7 @@ The following actions can be accomplished only using an ICE restart
 
 <t>
 To restart ICE, an agent MUST change both the password and the
-username fragment for the data stream(s) being restarted. The agent
-MUST verify that it has not used the new values in recent ICE sessions,
-as packets from those sessions might still be present in the network. 
+username fragment for the data stream(s) being restarted.  
 </t>
 <t>
 When the ICE is restarted, the candidate set for the new ICE session 
@@ -2914,7 +2944,7 @@ selected pairs have been produced for the data stream.
 
 <t>
 Once selected pairs have been produced for a data stream, an 
-agent MUST send data on those pairs.
+agent MUST send data on those pairs only.
 </t>
 
 <t>
@@ -2982,7 +3012,7 @@ candidate pairs (and, once selected pairs have been produced, only
 on the selected pairs) ICE implementations SHOULD by default be prepared
 to receive data on any of the candidates provided in the most recent
 candidate exchange with the peer. ICE usages MAY define rules
-that differs from this, e.g., by defining that data will not be sent
+that differ from this, e.g., by defining that data will not be sent
 until selected pairs have been produced for a data stream.
 </t>
 
@@ -3032,16 +3062,16 @@ One of the complications in achieving interoperability is that ICE
 relies on a distributed algorithm running on both agents to converge
 on an agreed set of candidate pairs. If the two agents run different
 algorithms, it can be difficult to guarantee convergence on the same
-candidate pairs. The regular nomination procedure described in <xref
+candidate pairs. The nomination procedure described in <xref
 target="sec-conclude"/> eliminates some of the tight coordination by
 delegating the selection algorithm completely to the controlling
 agent. Consequently, when a controlling agent is communicating with a
-peer that supports options it doesn't know about, the agent MUST run a
-regular nomination algorithm. When regular nomination is used, ICE
-will converge perfectly even when both agents use different pair
-prioritization algorithms. One of the keys to such convergence is
-triggered checks, which ensure that the nominated pair is validated by
-both agents.
+peer that supports options it doesn't know about, the agent MUST run 
+the nomination algorithm described in <xref target="sec-conclude"/>. 
+When this algorithm is used, ICE will converge perfectly even when both 
+agents use different pair prioritization algorithms. One of the keys to 
+such convergence is triggered checks, which ensure that the nominated pair 
+is validated by both agents.
 </t>
 
 <t>
@@ -3099,7 +3129,7 @@ pairs.
 <section anchor="sec-ta-ta" title="Ta">
 
 <t>
-ICE agents SHOULD use the default Ta value, 50 ms, but MAY use another
+ICE agents SHOULD use a default Ta value, 50 ms, but MAY use another
 value based on the characteristics of the associated data.
 </t>
 
@@ -3129,8 +3159,8 @@ based on the following reasoning.
   applicable to transport protocols:
   <list style="numbers">
     <t>Let MaxBytes be the maximum number of bytes allowed to be
-    outstanding in the network at start-up, which SHOULD be 14600
-    bytes per <xref target="RFC6928"/>.</t>
+    outstanding in the network at start-up, which SHOULD be 14600,
+    as defined in Section 2 of <xref target="RFC6928"/>.</t>
     <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
     RTT is known and 500ms otherwise. This is based on the RTO for
     STUN messages from <xref target="RFC5389"/> and the the TCP initial RTO, which is
@@ -3487,7 +3517,7 @@ check list, the ICE process also moves into the Completed state.
 <section anchor="sec-ice-newatts" title="New Attributes">
 
 <t>
-This specification defines four new STUN attributes, PRIORITY,
+This specification defines four new STUN attributes: PRIORITY,
 USE-CANDIDATE, ICE-CONTROLLED, and ICE-CONTROLLING.
 </t>
 
@@ -3561,7 +3591,7 @@ equipment. Consequently, it is not necessary to replace or reconfigure
 existing firewall and NAT equipment in order to facilitate deployment
 of ICE. Indeed, ICE was developed to be deployed in environments where
 the Voice over IP (VoIP) operator has no control over the IP network
-infrastructure, including firewalls and NAT.
+infrastructure, including firewalls and NATs.
 </t>
 
 <t>
@@ -3606,7 +3636,7 @@ there is no need for a separate STUN server), in addition to the
 traffic for the actual data. The amount of calls requiring
 TURN for data relay is highly dependent on network topologies, and
 can and will vary over time. In a network with 100% behave-compliant
-NAT, it is exactly zero. At time of writing, large-scale consumer
+NATs, it is exactly zero. At time of writing, large-scale consumer
 deployments were seeing between 5 and 10 percent of calls requiring
 TURN servers. Considering a voice-only deployment using G.711 (so 80
 kbps in each direction), with .2 erlangs during the busy hour, this is
@@ -3674,7 +3704,7 @@ keepalives do not have any real impact on capacity planning.
 
 <t>
 Deployments utilizing a mix of ICE and ICE-lite interoperate
-perfectly. They have been explicitly designed to do so.
+with each other. They have been explicitly designed to do so.
 </t>
 
 <t>
@@ -3736,14 +3766,14 @@ standard solutions such as the configuration framework
 <section anchor="sec-iab" title="IAB Considerations">
 
 <t>
-The IAB has studied the problem of "Unilateral Self-Address Fixing",
+The IAB has studied the problem of "Unilateral Self-Address Fixing" (UNSAF),
 which is the general process by which an ICE agent attempts to determine
 its address in another realm on the other side of a NAT through a
 collaborative protocol reflection mechanism <xref target="RFC3424"/>.
 ICE is an example of a protocol that performs this type of
 function. Interestingly, the process for ICE is not unilateral, but
 bilateral, and the difference has a significant impact on the issues
-raised by IAB. Indeed, ICE can be considered a B-SAF (Bilateral
+raised by the IAB. Indeed, ICE can be considered a B-SAF (Bilateral
 Self-Address Fixing) protocol, rather than an UNSAF
 protocol. Regardless, the IAB has mandated that any protocols
 developed for this purpose document a specific set of
@@ -3944,7 +3974,7 @@ better still.
 </section>
 
 <section anchor="sec-security" title="Security Considerations">
-
+<section title="IP Address Privacy">
 <t>
 The process of probing for candidates reveals the source addresses of
 the client and its peer to any on-network listening attacker, and the
@@ -3972,6 +4002,7 @@ the limit the peer might be able to probe the local network.
 There are several types of attacks possible in an ICE system. The
 subsections consider these attacks and their countermeasures.
 </t>
+</section>
 <section title="Attacks on Connectivity Checks">
 
 <t>
@@ -4047,9 +4078,9 @@ validation, unless the connectivity check was sent with DF=0.
 For code 2 or 3, which are originated by the host, the
 address is expected to be any of the remote agents host, reflexive,
 or relay candidates IP addresses. The ICMP message include the IP header and UDP
-header of the message triggering the error. These fields also needs to
-be validated. The IP destination and UDP destination port needs to match
-either the targeted candidate address and port, or the candidates base
+header of the message triggering the error. These fields also need to
+be validated. The IP destination and UDP destination port need to match
+either the targeted candidate address and port, or the candidate's base
 address. The source IP address and port can be any candidate for the
 same base address of the agent sending the connectivity check. Thus any
 attacker having access to the exchange of the candidates will have the necessary
@@ -4293,6 +4324,9 @@ IANA has registered four STUN attributes:
    0x802A ICE-CONTROLLING
 ]]></artwork></figure>
 
+<t>NOTE TO IANA: Please replace the reference to RFC 5245 in the registry
+with a reference to this specification.</t>
+
 </section>
 
 <section title="STUN Error Responses">
@@ -4307,6 +4341,8 @@ IANA has registered following STUN error response code:
        controlled) that is in conflict with the role of the server.
 ]]></artwork></figure>
 
+<t>NOTE TO IANA: Please replace the reference to RFC 5245 in the registry
+with a reference to this specification.</t>
 
 </section>
 
@@ -4338,7 +4374,7 @@ ICE Option name:
   Description:
 
      The ICE option indicates that the ICE agent using the ICE option
-     is compliant and implemented according to RFC XXXX.
+     is implemented according to RFC XXXX.
 
   Reference:
 
@@ -4391,7 +4427,7 @@ revision of the specification we would like to thank Emil Ivov, Paul
 Kyzivat, Pal-Erik Martinsen, Simon Perrault, Eric Rescorla, Thomas
 Stach, Peter Thatcher, Martin Thomson, Justin Uberti, Suhas
 Nandakumar, Taylor Brandstetter, Peter Saint-Andre, Harald Alvestrand
-and Roman Shpount. Ben Campbill did the AD review. Stephen Farrell did 
+and Roman Shpount. Ben Campbell did the AD review. Stephen Farrell did 
 the sec-dir review. Stewart Bryant did the gen-art review. Qin We did 
 the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 
@@ -4421,6 +4457,7 @@ the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 <?rfc include="reference.RFC.3424"?>
 <?rfc include="reference.RFC.3550"?>
 <?rfc include="reference.RFC.3711"?>
+<?rfc include="reference.RFC.3725"?>
 <?rfc include="reference.RFC.3879"?>
 <?rfc include="reference.RFC.4038"?>
 <?rfc include="reference.RFC.4291"?>
@@ -4538,7 +4575,7 @@ paced, and why are these formulas used?
 creating bindings on NAT devices between the client and the STUN
 servers. Experience has shown that many NAT devices have upper limits
 on the rate at which they will create new bindings. Experiments have
-shown that once every 5 ms is well supported.
+shown that once every 5 ms is well-supported.
 This is why Ta has a lower bound of 5 ms. Furthermore,
 transmission of these packets on the network makes use of bandwidth
 and needs to be rate limited by the ICE agent. Deployments based on
@@ -4884,7 +4921,8 @@ access networks that use fairly tight packet schedulers for data.
 <t>
 Additionally, using a Binding Indication allows integrity to be
 disabled, allowing for better performance. This is useful for
-large-scale endpoints, such as PSTN gateways and SBCs.
+large-scale endpoints, such as Public Switched Telephone Network (PSTN) 
+gateways and Session Border Controllers (SBCs).
 </t>
 
 </section>
