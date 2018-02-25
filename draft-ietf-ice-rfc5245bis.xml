@@ -3161,53 +3161,13 @@ described above. Agents MUST NOT use a RTO value smaller than 500 ms.
 <!-- end Ta and RTO -->
 </section>
 
-<section anchor="sec-example" title="Example">
+<section anchor="sec-example" title="Examples">
+<t>
+This section shows two ICE examples: one using IPv4 addresses, and one using IPv6 addresses.
+</t>
 
 <t>
-The example is based on the simplified topology of <xref
-target="fig-ex-topo"/>.
-</t>
-
-<figure title="Example Topology" anchor="fig-ex-topo"><artwork>
-<![CDATA[
-                         +-------+
-                         |STUN   |
-                         |Server |
-                         +-------+
-                             |
-                  +---------------------+
-                  |                     |
-                  |      Internet       |
-                  |                     |
-                  +---------------------+
-                    |                |
-                    |                |
-             +---------+             |
-             |   NAT   |             |
-             +---------+             |
-                  |                  |
-                  |                  |
-               +-----+            +-----+
-               |  L  |            |  R  |
-               +-----+            +-----+
-]]></artwork></figure>
-
-
-<t> Two ICE agents, L and R, are using ICE. Both are full ICE
-implementations. Both agents have a single IPv4 address. For agent L, it
-is 10.0.1.1 in private address space <xref target="RFC1918"/>, and for
-agent R, 192.0.2.1 on the public Internet. Both are configured with
-the same STUN server (shown in this example for simplicity, although
-in practice the agents do not need to use the same STUN server), which
-is listening for STUN Binding requests at an IP address of 192.0.2.2
-and port 3478. TURN servers are not used in this example. Agent L is
-behind a NAT, and agent R is on the public Internet. The NAT has an
-endpoint independent mapping property and an address dependent
-filtering property. The public side of the NAT has an IP address of
-192.0.2.3.
-</t>
-
-<t> To facilitate understanding, transport addresses are listed using
+To facilitate understanding, transport addresses are listed using
 variables that have mnemonic names. The format of the name is
 entity-type-seqno, where entity refers to the entity whose IP address
 the transport address is on, and is one of "L", "R", "STUN", or
@@ -3217,10 +3177,6 @@ seq-no is a sequence number that is different for each transport
 address of the same type on a particular entity. Each variable has an
 IP address and port, denoted by varname.IP and varname.PORT,
 respectively, where varname is the name of the variable. </t>
-
-<t>The STUN server has advertised transport address STUN-PUB-1 (which
-is 192.0.2.2:3478).
-</t>
 
 <t> In the call flow itself, STUN messages are annotated with several
 attributes. The "S=" attribute indicates the source transport address
@@ -3236,7 +3192,56 @@ and focus on a single data stream between two full
 implementations.
 </t>
 
-<figure title="Example Flow" anchor="fig:basic-ex"><artwork>
+<section anchor="sec-example-ipv4" title="Example with IPv4 Addresses">
+
+<t>
+The example is using the topology shown in <xref target="fig-ex-topo-ipv4"/>.
+</t>
+
+<figure title="Example Topology" anchor="fig-ex-topo-ipv4"><artwork>
+<![CDATA[
+                         +-------+
+                         |STUN   |
+                         |Server |
+                         +-------+
+                             |
+                  +---------------------+
+                  |                     |
+                  |      Internet       |
+                  |                     |
+                  +---------------------+
+                    |                |
+                    |                |
+             +---------+             |
+             |   NAT    |             |
+             +---------+             |
+                  |                  |
+                  |                  |
+               +-----+            +-----+
+               |  L  |            |  R  |
+               +-----+            +-----+
+]]></artwork></figure>
+
+<t> In the example, ICE agents L and R are full ICE implementations. Both 
+agents have a single IPv4 address. Both are configured with the same STUN server.
+The NAT has an endpoint independent mapping property and an address dependent
+filtering property. The IP addresses of the ICE agents, the STUN server and the NAT
+are shown below;
+</t>
+<figure><artwork>
+<![CDATA[
+
+ENTITY                   IP Address  mnemonic name
+--------------------------------------------------
+ICE Agent L:             10.0.1.1    L-PRIV-1
+ICE Agent R:             192.0.2.1   R-PUB-1          
+STUN Server:             192.0.2.2   STUN-PUB-1
+NAT (Public):            192.0.2.3   NAT-PUB-1
+ 
+]]></artwork></figure>
+
+
+<figure title="Example Flow" anchor="fig:basic-ex-ipv6"><artwork>
 <![CDATA[
           L             NAT           STUN             R
           |STUN alloc.   |              |              |
@@ -3343,89 +3348,293 @@ implementations.
           
 ]]></artwork></figure>
 
-<t> First, agent L obtains a host candidate from its local IP address
-(not shown), and from that, sends a STUN Binding request to the STUN
-server to get a server reflexive candidate (messages 1-4). Recall that
-the NAT has the address and port independent mapping property. Here,
-it creates a binding of NAT-PUB-1 for this UDP request, and this
-becomes the server reflexive candidate.  </t>
+<t>Messages 1-4: Agent L gathers a host candidate from its local IP address,
+and from that sends a STUN Binding request to the STUN Server. The request
+creates a NAT binding. The NAT public IP address of the binding becomes
+agent L's server reflexive candidate.</t>
 
-<t>
-Agent L sets a type preference of 126 for the host candidate and 100
-for the server reflexive. The local preference is 65535. Based on
-this, the priority of the host candidate is 2130706431 and for the
-server reflexive candidate is 1694498815. The host candidate is
-assigned a foundation of 1, and the server reflexive, a foundation of
-2. These are sent to the peer.
-</t>
+<t>Message 5: Agent L sends its local candidate information to agent R, using
+the signalling protocol associated with the ICE usage.</t>
 
-<t>
-This candidate information is received at agent R. Agent R will obtain
-a host candidate, and from it, obtain a server reflexive candidate
-(messages 6-7). Since R is not behind a NAT, this candidate is
-identical to its host candidate, and they share the same base. It
-therefore discards this redundant candidate and ends up with a single
-host candidate. With identical type and local preferences as L, the
-priority for this candidate is 2130706431. It chooses a foundation of
-1 for its single candidate. Then R's candidates are then sent to
-L. </t>
+<t>Messages 6-7: Agent R gathers a host candidate from its local IP address,
+and from that sends a STUN Binding request to the STUN Server. Since agent R
+is not behind a NAT, R's server reflexive candidate will be identical to the
+host candidate.
 
-<t>
-Since neither side indicated that it is lite, the initiating agent
-that began ICE processing (agent L) becomes the controlling agent.
-</t>
+<t>Message 8: Agent R sends its local candidate information to agent L, using
+the signalling protocol associated with the ICE usage.</t>
 
-<t>
-Agents L and R both pair up the candidates. They both initially have
+<t>Since both agents are full ICE implementations, the initiating agent (agent L)
+becomes the controlling agent.</t>
+
+<t>Agents L and R both pair up the candidates. Both agents initially have
 two pairs. However, agent L will prune the pair containing its
-server reflexive candidate, resulting in just one. At agent L, this
+server reflexive candidate, resulting in just one (L1). At agent L, this
 pair has a local candidate of $L_PRIV_1 and remote candidate of
-$R_PUB_1, and has a candidate pair priority of 9151314442783293438.
-At agent R, there are two pairs. The highest priority has a local 
-candidate of $R_PUB_1 and remote candidate of $L_PRIV_1 and has a 
-priority of 9151314442783293438, and the second has a local candidate 
-of $R_PUB_1 and remote candidate of $NAT_PUB_1 and priority 
-7277816997797167102.
+$R_PUB_1. At agent R, there are two pairs. The highest priority pair (R1)
+has a local candidate of $R_PUB_1 and remote candidate of $L_PRIV_1, 
+and the second pair (R2) has a local candidate of $R_PUB_1 and remote candidate 
+of $NAT_PUB_1. The pairs are shown below (the pair numbers are for reference purpose 
+only):
 </t>
 
-<t> Agent R begins its connectivity check (message 9) for the first
-pair (between the two host candidates). The host candidate from agent
-L is private and behind a NAT, and thus this check won't be successful,
-because the packet cannot be routed from R to L, and will be dropped
-by the network.
-</t>
+<figure><artwork>
+<![CDATA[
 
-<t> When agent L gets the R's candidates, it performs its one and only
-connectivity check (messages 10-13). Since the check succeeds, agent L
-creates a new pair, whose local candidate is from the mapped address
-in the Binding response (NAT-PUB-1 from message 13) and whose remote
-candidate is the destination of the request (R-PUB-1 from message
-10). This is added to the valid list. Agent L can now send data if it
-so chooses.
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PRIV_1      R_PUB_1       L1
+
+ICE Agent R:             R_PUB_1       L_PRIV_1      R1
+                         R_PUB_1       NAT_PUB_1     R2 
+ 
+]]></artwork></figure>
+
+<t>Message 9: Agent R initiates a connectivity check for pair #2.
+As the remote candidate of the pair is the private address of agent L,
+the check will not be successful, as the request cannot be routed
+from R to L, and will be dropped by the network.</t>
+
+<t>Messages 10-13: Agent L initiates a connectivity check for pair L1.
+The check succeeds, and L creates a new pair (L2). The local candidate
+of the new pair is $NAT_PUB_1 and the remote candidate is $R_PUB_1. The
+pair (L2) is added to the valid list of agent L.</t>
+
+<figure><artwork>
+<![CDATA[
+
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PRIV_1      R_PUB_1       L1
+                         NAT_PUB_1     R_PUB_1       L2        X
+
+ICE Agent R:             R_PUB_1       L_PRIV_1      R1
+                         R_PUB_1       NAT_PUB_1     R2 
+ 
+]]></artwork></figure>
+
+<t>Messages 14-17: When agent R receives the Binding request from agent L
+(message 11) it will initiate a triggered connectivity check. The pair
+matches one of agent R's existing pairs (R2). The check succeeds, and the
+pair (R2) is added to the valid list of agent R.</t> 
+
+<figure><artwork>
+<![CDATA[
+
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PRIV_1      R_PUB_1       L1
+                         NAT_PUB_1     R_PUB_1       L2        X
+
+ICE Agent R:             R_PUB_1       L_PRIV_1      R1
+                         R_PUB_1       NAT_PUB_1     R2        X 
+ 
+]]></artwork></figure>
+.
+
+<t>Messages 18-21: At some point, the controlling agent (agent L) decides 
+to nominate a pair (L2) in the valid list. It performs a connectivity check 
+on the pair (L2), and includes the USE-CANDIDATE attribute in the Binding request. 
+As the check succeeds, the pair (L2) becomes the selected pair of agent L. The
+matching pair (R2) becomes the selected pair of agent R. Consequently, processing 
+for this stream moves into the Completed state. The ICE process also moves into the 
+Completed state.
 </t>
+</section>
+<section anchor="sec-example-ipv6" title="Example with IPv6 Addresses">
 
 <t>
-Soon after receipt of the STUN Binding request from agent L (message
-11), agent R will generate its triggered check. This check happens to
-match the next one on its check list -- from its host candidate to
-agent L's server reflexive candidate. This check (messages 14-17) will
-succeed. Consequently, agent R constructs a new candidate pair using
-the mapped address from the response as the local candidate (R-PUB-1)
-and the destination of the request (NAT-PUB-1) as the remote
-candidate. This pair is added to the valid list for that data
-stream.
-</t>
-<t>
-At some point, the controlling agent (agent L) decides to nominate a
-pair on the valid list. It performs a connectivity check 
-(messages 18-21) using a valid pair, and includes the USE-CANDIDATE 
-attribute. As agent R has previously checked the pair, the check
-from agent L will not trigger a triggered check. As the check
-succeeds, the pair becomes the selected pair. Consequently, processing 
-for this stream moves into the Completed state. As there is only one
-check list, the ICE process also moves into the Completed state.
+The example is using the topology shown in <xref target="fig-ex-topo-ipv6"/>.
 </t>
 
+<figure title="Example Topology" anchor="fig-ex-topo-ipv6"><artwork>
+<![CDATA[
+                         +-------+
+                         |STUN   |
+                         |Server |
+                         +-------+
+                             |
+                  +---------------------+
+                  |                     |
+                  |      Internet       |
+                  |                     |
+                  +---------------------+
+                    |                |
+                    |                |
+                    |                |
+                    |                |
+                    |                |
+                    |                |
+                    |                |
+                 +-----+          +-----+
+                 |  L  |          |  R  |
+                 +-----+          +-----+
+]]></artwork></figure>
+
+<t> In the example, ICE agents L and R are full ICE implementations. Both 
+agents have a single IPv6 address. Both are configured with the same STUN server.
+The IP addresses of the ICE agents and the STUN server are shown below;
+</t>
+<figure><artwork>
+<![CDATA[
+
+ENTITY                   IP Address  mnemonic name
+--------------------------------------------------
+ICE Agent L:             2001:db8::3   L-PUB-1
+ICE Agent R:             2001:db8::5   R-PUB-1          
+STUN Server:             2001:db8::9   STUN-PUB-1
+ 
+]]></artwork></figure>
+
+
+<figure title="Example Flow" anchor="fig:basic-ex-ipv6"><artwork>
+<![CDATA[
+          L                           STUN             R
+          |STUN alloc.                  |              |
+          |(1) STUN Req                 |              |
+          |S=$L-PUB-1                   |              |
+          |D=$STUN-PUB-1                |              |
+          |---------------------------->|              | 
+          |(2) STUN Res                 |              |
+          | S=$STUN-PUB-1               |              |
+          | D=$L-PUB-1                  |              |
+          | MA=$L-PUB-1                 |              |
+          |<----------------------------|              |
+          |(3) L's Candidate Information|              |
+          |------------------------------------------->|
+          |                             |              | STUN
+          |                             |              | alloc.
+          |                             |(4) STUN Req  |
+          |                             |S=$R-PUB-1    |
+          |                             |D=$STUN-PUB-1 |
+          |                             |<-------------|
+          |                             |(5) STUN Res  |
+          |                             |S=$STUN-PUB-1 |
+          |                             |D=$R-PUB-1    |
+          |                             |MA=$R-PUB-1   |
+          |                             |------------->|
+          |(6) R's Candidate Information|              |
+          |<-------------------------------------------|
+          |(7) Bind Req                 |              |
+          |S=$L-PUB-1                   |              |
+          |D=$R-PUB-1                   |              |
+          |------------------------------------------->|
+          |(8) Bind Res                 |              |
+          |S=$R-PUB-1                   |              |
+          |D=$L-PUB-1                   |              |
+          |MA=$L-PUB-1                  |              |
+          |<-------------------------------------------| 
+          |                             |              |
+          |(9) Bind Req                 |              |
+          |S=$R-PUB-1                   |              |
+          |D=$L-PUB-1                   |              |
+          |<-------------------------------------------|
+          |(10) Bind Res                |              |
+          |S=$L-PUB-1                   |              |
+          |D=$R-PUB-1                   |              |
+          |MA=$R-PUB-1                  |              |
+          |------------------------------------------->|
+          |                             |              |
+                             .......                  
+          |                             |              |
+          |(11) Bind Req                |              |
+          |S=$L-PUB-1                   |              |
+          |D=$R-PUB-1                   |              |
+          |USE-CAND                     |              |
+          |------------------------------------------->|
+          |(12) Bind Res                |              |
+          |S=$R-PUB-1                   |              |
+          |D=$L-PUB-1                   |              |
+          |MA=$L-PUB-1                  |              |
+          |<-------------------------------------------| 
+          |              |              |              |
+          
+          
+]]></artwork></figure>
+
+<t>Messages 1-2: Agent L gathers a host candidate from its local IP address,
+and from that sends a STUN Binding request to the STUN Server. Since agent L
+is not behind a NAT, L's server reflexive candidate will be identical to the
+host candidate.</t>
+
+<t>Message 3: Agent L sends its local candidate information to agent R, using
+the signalling protocol associated with the ICE usage.</t>
+
+<t>Messages 4-5: Agent R gathers a host candidate from its local IP address,
+and from that sends a STUN Binding request to the STUN Server. Since agent R
+is not behind a NAT, R's server reflexive candidate will be identical to the
+host candidate.
+
+<t>Message 6: Agent R sends its local candidate information to agent L, using
+the signalling protocol associated with the ICE usage.</t>
+
+<t>Since both agents are full ICE implementations, the initiating agent (agent L)
+becomes the controlling agent.</t>
+
+<t>Agents L and R both pair up the candidates. Both agents initially have
+one pair each. At agent L, the pair (L1) has a local candidate of $L_PUB_1 
+and remote candidate of $R_PUB_1. At agent R, the pair (R1) has a local candidate 
+of $R_PUB_1 and remote candidate of $L_PUB_1. The pairs are shown below 
+(the pair numbers are for reference purpose only):
+</t>
+
+<figure><artwork>
+<![CDATA[
+
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PUB_1       R_PUB_1       L1
+
+ICE Agent R:             R_PUB_1       L_PUB_1       R1
+ 
+]]></artwork></figure>
+
+<t>Messages 7-8: Agent L initiates a connectivity check for pair L1.
+The check succeeds, and the pair (L1) is added to the valid list of agent L.</t>
+
+<figure><artwork>
+<![CDATA[
+
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PUB_1       R_PUB_1       L1         X
+
+ICE Agent R:             R_PUB_1       L_PUB_1       R1
+ 
+]]></artwork></figure>
+
+<t>Messages 9-10: When agent R receives the Binding request from agent L
+(message 7) it will initiate a triggered connectivity check. The pair
+matches agent R's existing pair (R1). The check succeeds, and the
+pair (R1) is added to the valid list of agent R.</t> 
+
+<figure><artwork>
+<![CDATA[
+
+                         Pairs
+ENTITY                   Local         Remote     Pair #     Valid
+------------------------------------------------------------------
+ICE Agent L:             L_PUB_1       R_PUB_1       L1         X
+
+ICE Agent R:             R_PUB_1       L_PUB_1       R1         X
+ 
+]]></artwork></figure>
+.
+
+<t>Messages 11-12: At some point, the controlling agent (agent L) decides 
+to nominate a pair (L1) in the valid list. It performs a connectivity check 
+on the pair (L1), and includes the USE-CANDIDATE attribute in the Binding request. 
+As the check succeeds, the pair (L1) becomes the selected pair of agent L. The
+matching pair (R1) becomes the selected pair of agent R. Consequently, processing 
+for this stream moves into the Completed state. The ICE process also moves into 
+the Completed state.
+</t>
+</section>
 </section>
 
 <section title="STUN Extensions">
