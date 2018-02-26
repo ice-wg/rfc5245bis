@@ -618,7 +618,7 @@ is identical to the host candidate.
 <t hangText="Foundation:"> An arbitrary string used in the freezing
 algorithm to group similar candidates.  Is the same for two candidates
 that have the same type, base IP address, protocol (UDP, TCP, etc.),
-and STUN or TURN server.  If any of these are different, then the
+and STUN or TURN server. If any of these are different, then the
 foundation will be different.
 </t>
 
@@ -728,12 +728,15 @@ protocol. </t>
 
 <t hangText="Timer Ta:"> The timer for generating new STUN or TURN transactions.</t>
 
-<t hangText="Timer RTO:"> The retransmission timer for a given STUN or TURN transaction.</t>
+<t hangText="Timer RTO (Retransmission Timout):"> The retransmission timer for a given STUN or TURN transaction.</t>
 
-<t hangText="Timer HTO:"> The timeout timer for a given STUN or TURN transaction.</t>
+<t hangText="Timer HTO (Handshake Timeout):"> The timeout timer for a given STUN or TURN transaction.</t>
 
 </list></t>
-
+<t>
+NOTE: When STUN and TURN are used with ICE, timer HTO is used instead of timer Ti <xref target="RFC3264"/> as 
+transaction timeout timer.
+</t>
 </section>
 
 
