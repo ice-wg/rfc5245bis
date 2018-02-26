@@ -3244,7 +3244,7 @@ NAT (Public):            192.0.2.3   NAT-PUB-1
 ]]></artwork></figure>
 
 
-<figure title="Example Flow" anchor="fig:basic-ex-ipv6"><artwork>
+<figure title="Example Flow" anchor="fig:basic-ex-ipv4"><artwork>
 <![CDATA[
           L             NAT           STUN             R
           |STUN alloc.   |              |              |
@@ -3304,6 +3304,8 @@ NAT (Public):            192.0.2.3   NAT-PUB-1
           |D=$L-PRIV-1   |              |              |
           |MA=$NAT-PUB-1 |              |              |
           |<-------------|              |              |
+          |Data          |              |              |
+          |===========================================>|
           |              |              |              |
           |              |(14) Bind Req |              |
           |              |S=$R-PUB-1    |              |
@@ -3323,6 +3325,8 @@ NAT (Public):            192.0.2.3   NAT-PUB-1
           |              |D=$R-PUB-1    |              |
           |              |MA=$R-PUB-1   |              |
           |              |---------------------------->|
+          |Data          |              |              |
+          |<===========================================|
           |              |              |              |
                              .......                  
           |              |              |              |
@@ -3402,7 +3406,8 @@ from R to L, and will be dropped by the network.</t>
 <t>Messages 10-13: Agent L initiates a connectivity check for pair L1.
 The check succeeds, and L creates a new pair (L2). The local candidate
 of the new pair is $NAT_PUB_1 and the remote candidate is $R_PUB_1. The
-pair (L2) is added to the valid list of agent L.</t>
+pair (L2) is added to the valid list of agent L. Agent L can now send 
+and receive data on the pair (L2) if it wishes.</t>
 
 <figure><artwork>
 <![CDATA[
@@ -3421,7 +3426,8 @@ ICE Agent R:             R_PUB_1       L_PRIV_1      R1
 <t>Messages 14-17: When agent R receives the Binding request from agent L
 (message 11) it will initiate a triggered connectivity check. The pair
 matches one of agent R's existing pairs (R2). The check succeeds, and the
-pair (R2) is added to the valid list of agent R.</t> 
+pair (R2) is added to the valid list of agent R. Agent R can now send and
+receive data on the pair (R2) if it wishes.</t> 
 
 <figure><artwork>
 <![CDATA[
@@ -3530,7 +3536,9 @@ STUN Server:             2001:db8::9   STUN-PUB-1
           |S=$R-PUB-1                   |              |
           |D=$L-PUB-1                   |              |
           |MA=$L-PUB-1                  |              |
-          |<-------------------------------------------| 
+          |<-------------------------------------------|
+          |Data                         |              |
+          |===========================================>|
           |                             |              |
           |(9) Bind Req                 |              |
           |S=$R-PUB-1                   |              |
@@ -3541,6 +3549,8 @@ STUN Server:             2001:db8::9   STUN-PUB-1
           |D=$R-PUB-1                   |              |
           |MA=$R-PUB-1                  |              |
           |------------------------------------------->|
+          |Data                         |              |
+          |<===========================================|
           |                             |              |
                              .......                  
           |                             |              |
@@ -3598,7 +3608,8 @@ ICE Agent R:             R_PUB_1       L_PUB_1       R1
 ]]></artwork></figure>
 
 <t>Messages 7-8: Agent L initiates a connectivity check for pair L1.
-The check succeeds, and the pair (L1) is added to the valid list of agent L.</t>
+The check succeeds, and the pair (L1) is added to the valid list of agent L.
+Agent L can now send and receive data on the pair (L1) if it wishes.</t>
 
 <figure><artwork>
 <![CDATA[
@@ -3615,7 +3626,8 @@ ICE Agent R:             R_PUB_1       L_PUB_1       R1
 <t>Messages 9-10: When agent R receives the Binding request from agent L
 (message 7) it will initiate a triggered connectivity check. The pair
 matches agent R's existing pair (R1). The check succeeds, and the
-pair (R1) is added to the valid list of agent R.</t> 
+pair (R1) is added to the valid list of agent R. Agent R can now send and
+receive data on the pair (R1) if it wishes.</t> 
 
 <figure><artwork>
 <![CDATA[
