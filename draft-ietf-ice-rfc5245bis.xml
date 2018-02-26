@@ -2014,8 +2014,8 @@ a role conflict, a failure, or a success, according to the procedures below.
     pair belongs, and set the candidate pair state to Waiting. When the
     triggered connectivity check is later performed, the
     ICE-CONTROLLING/ICE-CONTROLLED attribute of the Binding request will
-    indicate the agent's new role. The agent MAY change
-    the tie-breaker value.
+    indicate the agent's new role. The agent MUST change the tie-breaker 
+    value.
     </t>
     <t>NOTE: A role switch requires an agent to recompute pair priorities
     (<xref target="sec-comp-pair-prio"/>), since the priority values
@@ -3672,8 +3672,9 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. The number is used
 for solving role conflicts, when it is referred to as the tie-breaker
 value. An ICE agent MUST use the same number for all Binding requests,
-for all streams, within an ICE session. The agent MAY change
-the number when an ICE restart occurs.
+for all streams, within an ICE session, unless it has received a 487 response,
+in which case it MUST change the number (<xref target="sec-recv-response-conf"/>). 
+The agent MAY change the number when an ICE restart occurs.
 </t>
 
 <t>
@@ -3683,7 +3684,9 @@ role. The content of the attribute is a 64-bit unsigned integer in
 network byte order, which contains a random number. As for the
 ICE-CONTROLLED attribute, the number is used for solving role conflicts. 
 An agent MUST use the same number for all Binding requests, for all streams, 
-within an ICE session. The agent MAY change the number when an ICE restart occurs.
+within an ICE session, unless it has received a 487 response, in which case it 
+MUST change the number (<xref target="sec-recv-response-conf"/>). 
+The agent MAY change the number when an ICE restart occurs.
 </t>
 
 </section>
