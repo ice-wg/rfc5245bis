@@ -3438,10 +3438,11 @@ ICE Agent R:             R_PUB_1       L_PRIV_1      R1
 <t>Messages 18-21: At some point, the controlling agent (agent L) decides 
 to nominate a pair (L2) in the valid list. It performs a connectivity check 
 on the pair (L2), and includes the USE-CANDIDATE attribute in the Binding request. 
-As the check succeeds, the pair (L2) becomes the selected pair of agent L. The
-matching pair (R2) becomes the selected pair of agent R. Consequently, processing 
-for this stream moves into the Completed state. The ICE process also moves into the 
-Completed state.
+As the check succeeds, agent L sets the nominated flag value of the pair (L2) to 'true'. 
+Agent R sets the nominated flag value of the matching pair (R2) to 'true'. As there
+are no more components associated with the stream, the nominated pairs become the 
+selected pairs. Consequently, processing for this stream moves into the Completed state. 
+The ICE process also moves into the Completed state.
 </t>
 </section>
 <section anchor="sec-example-ipv6" title="Example with IPv6 Addresses">
@@ -3629,10 +3630,11 @@ ICE Agent R:             R_PUB_1       L_PUB_1       R1         X
 <t>Messages 11-12: At some point, the controlling agent (agent L) decides 
 to nominate a pair (L1) in the valid list. It performs a connectivity check 
 on the pair (L1), and includes the USE-CANDIDATE attribute in the Binding request. 
-As the check succeeds, the pair (L1) becomes the selected pair of agent L. The
-matching pair (R1) becomes the selected pair of agent R. Consequently, processing 
-for this stream moves into the Completed state. The ICE process also moves into 
-the Completed state.
+As the check succeeds, agent L sets the nominated flag value of the pair (L1) to 'true'. 
+Agent R sets the nominated flag value of the matching pair (R1) to 'true'. As there
+are no more components associated with the stream, the nominated pairs become the 
+selected pairs. Consequently, processing for this stream moves into the Completed state. 
+The ICE process also moves into the Completed state.
 </t>
 </section>
 </section>
