@@ -527,7 +527,7 @@ This specification makes use of the following additional terminology:
 <t hangText="ICE Session:">
 An ICE session consists of all ICE-related actions starting with the
 candidate gathering, followed by the interactions (candidate exchange,
-connectivity checks, nominations and keep-alives) between the ICE agents
+connectivity checks, nominations and keepalives) between the ICE agents
 until all the candidates are released or ICE-restart is triggered.</t>
 
 <t hangText="ICE Agent, Agent:">
@@ -3442,7 +3442,6 @@ ICE Agent R:             R_PUB_1       L_PRIV_1      R1
                          R_PUB_1       NAT_PUB_1     R2        X 
  
 ]]></artwork></figure>
-.
 
 <t>Messages 18-21: At some point, the controlling agent (agent L) decides 
 to nominate a pair (L2) in the valid list. It performs a connectivity check 
@@ -3640,7 +3639,6 @@ ICE Agent L:             L_PUB_1       R_PUB_1       L1         X
 ICE Agent R:             R_PUB_1       L_PUB_1       R1         X
  
 ]]></artwork></figure>
-.
 
 <t>Messages 11-12: At some point, the controlling agent (agent L) decides 
 to nominate a pair (L1) in the valid list. It performs a connectivity check 
@@ -3804,7 +3802,7 @@ traffic itself will consume once the ICE process conclude. This was done
 to ensure that, if a network is designed to support communication traffic 
 of a certain type (voice, video, or just text), it will have sufficient 
 capacity to support the ICE checks for that data. Once ICE has concluded, 
-the subsequent ICE keep-alives will later cause a marginal increase in the 
+the subsequent ICE keepalives will later cause a marginal increase in the 
 total bandwidth utilization; however, this will typically be an extremely 
 small increase.
 </t>
@@ -4603,7 +4601,6 @@ the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 <?rfc include="reference.RFC.4291"?>
 <?rfc include="reference.RFC.4566"?>
 <?rfc include="reference.RFC.2475"?>
-<?rfc include="reference.RFC.1918"?>
 <?rfc include="reference.RFC.4787"?>
 <?rfc include="reference.RFC.5761"?>
 <?rfc include="reference.RFC.4103"?>
