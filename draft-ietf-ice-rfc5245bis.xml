@@ -2615,7 +2615,6 @@ required by the processing of <xref target="sec-serverproc"/>.
 </t>
 <t>The agent MUST continue retransmitting any In-Progress checks for
 that check list.</t>
-</t>
 </list>
 </t>
 
@@ -3179,7 +3178,8 @@ public, and "PRIV" for transport addresses that are private. Finally,
 seq-no is a sequence number that is different for each transport
 address of the same type on a particular entity. Each variable has an
 IP address and port, denoted by varname.IP and varname.PORT,
-respectively, where varname is the name of the variable. </t>
+respectively, where varname is the name of the variable.
+</t>
 
 <t> In the call flow itself, STUN messages are annotated with several
 attributes. The "S=" attribute indicates the source transport address
@@ -3366,7 +3366,7 @@ the signalling protocol associated with the ICE usage.</t>
 <t>Messages 6-7: Agent R gathers a host candidate from its local IP address,
 and from that sends a STUN Binding request to the STUN Server. Since agent R
 is not behind a NAT, R's server reflexive candidate will be identical to the
-host candidate.
+host candidate.</t>
 
 <t>Message 8: Agent R sends its local candidate information to agent L, using
 the signalling protocol associated with the ICE usage.</t>
@@ -3580,7 +3580,7 @@ the signalling protocol associated with the ICE usage.</t>
 <t>Messages 4-5: Agent R gathers a host candidate from its local IP address,
 and from that sends a STUN Binding request to the STUN Server. Since agent R
 is not behind a NAT, R's server reflexive candidate will be identical to the
-host candidate.
+host candidate.</t>
 
 <t>Message 6: Agent R sends its local candidate information to agent L, using
 the signalling protocol associated with the ICE usage.</t>
@@ -4611,7 +4611,6 @@ the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 <?rfc include="reference.RFC.4092"?>
 <?rfc include="reference.RFC.5245"?>
 <?rfc include="reference.RFC.5382"?>
-<?rfc include="reference.RFC.5389"?>
 <?rfc include="reference.RFC.6080"?>
 <?rfc include="reference.RFC.6146"?>
 <?rfc include="reference.RFC.6147"?>
