@@ -528,7 +528,7 @@ This specification makes use of the following additional terminology:
 An ICE session consists of all ICE-related actions starting with the
 candidate gathering, followed by the interactions (candidate exchange,
 connectivity checks, nominations and keepalives) between the ICE agents
-until all the candidates are released or ICE-restart is triggered.</t>
+until all the candidates are released or ICE restart is triggered.</t>
 
 <t hangText="ICE Agent, Agent:">
 An ICE agent (sometimes simply referred to as an agent) is the protocol 
@@ -2553,14 +2553,18 @@ They are a matter of local optimization. The only requirement is that the
 agent MUST eventually pick one and only one candidate pair and generate a
 check for that pair with the USE-CANDIDATE attribute set.
 </t>
-<t>If more than one candidate pair is nominated by the controlling agent, and if
-the controlled agent accepts multiple nominations requests, the agents 
-MUST produce the selected pairs using the pairs with the highest priority.</t>
-<t>NOTE: A controlling agent that does not support this specification (i.e. it
+<t>Once the controlling agent has successfully nominated a candidate pair (i.e., the agent has set 
+the nominated flag of the pair to true), the agent MUST NOT nominate another pair for same same component 
+of the data stream within the ICE session. Doing so requires an ICE restart.</t>
+<t>A controlling agent that does not support this specification (i.e., it
 is implemented according to RFC 5245) might nominate more than one candidate pair.
-This was referred to as "aggressive nomination" in RFC 5245. The usage of the
-'ice2' ice option (<xref target="sec-ice-option"/>) by endpoints supporting this 
-specification is supposed to prevent such controlling agents from using aggressive nomination.
+This was referred to as "aggressive nomination" in RFC 5245. If more than one candidate pair is 
+nominated by the controlling agent, and if the controlled agent accepts multiple 
+nominations requests, the agents MUST produce the selected pairs using the pairs with 
+the highest priority.</t>
+<t>The usage of the 'ice2' ice option (<xref target="sec-ice-option"/>) by endpoints supporting this 
+specification is supposed to prevent controlling agents implemented according to RFC 5245 from using 
+aggressive nomination.
 </t>
 <t>NOTE: In RFC 5245, usage of "aggressive nomination" allowed agents to continuously nominate
 pairs, before a pair was eventually selected, in order to allow sending of data on those pairs.
