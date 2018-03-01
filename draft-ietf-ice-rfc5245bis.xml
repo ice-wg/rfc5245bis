@@ -105,7 +105,7 @@ complexity and brittleness into the system.</t>
 such as TCP <xref target="RFC6544"/>). ICE works by exchanging a
 multiplicity of IP addresses and ports which are then tested for
 connectivity by peer-to-peer connectivity checks. The IP addresses and
-ports are exchanged using ICE usage-specific mechanisms (for example, including in a
+ports are exchanged using ICE usage-specific mechanisms (e.g., including in a
 offer/answer exchange) and the connectivity checks are performed using
 STUN <xref target="RFC5389"/>. ICE also makes use of Traversal Using Relays
 around NAT (TURN) <xref target="RFC5766"/>, an extension to STUN.
@@ -845,22 +845,17 @@ following exceptions:
     support IPv4 (i.e., is an IPv6-only application <xref
     target="RFC4038"/>). </t>
 
-    <t> If one or more host candidates corresponding to an IPv6
-    address generated using a mechanism that prevents location
-    tracking <xref target="RFC7721"/> are
-    gathered, host candidates corresponding to IPv6 addresses that do
-    allow location tracking, that are configured on the same
-    interface, and are part of the same network prefix MUST NOT be
-    gathered.</t>
-
-    <t>If one or more host candidates corresponding to an IPv6 
-    address generated using a mechanism that prevents location 
-    tracking <xref target="RFC7721"/> are gathered, host candidates 
-    corresponding to IPv6 addresses that do allow location tracking 
-    that are configured on the same interface and are part of the 
-    same network prefix MUST NOT be gathered; and host candidates 
-    corresponding to IPv6 link-local addresses <xref target="RFC4291"/>
-    MUST NOT be gathered.</t>
+    <t>
+    If one or more host candidates corresponding to an IPv6 address
+    generated using a mechanism that prevents location tracking
+    <xref target="RFC7721"/> are gathered, host candidates corresponding to IPv6
+    addresses that do allow location tracking that are configured on
+    the same interface and are part of the same network prefix MUST
+    NOT be gathered. Similarly, when host candidates corresponding
+    to an IPv6 address generated using a mechanism that prevents
+    location tracking are gathered, then host candidates corresponding
+    to IPv6 link-local addresses <xref target="RFC4291"/> MUST NOT be gathered.
+    </t>
   </list>
 </t>
 
@@ -1254,7 +1249,7 @@ for data.
 <section anchor="sec-verify" title="ICE Mismatch">
 <t>
 Certain middleboxes, such as ALGs, can alter signaling
-information in ways that break ICE break ICE (for example, by rewriting 
+information in ways that break ICE (e.g., by rewriting 
 IP addresses in SDP). This is referred to as ICE mismatch.
 If the using protocol is vulnerable to ICE mismatch, the responding 
 agent needs to be able to detect it and inform the peer ICE agent 
@@ -1704,7 +1699,7 @@ have that foundation is not the first check list in the check list set.
 The table below illustrates an example.
 </t>
 
-<figure anchor="fig-state-initial" align="center"><artwork>
+<figure align="center"><artwork>
 <![CDATA[
 
 Table legend:
@@ -3174,8 +3169,8 @@ variables that have mnemonic names. The format of the name is
 entity-type-seqno, where entity refers to the entity whose IP address
 the transport address is on, and is one of "L", "R", "STUN", or
 "NAT". The type is either "PUB" for transport addresses that are
-public, and "PRIV" for transport addresses that are private. Finally,
-seq-no is a sequence number that is different for each transport
+public, and "PRIV" for transport addresses that are private <xref target="RFC1918"/>.
+Finally, seq-no is a sequence number that is different for each transport
 address of the same type on a particular entity. Each variable has an
 IP address and port, denoted by varname.IP and varname.PORT,
 respectively, where varname is the name of the variable.
@@ -3216,7 +3211,7 @@ The example is using the topology shown in <xref target="fig-ex-topo-ipv4"/>.
                     |                |
                     |                |
              +---------+             |
-             |   NAT    |             |
+             |   NAT   |             |
              +---------+             |
                   |                  |
                   |                  |
@@ -4174,7 +4169,7 @@ or other purposes.
 
 <t hangText="False Valid on False Candidate:">An attacker has already
 convinced an agent that there is a candidate with an address that
-does not actually route to that agent (for example, by injecting a
+does not actually route to that agent (e.g., by injecting a
 false peer reflexive candidate or false server reflexive
 candidate). The attacker then launches an attack that forces the agents to
 believe that this candidate is valid.
@@ -4277,7 +4272,7 @@ replay that back as well.  </t>
 This attack is very hard to launch unless the attacker is identified
 by the fake candidate. This is because it requires the attacker to
 intercept and replay packets sent by two different hosts. If both
-agents are on different networks (for example, across the public
+agents are on different networks (e.g., across the public
 Internet), this attack can be hard to coordinate, since it needs to
 occur against two different endpoints on different parts of the
 network at the same time.
@@ -4584,6 +4579,7 @@ the ops-dir review. Magnus Westerlund did the tsv-art review.</t>
 </references>
 
 <references title="Informative References">
+<?rfc include="reference.RFC.1918"?>
 <?rfc include="reference.RFC.3605"?>
 <?rfc include="reference.RFC.3261"?>
 <?rfc include="reference.RFC.3264"?>
