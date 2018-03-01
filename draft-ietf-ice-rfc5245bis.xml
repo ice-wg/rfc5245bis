@@ -4152,7 +4152,7 @@ capabilities. In some cases the attacker needs to be on the path of the
 connectivity checks. In other cases the attacker does not need to be on
 the path, as long as it is able to generate STUN connectivity checks.
 While attacks on connectivity checks are typically performed by network
-entities, if an attacker is able to control an endpoint it can might be able
+entities, if an attacker is able to control an endpoint it might be able
 to trigger connectivity check attacks. The possible false conclusions an attacker
 can try and cause are:
 </t>
@@ -4236,13 +4236,13 @@ in a network without source address validation.
 </t>
 
 <t>
-Forcing the fake valid result works in a similar way. The agent
+Forcing the fake valid result works in a similar way. The attacker
 needs to wait for the Binding request from each agent, and inject a
-fake success response, or route (e.g., using a tunnelling mechanism) a
-success response that normally would be dropped or rejected by the
-network to the agent. Again, due to the STUN short-term credential
-mechanism, in order for the attacker to inject a valid success response, the
-attacker needs the password.
+fake success response. Again, due to the STUN short-term credential
+mechanism, in order for the attacker to inject a valid success response, 
+the attacker needs the password. Alternatively, the attacker can route 
+(e.g., using a tunnelling mechanism) a valid success response, that 
+normally would be dropped or rejected by the network, to the agent. 
 </t>
 
 <t>Forcing the false peer reflexive candidate result can be done
