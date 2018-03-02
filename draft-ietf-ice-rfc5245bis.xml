@@ -2398,7 +2398,7 @@ request came from (which may be the peer reflexive remote candidate
 that was just learned). The local candidate will either be a host
 candidate (for cases where the request was not received through a
 relay) or a relayed candidate (for cases where it is received through
-a relay).  The local candidate can never be a server reflexive
+a relay). The local candidate can never be a server reflexive
 candidate. Since both candidates are known to the agent, it can obtain
 their priorities and compute the candidate pair priority. This pair is
 then looked up in the check list. There can be one of several
@@ -2407,19 +2407,30 @@ outcomes:
 <list style="symbols">
   <t>If the pair is already on the check list:
     <list style="symbols">
-      <t>If the state of that pair is In-Progress or Succeeded, nothing further is
-      done. </t>
-      <t>If the state of that pair is Waiting or Frozen, a check for that pair 
-      is enqueued into the triggered check queue if not already present.
+      <t>
+      If the state of that pair is Succeeded, nothing further is
+      done.
       </t>
-      <t> If the state of the pair is Failed, it is changed to Waiting
-      and the agent MUST create a new connectivity check for that pair
-      (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the triggered check queue. Note that the
-      change of the state pair might also trigger a change of the 
-      check list state, if the current check list state is Failed.
+      <t>
+      If the state of that pair is In-Progress, the agent cancels the
+      In-Progress transaction. Cancellation means that the agent
+      will not retransmit the Binding requests associated with the
+      connectivity check transaction, will not treat the lack of
+      response to be a failure, but will wait the duration of the
+      transaction timeout for a response. In addition, the agent
+      MUST add enqueue the pair in the triggered check list associated with the
+      check list, and set the state of the pair to Waiting, in order to trigger a new connectivity 
+      check of the pair. Creating a new connectivity check enables validating 
+      In-Progress pairs as soon as possible, without having to wait for retransmissions 
+      of the Binding requests associated with the original connectivity check transaction.
       </t>
-
+      <t>
+      If the state of that pair is Waiting, Frozen or Failed, the agent MUST enqueue
+      the pair in the triggered check list associated with the check list (if not already present), 
+      and set the state of the pair to Waiting, in order to trigger a new connectivity check of the pair. 
+      Note that a state change of the pair from Failed to Waiting might also trigger a 
+      state change of the associated check list.
+      </t>
     </list>
   </t>
 </list>
