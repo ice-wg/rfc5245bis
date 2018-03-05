@@ -730,13 +730,7 @@ protocol. </t>
 
 <t hangText="Timer RTO (Retransmission Timout):"> The retransmission timer for a given STUN or TURN transaction.</t>
 
-<t hangText="Timer HTO (Handshake Timeout):"> The timeout timer for a given STUN or TURN transaction.</t>
-
 </list></t>
-<t>
-NOTE: When STUN and TURN are used with ICE, timer HTO is used instead of timer Ti <xref target="RFC3264"/> as 
-transaction timeout timer.
-</t>
 </section>
 
 
@@ -3075,45 +3069,8 @@ Regardless of the Ta value chosen for each agent, the combination
 of all transactions from all agents (if a given implementation
 runs several concurrent agents) MUST NOT be sent more often than
 once every 5ms (as though there were one global Ta value for pacing
-all agents).
-</t>
-
-<t>
-This mechanism of a global minimum pacing interval of 5ms is not
-generally applicable to transport protocols, but is applicable to ICE
-based on the following reasoning.
-
-<list style="symbols">
-  <t>Start with the following rules which would be generally
-  applicable to transport protocols:
-  <list style="numbers">
-    <t>Let MaxBytes be the maximum number of bytes allowed to be
-    outstanding in the network at start-up, which SHOULD be 14600,
-    as defined in Section 2 of <xref target="RFC6928"/>.</t>
-    <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
-    RTT is known and 500ms otherwise. This is based on the RTO for
-    STUN messages from <xref target="RFC5389"/> and the the TCP initial RTO, which is
-    1 sec in <xref target="RFC6298"/>.</t>
-    <t>Let MinPacing be the minimum pacing interval between
-    transactions, which is 5ms (see above).</t>
-  </list>
-  </t>
-  <t>
-    Observe that agents typically do not know the RTT for ICE
-    transactions (connectivity checks in particular), meaning that HTO
-    will almost always be 500ms.
-  </t>
-  <t>
-    Observe that a MinPacing of 5ms and HTO of 500ms gives at most 100
-    packets/HTO, which for a typical ICE check of less than 120
-    bytes means a maximum of 12000 outstanding bytes in the network,
-    which is less than the maximum expressed by rule 1.
-  </t>
-  <t>
-    Thus, for ICE, the rule set reduces down to just the MinPacing
-    rule, which is equivalent to having a global Ta value.
-  </t>
-</list>
+all agents). See <xref target="sec-pacing"/> for the background of
+using a value of 5ms with ICE.
 </t>
 
 <t>
@@ -4790,6 +4747,44 @@ transaction (packet A2) is sent at time 3Ta.
 Subsequent retransmits after the first will occur even less frequently
 than Ta milliseconds apart, since STUN uses an exponential back-off on
 its retransmissions.
+</t>
+
+<t>
+This mechanism of a global minimum pacing interval of 5ms is not
+generally applicable to transport protocols, but is applicable to ICE
+based on the following reasoning.
+
+<list style="symbols">
+  <t>Start with the following rules which would be generally
+  applicable to transport protocols:
+  <list style="numbers">
+    <t>Let MaxBytes be the maximum number of bytes allowed to be
+    outstanding in the network at start-up, which SHOULD be 14600,
+    as defined in Section 2 of <xref target="RFC6928"/>.</t>
+    <t>Let HTO be the transaction timeout, which SHOULD be 2*RTT if
+    RTT is known and 500ms otherwise. This is based on the RTO for
+    STUN messages from <xref target="RFC5389"/> and the the TCP initial RTO, which is
+    1 sec in <xref target="RFC6298"/>.</t>
+    <t>Let MinPacing be the minimum pacing interval between
+    transactions, which is 5ms (see above).</t>
+  </list>
+  </t>
+  <t>
+    Observe that agents typically do not know the RTT for ICE
+    transactions (connectivity checks in particular), meaning that HTO
+    will almost always be 500ms.
+  </t>
+  <t>
+    Observe that a MinPacing of 5ms and HTO of 500ms gives at most 100
+    packets/HTO, which for a typical ICE check of less than 120
+    bytes means a maximum of 12000 outstanding bytes in the network,
+    which is less than the maximum expressed by rule 1.
+  </t>
+  <t>
+    Thus, for ICE, the rule set reduces down to just the MinPacing
+    rule, which is equivalent to having a global Ta value.
+  </t>
+</list>
 </t>
 
 </section>
