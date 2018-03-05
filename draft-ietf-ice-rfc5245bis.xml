@@ -2398,7 +2398,7 @@ request came from (which may be the peer reflexive remote candidate
 that was just learned). The local candidate will either be a host
 candidate (for cases where the request was not received through a
 relay) or a relayed candidate (for cases where it is received through
-a relay).  The local candidate can never be a server reflexive
+a relay). The local candidate can never be a server reflexive
 candidate. Since both candidates are known to the agent, it can obtain
 their priorities and compute the candidate pair priority. This pair is
 then looked up in the check list. There can be one of several
@@ -2407,19 +2407,30 @@ outcomes:
 <list style="symbols">
   <t>If the pair is already on the check list:
     <list style="symbols">
-      <t>If the state of that pair is In-Progress or Succeeded, nothing further is
-      done. </t>
-      <t>If the state of that pair is Waiting or Frozen, a check for that pair 
-      is enqueued into the triggered check queue if not already present.
+      <t>
+      If the state of that pair is Succeeded, nothing further is
+      done.
       </t>
-      <t> If the state of the pair is Failed, it is changed to Waiting
-      and the agent MUST create a new connectivity check for that pair
-      (representing a new STUN Binding request transaction), by
-      enqueueing the pair in the triggered check queue. Note that the
-      change of the state pair might also trigger a change of the 
-      check list state, if the current check list state is Failed.
+      <t>
+      If the state of that pair is In-Progress, the agent cancels the
+      In-Progress transaction. Cancellation means that the agent
+      will not retransmit the Binding requests associated with the
+      connectivity check transaction, will not treat the lack of
+      response to be a failure, but will wait the duration of the
+      transaction timeout for a response. In addition, the agent
+      MUST add enqueue the pair in the triggered check list associated with the
+      check list, and set the state of the pair to Waiting, in order to trigger a new connectivity 
+      check of the pair. Creating a new connectivity check enables validating 
+      In-Progress pairs as soon as possible, without having to wait for retransmissions 
+      of the Binding requests associated with the original connectivity check transaction.
       </t>
-
+      <t>
+      If the state of that pair is Waiting, Frozen or Failed, the agent MUST enqueue
+      the pair in the triggered check list associated with the check list (if not already present), 
+      and set the state of the pair to Waiting, in order to trigger a new connectivity check of the pair. 
+      Note that a state change of the pair from Failed to Waiting might also trigger a 
+      state change of the associated check list.
+      </t>
     </list>
   </t>
 </list>
@@ -4144,10 +4155,17 @@ subsections consider these attacks and their countermeasures.
 <section title="Attacks on Connectivity Checks">
 
 <t>
-An attacker might attempt to disrupt the STUN connectivity
-checks. Ultimately, all of these attacks fool an ICE agent into thinking
-something incorrect about the results of the connectivity checks. The
-possible false conclusions an attacker can try and cause are:
+An attacker might attempt to disrupt the STUN connectivity checks.
+Ultimately, all of these attacks fool an ICE agent into thinking
+something incorrect about the results of the connectivity checks.
+Depending on the type of attack, the attacker needs to have different
+capabilities. In some cases the attacker needs to be on the path of the
+connectivity checks. In other cases the attacker does not need to be on
+the path, as long as it is able to generate STUN connectivity checks.
+While attacks on connectivity checks are typically performed by network
+entities, if an attacker is able to control an endpoint it might be able
+to trigger connectivity check attacks. The possible false conclusions an attacker
+can try and cause are:
 </t>
 
 <t><list style="hanging">
@@ -4188,21 +4206,22 @@ in <xref target="RFC5389"/>.
 
 </list></t>
 
-<t> To force the false invalid result, the attacker has to wait for
-the connectivity check from one of the agents to be sent. When it is,
+<t>
+To force the false invalid result, the attacker has to wait for the
+connectivity check from one of the agents to be sent.  When it is,
 the attacker needs to inject a fake response with an unrecoverable
-error response, such as a 400. However, since the candidate is, in
-fact, valid, the original request may reach the peer agent, and result
-in a success response. The attacker needs to force this packet or its
-response to be dropped, through a DoS attack, layer 2 network
-disruption, or other technique. If it doesn't do this, the success
-response will also reach the originator, alerting it to a possible
-attack. Fortunately, this attack is mitigated completely through the
-STUN short-term credential mechanism. The attacker needs to inject a
-fake response, and in order for this response to be processed, the
-attacker needs the password. If the candidate exchange signaling is
-secured, the attacker will not have the password and its response will
-be discarded.
+error response (such as a 400), or drop the response so that it never
+reaches the agent. However, since the candidate is, in fact, valid, the 
+original request may reach the peer agent, and result in a success 
+response. The attacker needs to force this packet or its response to 
+be dropped, through a DoS attack, layer 2 network disruption, or other 
+technique. If it doesn't do this, the success response will also reach 
+the originator, alerting it to a possible attack. The ability for the 
+attacker to generate a fake response is mitigated through the STUN 
+short-term credential mechanism. In order for this response to be 
+processed, the attacker needs the password. If the candidate exchange 
+signaling is secured, the attacker will not have the password and its 
+response will be discarded.
 </t>
 
 <t>
@@ -4227,13 +4246,14 @@ spoofed ICMP attacks is possible also for off-path attackers from a node
 in a network without source address validation.
 </t>
 
-<t> Forcing the fake valid result works in a similar way. The agent
+<t>
+Forcing the fake valid result works in a similar way. The attacker
 needs to wait for the Binding request from each agent, and inject a
-fake success response. The attacker won't need to worry about
-disrupting the actual response since, if the candidate is not valid,
-it presumably wouldn't be received anyway. However, like the fake
-invalid attack, this attack is mitigated by the STUN short-term
-credential mechanism in conjunction with a secure candidate exchange.
+fake success response. Again, due to the STUN short-term credential
+mechanism, in order for the attacker to inject a valid success response, 
+the attacker needs the password. Alternatively, the attacker can route 
+(e.g., using a tunnelling mechanism) a valid success response, that 
+normally would be dropped or rejected by the network, to the agent. 
 </t>
 
 <t>Forcing the false peer reflexive candidate result can be done
@@ -4392,8 +4412,10 @@ attack target. However, instead of voice packets being directed to the target,
 STUN connectivity checks are directed to the target. The attacker sends an
 a large number of candidates, say, 50. The responding agent receives
 the candidate information, and starts its checks, which are directed
-at the target, and consequently, never generate a response. The
-answerer will start a new connectivity check every Ta ms (say,
+at the target, and consequently, never generate a response. In the case of WebRTC 
+the user might not even be aware that this attack is ongoing, since it might be 
+triggered in the background by malicious JavaScript code that the user has 
+fetched. The answerer will start a new connectivity check every Ta ms (say,
 Ta=50ms). However, the retransmission timers are set to a large number
 due to the large number of candidates. As a consequence, packets will
 be sent at an interval of one every Ta milliseconds, and then with
@@ -4501,9 +4523,8 @@ ICE Option name:
 
   Contact:
 
-     Name:    Christer Holmberg
-     E-mail:  christer.holmberg(at)ericsson(dot)com
-     Address: Oy LM Ericsson Ab, 02420 Jorvas, FINLAND
+     Name:    IESG 
+     E-mail:  iesg@ietf.org
 
   Change control:
 
@@ -4707,12 +4728,14 @@ RTO that is a function of Ta as well. Why are these transactions
 paced, and why are these formulas used?
 </t>
 
-<t> Sending of these STUN requests will often have the effect of
+<t>
+Sending of these STUN requests will often have the effect of
 creating bindings on NAT devices between the client and the STUN
 servers. Experience has shown that many NAT devices have upper limits
-on the rate at which they will create new bindings. Experiments have
-shown that once every 5 ms is well-supported.
-This is why Ta has a lower bound of 5 ms. Furthermore,
+on the rate at which they will create new bindings. Discussions in the 
+IETF ICE WG during the work on this specification concluded that, that 
+once every 5 ms is will supported. This is why Ta has a lover bound 
+of 5 ms. This is why Ta has a lower bound of 5 ms. Furthermore,
 transmission of these packets on the network makes use of bandwidth
 and needs to be rate limited by the ICE agent. Deployments based on
 earlier draft versions of <xref target="RFC5245"/> tended to overload
