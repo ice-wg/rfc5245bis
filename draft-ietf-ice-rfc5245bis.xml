@@ -3967,12 +3967,12 @@ connectivity, for example. ICE also helps prevent certain security
 attacks that have nothing to do with NAT. However, what ICE does is
 help phase out other UNSAF mechanisms. ICE effectively picks amongst
 those mechanisms, prioritizing ones that are better, and
-deprioritizing ones that are worse. IPv6 address from the local host 
-can be preferred. As NATs begin to dissipate as IPv6 is introduced, server
-reflexive and relayed candidates (both forms of UNSAF addresses)
-simply never get used, because higher-priority connectivity exists to
-the native host candidates. Therefore, the servers get used less and
-less, and can eventually be removed when their usage goes to zero.
+deprioritizing ones that are worse. As NATs begin to dissipate as 
+IPv6 is introduced, server reflexive and relayed candidates (both 
+forms of UNSAF addresses) simply never get used, because higher-priority 
+connectivity exists to the native host candidates. Therefore, the servers 
+get used less and less, and can eventually be removed when their usage 
+goes to zero.
 </t>
 
 <t>
