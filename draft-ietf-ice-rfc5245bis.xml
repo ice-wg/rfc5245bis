@@ -4702,9 +4702,8 @@ creating bindings on NAT devices between the client and the STUN
 servers. Experience has shown that many NAT devices have upper limits
 on the rate at which they will create new bindings. Discussions in the 
 IETF ICE WG during the work on this specification concluded that, that 
-once every 5 ms is will supported. This is why Ta has a lover bound 
-of 5 ms. This is why Ta has a lower bound of 5 ms. Furthermore,
-transmission of these packets on the network makes use of bandwidth
+once every 5 ms is well supported. This is why Ta has a lover bound 
+of 5 ms. Furthermore, transmission of these packets on the network makes use of bandwidth
 and needs to be rate limited by the ICE agent. Deployments based on
 earlier draft versions of <xref target="RFC5245"/> tended to overload
 rate-constrained access links and perform poorly overall, in addition
