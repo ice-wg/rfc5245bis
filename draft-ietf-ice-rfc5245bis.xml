@@ -2591,57 +2591,68 @@ stream and the state of the check list is Running, ICE processing
 continues.
 </t>
 
-
-<t>If there is at least one nominated pair in the valid list for a
-data stream and the state of the check list is Running:
+<t>
+If there is a nominated pair for a component in a valid list and the state 
+of the check list is Running:
 <list style="symbols">
-<t>The ICE agent MUST remove all Waiting and Frozen pairs in the CHECK
-LIST and triggered check queue for the same component as the nominated
-pairs for that data stream.
+<t>
+The ICE agent MUST remove all other candidates pairs for the same component
+from the check list. In addition, in case of an In-Progress pair the agent 
+terminates the STUN connectivity check transaction associated with the pair.
 </t>
-<t>If an In-Progress pair in the check list is for the same component
-as a nominated pair, the agent SHOULD cease retransmissions for its
-check if its pair priority is lower than the lowest-priority nominated
-pair for that component.
+<t>
+The agent MUST continue to respond to any connectivity check Binding request it may still
+receive for the component. As defined in <xref target="sec-serverproc"/>, as
+the state of the pair is Succeeded, no agent will no longer generate triggered checks
+for the component.
 </t>
 </list>
 </t>
 
-<t>Once there is at least one nominated pair in the valid list for
-every component of at least one data stream and the state of the
-check list is Running:
+<t>Once there is a nominated pair for each component in a valid list 
+and the state of the check list is Running:
 <list style="symbols">
-<t>The agent MUST change the state of processing for its check list
-for that data stream to Completed. </t>
-<t>The agent MUST continue to respond to any checks it may still
-receive for that data stream, and MUST perform triggered checks if
-required by the processing of <xref target="sec-serverproc"/>.
+<t>
+The ICE agent sets the state of the check list to Completed.
+</t>
+<t>
+The agent MUST continue to respond to any connectivity check Binding request 
+it may still receive for a candidate pair within the valid list.
 </t>
 <t>The agent MUST continue retransmitting any In-Progress checks for
 that check list.</t>
 </list>
 </t>
 
-<t>Once the state of each check list is Completed:
+<t>Once the state of each check list in the check list set is Completed:
 <list style="symbols">
-<t>The agent sets the state of ICE processing overall to Completed.</t>
+<t>
+The agent sets the state of the ICE session to Completed.</t>
 </list>
 </t>
 
-<t>If the state of the check list is Failed, ICE has not been
+<t>
+If the state of the check list is Failed, ICE has not been
 able to complete for this data stream. The correct behavior depends
 on the state of the check lists for other data streams:
 <list style="symbols">
-<t>If all check lists are Failed, ICE processing overall is considered
-to be in the Failed state, and the agent SHOULD consider the session a
-failure, SHOULD NOT restart ICE, and the controlling agent SHOULD
-terminate the entire session. </t>
-<t>If at least one of the check lists for other data streams is
-Completed, the controlling agent SHOULD remove the failed data stream
-from the session while sending updated candidate list to its peer.</t>
-<t> If none of the check lists for other data streams are
-Completed, but at least one is Running, the agent SHOULD let ICE
-continue.</t>
+<t>
+If the state of at least one of the other check lists is Running, the 
+agent SHOULD list ICE continue.
+</t>
+<t>
+If the state of at least one of the other check lists is Completed, and
+if the controlling agent wants to continue the session without the data stream(s) associated
+with the Failed check list(s), the controlling agent takes the proper actions for removing
+the failed data streams and sets the state of the ICE session to Completed. If the
+controlling agent does not want to continue the session without the failed data streams 
+it MUST terminate the session.
+</t>
+<t>
+If the state of each check list is Failed, the state of the ICE session is set
+to Failed. Unless the controlling agent wants to continue the session without the data streams,
+it MUST terminate the session.
+</t>
 </list>
 </t>
 
