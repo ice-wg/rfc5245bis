@@ -2578,7 +2578,7 @@ there is no longer a need for aggressive nomination.
 
 <section anchor="sec-conc-state" title="Updating Check List and ICE States">
 <t>
-For both controlling and controlled agents, when a candidate pair for a component of a data stream
+For both a controlling and a controlled agent, when a candidate pair for a component of a data stream
 gets nominated, it might impact other pairs in the check list associated with the data stream. It might
 also impact the state of the check list:
 <list style="symbols">
